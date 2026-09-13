@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fish In the Toolbox — Working notes</title><meta name="description" content="Practical notes on GPT typography, backgrounds, chibi layouts, and displaying externally hosted images."><meta name="author" content="Frozen_Tuna"><meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="ko" href="../index.html">
+<link rel="alternate" hreflang="en" href="../en/index.html">
+<link rel="alternate" hreflang="ja" href="../ja/index.html">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2330;
+    --border: #30363d;
+    --border-bright: #444c56;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #484f58;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --accent4: #ffa657;
+    --accent5: #ff7b72;
+    --tag-bg: #1f3048;
+    --tag-text: #79c0ff;
+    --code-bg: #161b22;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* layout */
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* sidebar */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 0 40px;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .product {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-logo .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sidebar-logo .subtitle {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 8px 0;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 24px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 24px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(88,166,255,0.06);
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* main */
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px 60px 80px;
+    max-width: 860px;
+  }
+
+  /* page header */
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header .eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+
+  .page-header .desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* sections */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-anchor {
+    display: block;
+    position: relative;
+    top: -80px;
+    visibility: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .section p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .section p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* callout */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout.info { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.2); color: #9ecbff; }
+  .callout.tip  { background: rgba(63,185,80,0.08);  border: 1px solid rgba(63,185,80,0.2);  color: #85e89d; }
+  .callout.warn { background: rgba(255,166,87,0.08); border: 1px solid rgba(255,166,87,0.2); color: #ffb86c; }
+
+  /* node cards */
+  .node-grid {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .node-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color 0.15s;
+  }
+
+  .node-card:hover { border-color: var(--border-bright); }
+
+  .node-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .node-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .node-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .node-card-desc {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* field table */
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+
+  .field-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .field-table tr:last-child td { border-bottom: none; }
+
+  .field-table .field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent3);
+    white-space: nowrap;
+  }
+
+  .field-table .field-desc { color: var(--text-muted); }
+
+  /* code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #c9d1d9;
+    overflow-x: auto;
+    margin: 16px 0;
+    white-space: pre;
+  }
+
+  .code-block .cm { color: var(--text-dim); }
+  .code-block .kw { color: var(--accent5); }
+  .code-block .st { color: var(--accent2); }
+  .code-block .nm { color: var(--accent3); }
+  .code-block .vl { color: var(--accent4); }
+
+  /* flow diagram */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .flow-box {
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .flow-down {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-down-arrow {
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 2px 0;
+  }
+
+  /* arch diagram */
+  .arch {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .arch-row:last-child { border-bottom: none; }
+
+  .arch-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .arch-content {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  .arch-content strong { color: var(--text); font-weight: 600; }
+
+  /* tag chip */
+  .chip {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    margin: 1px 2px;
+    white-space: nowrap;
+  }
+
+  .chip.green { background: rgba(63,185,80,0.1); color: #85e89d; }
+  .chip.purple { background: rgba(210,168,255,0.1); color: var(--accent3); }
+  .chip.orange { background: rgba(255,166,87,0.1); color: var(--accent4); }
+  .chip.red { background: rgba(255,123,114,0.1); color: var(--accent5); }
+
+  /* divider */
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* scroll */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+
+  /* ── screenshots ── */
+  .shot { margin: 22px 0 26px; }
+  .shot img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border-bright);
+    border-radius: 10px;
+    background: var(--bg2);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+  }
+  .shot figcaption {
+    margin-top: 9px; font-size: 12.5px; line-height: 1.6;
+    color: var(--text-dim); padding-left: 2px;
+  }
+  .shot figcaption b { color: var(--text-muted); font-weight: 600; }
+  .shot.narrow img { max-width: 620px; }
+
+  /* ── language tabs ── */
+  .lang-tabs { display: flex; gap: 6px; margin: 4px 0 20px; }
+  .lang-tabs a {
+    flex: 1; text-align: center; font-size: 12px; font-weight: 600;
+    padding: 7px 0; border-radius: 7px; text-decoration: none;
+    color: var(--text-muted); background: var(--bg3);
+    border: 1px solid var(--border-bright); transition: all 0.15s ease;
+  }
+  .lang-tabs a:hover { color: var(--text); }
+  .lang-tabs a.active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  .shot-row { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+  .shot-row .shot { flex: 1; min-width: 240px; margin: 0; }
+  @media (max-width: 560px) { .shot-row { flex-direction: column; } }
+
+.fish-sign { position: fixed; bottom: 18px; right: 20px; z-index: 50; display: flex; align-items: center; gap: 8px; text-decoration: none; user-select: none; cursor: pointer; }
+  .fish-sign-tip { font-size: 12px; line-height: 1.4; color: var(--text-muted); background: var(--bg3); border: 1px solid var(--border-bright); padding: 6px 11px; border-radius: 999px; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.35); opacity: 0; transform: translateX(8px); transition: opacity 0.22s ease, transform 0.22s ease; pointer-events: none; }
+  .fish-sign-tip b { color: var(--accent3); font-weight: 600; }
+  .fish-sign-emoji { font-size: 26px; opacity: 0.55; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); transition: opacity 0.22s ease, transform 0.22s ease; }
+  .fish-sign:hover .fish-sign-tip { opacity: 1; transform: translateX(0); }
+  .fish-sign:hover .fish-sign-emoji { opacity: 1; transform: translateY(-2px) scale(1.08); }
+
+:root { --text-muted:#a0acbc; --text-dim:#96a2b2; }
+html{scroll-behavior:smooth;scroll-padding-top:32px}
+body{font-size:16px;line-height:1.85;overflow-wrap:break-word}
+.shell{max-width:1600px;margin:0 auto}
+.sidebar{width:272px;padding-top:35px}
+.brand{display:block;color:var(--text);text-decoration:none;font-size:23px;font-weight:700;line-height:1.3;margin-top:12px;letter-spacing:-.7px}
+.brand span{font-size:23px}.edition{font-size:13px;color:var(--text-muted);margin-top:16px}
+.nav-label.group{display:block;font-size:14px;letter-spacing:0;text-transform:none;color:#d2dbe7;text-decoration:none;line-height:1.7;margin:8px 0}
+.alias{font-size:12px;color:var(--text-muted);display:block}.nav-item{font-size:15px;padding-top:9px;padding-bottom:9px}.blue{background:var(--accent)}.green{background:var(--accent2)}.purple{background:var(--accent3)}.orange{background:var(--accent4)}
+.subnav{display:flex;gap:12px;padding:8px 25px 4px;font-size:12px}.subnav a{color:var(--text-muted);text-decoration:none}.subnav a:hover{color:var(--accent)}
+.sidebar-footer{margin:32px 24px;border-top:1px solid var(--border);padding-top:22px;color:var(--text-muted);font-size:13px}
+.main{padding:48px 64px 80px;max-width:1120px;min-width:0;flex:1;width:calc(100% - 272px)}
+.page-intro{padding-bottom:34px;border-bottom:1px solid var(--border);margin-bottom:42px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:14px}
+.page-intro h1{font-size:clamp(29px,3vw,40px);letter-spacing:-1.2px;line-height:1.3;margin-bottom:18px}
+.page-intro>p:not(.eyebrow){color:#b5c0cf;font-size:16px;line-height:1.9}
+.language-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 27px}
+.language-tab{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:14px;font-weight:500;text-decoration:none;color:var(--text-muted);background:var(--bg2);min-height:40px}
+.language-tab:hover{border-color:var(--accent);color:var(--text)}.language-tab.selected{border-color:var(--accent);color:#b6d9ff;background:#152c47}
+.feedback{border-top:1px solid var(--border);margin-top:55px;padding-top:30px}.feedback h2{font-size:20px;line-height:1.6;margin-bottom:12px}.feedback p{margin-bottom:15px;color:#bdc8d7}.feedback-link{display:inline-block;color:#a4cfff;border:1px solid #365575;border-radius:6px;padding:8px 15px;text-decoration:none;font-size:14px}.feedback-link:hover{background:#152c47}.feedback .translation-note{margin-top:23px;font-size:14px;line-height:1.9;color:var(--text-muted)}
+html[lang="ja"] body{font-family:'Noto Sans JP','Yu Gothic','Meiryo',sans-serif}html[lang="en"] body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+html[lang="en"] .nav-item,html[lang="ja"] .nav-item{line-height:1.6}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}.meta span{font-size:12px;border:1px solid var(--border);padding:2px 10px;border-radius:5px;color:var(--text-muted)}
+article h2.level-1{font-size:26px;line-height:1.5;letter-spacing:-.6px;margin:65px 0 21px;padding-top:30px;border-top:1px solid var(--border)}
+article h2.level-1:first-child{margin-top:0;padding-top:0;border:0}
+article h3.level-2{font-size:24px;line-height:1.45;letter-spacing:-.5px;margin:50px 0 21px;padding-left:14px;border-left:4px solid var(--accent)}
+#background{border-color:var(--accent2)}#chibi{border-color:var(--accent3)}#principle,#format,#services{border-color:var(--accent4)}
+article h4{font-size:18px;margin:30px 0 13px;line-height:1.6}article h5{font-size:19px;color:var(--accent);margin:38px 0 16px;line-height:1.65}
+article p{margin:0 0 18px}article ul,article ol{margin:0 0 22px;padding-left:24px}article li{margin:7px 0}article strong{font-weight:700;color:#f0f5fc}
+article a{color:#79b8ff;text-underline-offset:4px;word-break:break-word}
+article pre{font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;line-height:1.8;background:#111823;border:1px solid var(--border);border-radius:8px;padding:22px 24px;overflow:auto;margin:22px 0;white-space:pre;max-width:100%;tab-size:2}
+article pre code{padding:0;background:none;color:#cbd9eb;font-size:inherit;white-space:pre}
+article :not(pre)>code{font-size:.87em;background:#202b3b;color:#bad7ff;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+article blockquote{border-left:3px solid var(--accent3);background:rgba(210,168,255,.055);padding:18px 22px;margin:22px 0;color:#c7d0df;border-radius:0 7px 7px 0}article blockquote p:last-child{margin:0}
+article figure{margin:28px 0 30px;border:1px solid var(--border);background:#161b22;border-radius:10px;overflow:hidden}
+article figure img{display:block;width:100%;height:auto;margin:0;padding:0}article figure:first-of-type img{padding:18px}
+article figcaption{font-size:13px;line-height:1.8;color:var(--text-muted);padding:17px 20px;border-top:1px solid var(--border)}
+.table-scroll{width:100%;overflow-x:auto;margin:22px 0 28px;border:1px solid var(--border);border-radius:8px}article table{width:100%;border-collapse:collapse;font-size:14px;margin:0}article th{font-size:13px;background:#1c2532;color:#e1e8f1;text-align:left;font-weight:600;white-space:nowrap}article td,article th{padding:13px 15px;border-bottom:1px solid var(--border);vertical-align:top}article tr:last-child td{border-bottom:0}article td{min-width:100px}article td:last-child{min-width:220px}article td:first-child{min-width:125px}
+article details{margin:22px 0 32px;padding:0 20px;background:#141b26;border:1px solid var(--border);border-radius:8px}article summary{padding:14px 0;color:var(--text-muted);cursor:pointer;font-size:13px;line-height:1.7}article summary small{font-size:13px}article details[open]{padding-bottom:14px}article details[open] summary{border-bottom:1px solid var(--border);margin-bottom:20px}article details h4{font-size:17px}
+.fish-sign{right:22px;bottom:20px;padding:8px}.fish-sign:focus-visible .fish-sign-tip{opacity:1;transform:none}.fish-sign:focus-visible .fish-sign-emoji{opacity:1}.fish-sign-emoji{font-size:29px}.fish-sign-tip{font-size:12px}
+.skip{position:fixed;left:12px;top:-80px;z-index:100;background:var(--accent);color:#0d1117;padding:8px 14px}.skip:focus{top:12px}
+a:focus-visible,summary:focus-visible,.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.end-note{font-size:13px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:24px;margin-top:55px;display:flex;justify-content:space-between;gap:20px;padding-right:36px}.end-note a{color:var(--accent);text-decoration:none}
+.mobile-toc{display:none}
+@media(max-width:1000px){.main{padding:36px 32px 70px}.sidebar{width:242px}.brand{font-size:21px}}
+@media(max-width:760px){.shell{display:block}.sidebar{display:none}.main{width:100%;padding:28px 20px 76px}.page-intro{margin-bottom:24px;padding-bottom:24px}.mobile-toc{display:block;border:1px solid var(--border);background:var(--bg2);border-radius:7px;padding:12px 16px;margin-bottom:32px;font-size:14px}.mobile-toc summary{cursor:pointer}.mobile-toc nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:15px}.mobile-toc a{color:var(--accent);text-decoration:none}article h2.level-1{font-size:23px;margin-top:46px}article h3.level-2{font-size:22px;margin-top:38px}article pre{padding:16px;font-size:12px}article details{padding-left:13px;padding-right:13px}article figure:first-of-type img{padding:9px}article figcaption{padding:13px 15px}.fish-sign{right:10px;bottom:12px}.fish-sign-tip{max-width:70vw;white-space:normal}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style></head><body><a class="skip" href="#content">Skip to content</a>
+<div class="shell"><aside class="sidebar" aria-label="Page contents"><div class="sidebar-logo"><div class="product">FROZEN_TUNA’S NOTES</div><a class="brand" href="#top">Fish In<br>the Toolbox <span>🐟</span></a><div class="edition">English · Working notes</div></div>
+<nav><div class="nav-section"><a class="nav-label group" href="#gpt">Getting help from GPT</a><a class="nav-item" href="#typography"><span class="nav-dot blue"></span>Typography</a><a class="nav-item" href="#background"><span class="nav-dot green"></span>Backgrounds</a><a class="nav-item" href="#chibi"><span class="nav-dot purple"></span>Chibi layouts</a></div><div class="nav-section"><a class="nav-label group" href="#external">Loading images from<br>outside the platform <span class="alias">(external images)</span></a><a class="nav-item" href="#principle"><span class="nav-dot orange"></span>How it works</a><a class="nav-item" href="#format"><span class="nav-dot orange"></span>Image syntax</a><a class="nav-item" href="#services"><span class="nav-dot orange"></span>Hosting services</a><div class="subnav"><a href="#nsfw-yes">Allowed</a><a href="#nsfw-no">Not allowed</a><a href="#nsfw-unknown">Unclear</a></div></div></nav><div class="sidebar-footer">Notes from trying things out,<br>ready to use when you need them.</div></aside>
+<main id="content" class="main"><header id="top" class="page-intro"><nav class="language-tabs" aria-label="Choose a language"><a class="language-tab" href="../index.html" hreflang="ko" lang="ko">한국어</a><a class="language-tab selected" href="../en/index.html" hreflang="en" lang="en" aria-current="page">English</a><a class="language-tab" href="../ja/index.html" hreflang="ja" lang="ja">日本語</a></nav><p class="eyebrow">AI · VISUALS · IMAGE HOSTING</p><h1>Fish In the Toolbox</h1><p>There’s no grand plan behind this page. I had a few things I wanted to share that didn’t quite fit in the StoryEngine guide, so I gathered them here.<br>I hope they help even one more person.</p><div class="meta"><span>English</span><span>Observations · hands-on use</span><span>2026.09.13</span></div></header>
+<details class="mobile-toc"><summary>Browse contents</summary><nav><a href="#typography">Typography</a><a href="#background">Backgrounds</a><a href="#chibi">Chibi layouts</a><a href="#principle">How it works</a><a href="#format">Image syntax</a><a href="#services">Hosting services</a></nav></details><article><h2 id="gpt" class="level-1">Getting help from GPT</h2>
+<p>These notes cover how I organize requests for typography, backgrounds, and chibi layouts. They collect structures that made it easier to communicate what I wanted during my own work.</p>
+<p>This is not a definitive guide to image generation. Results vary, and the methods below are working observations and examples. Change the wording and conditions to suit your task.</p>
+<h3 id="typography" class="level-2">Typography</h3>
+<p>Separating the exact text, line breaks, layout, lettering, and decoration limits made the results easier to check than simply supplying a phrase.</p>
+<h4 id="note-1" class="level-3">What to decide first</h4>
+<ul>
+<li><strong>Exact text:</strong> Write out precisely what should appear.</li>
+<li><strong>Lines and blocks:</strong> Specify line breaks and which words should be larger.</li>
+<li><strong>Priority:</strong> Decide whether the text or the accompanying character should be noticed first.</li>
+<li><strong>Lettering:</strong> Specify the fill, outline, weight, and acceptable distortion.</li>
+<li><strong>Decorations:</strong> Set their quantity or density as well as their type.</li>
+<li><strong>Text preservation:</strong> Ask for no spelling changes or extra words.</li>
+</ul>
+<h4 id="note-2" class="level-3">Basic prompt</h4>
+<details class="code-example"><summary>View typography prompt</summary><pre><code class="language-text"># Typography Priority
+* text is the primary focal point
+* maintain high legibility
+* decorative elements remain secondary
+
+# Text Content
+First line: `Welcome`
+Second line: `Library`
+
+# Layout
+* centered two-line composition
+* first line above second line
+* clear spacing between lines
+* no overlapping decorations
+
+# Letter Style
+* white fill
+* light green outline
+* bold rounded sticker lettering
+* clean readable shapes
+
+# Decoration
+* idol fan-sign sticker atmosphere
+* a few small music notes, sparkles, and hearts
+* keep decorations sparse and outside the lettering
+* no extra ribbons or decorative frames
+* restrained glow and drop shadows
+
+# Background
+* transparent background
+
+# Text Preservation
+* keep all English text exactly as written
+* do not alter spelling
+* do not add extra letters or words
+</code></pre></details>
+<h4 id="note-3" class="level-3">Split long titles into visual blocks</h4>
+<p>Breaking a long sentence into lines and emphasis blocks produced more readable results than treating it as one unit. For example:</p>
+<details class="code-example"><summary>View the text-block layout</summary><pre><code class="language-text">[ GPT한테      ] [ 짬때리기 ]
+[ 비주얼라이즈 ] [          ]
+</code></pre></details>
+<p>Specify two lines on the left and one large word on the right spanning the height of both lines. Use a base color and one accent color, with sparse decorations outside the letters. The Korean wording is kept here to match the actual result below.</p>
+<figure><img loading="lazy" decoding="async" src="../assets/images/typography-block-example.png" alt="Sticker-style Korean typography: two white lines on the left and large lime-green lettering on the right"><figcaption>Example from my own work. The two left-hand lines and the large word on the right read as one group. Stars and hearts sit outside the lettering. This illustrates the block layout; it is not an example of every decoration limit being met.</figcaption></figure>
+<h4 id="note-4" class="level-3">What to adjust after generation</h4>
+<p>Even when the spelling and line breaks were correct, ribbons, glow, large shadows, or extra icons sometimes appeared. Alongside the decoration types, specify limits such as “sparse,” “outside the lettering,” or “do not expand the overall silhouette too much.”</p>
+<p>Strong styling or many colors sometimes turned the letters into decorations themselves. If the text is hard to read, reduce decorations and colors, then check the wording again. A text-preservation instruction is not a guarantee: check the spelling in the final image yourself.</p>
+<h3 id="background" class="level-2">Backgrounds</h3>
+<p>For a background, separating viewpoint, depth, light, and detail density helped me explain the scene more clearly than a location name alone. This section covers background instructions, without character appearance, clothing, or poses.</p>
+<h4 id="note-5" class="level-3">Start with a short scene note</h4>
+<p>First describe the scene briefly in your own language, then expand it into sections if needed. The location and colors below are examples you can replace.</p>
+<details class="code-example"><summary>View short background notes</summary><pre><code class="language-text">Purpose: background for adding text or an image later
+Place: a quiet uphill rural road
+Time: early night
+Viewpoint: eye-level view along the road
+Space: separate foreground, midground, and background; reduce contrast and saturation with distance
+Style: modern anime look, flat colors, simple cel shading
+Sky: purple near the horizon, darker toward the top
+Light: soft ambient sky light, one distant streetlight on the left
+Density: sparse surroundings, no clutter in the center
+Limits: no extra streetlights, decorative lighting, or strong glow
+</code></pre></details>
+<h4 id="note-6" class="level-3">How to organize the request</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Table, scroll horizontally if needed"><table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>What to specify</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Purpose and composition</td>
+<td>Whether the landscape is the focus or a backdrop for other elements; which areas should stay open</td>
+</tr>
+<tr>
+<td>Place and time</td>
+<td>Terrain, buildings and object positions, time of day, mood</td>
+</tr>
+<tr>
+<td>Camera</td>
+<td>Eye level, high or low angle, viewing direction, distance, perspective strength</td>
+</tr>
+<tr>
+<td>Space</td>
+<td>Foreground, midground, background; changes in scale, contrast, and saturation with distance</td>
+</tr>
+<tr>
+<td>Style</td>
+<td>Period, linework, flat colors, cel shading, surface detail</td>
+</tr>
+<tr>
+<td>Lighting</td>
+<td>Roles of key and ambient light; number and position of visible artificial lights; limits on extra effects</td>
+</tr>
+<tr>
+<td>Color</td>
+<td>Main and accent colors, value contrast, saturation in the distance</td>
+</tr>
+<tr>
+<td>Motion</td>
+<td>Wind direction and strength; how grass, fabric, and other environmental elements respond</td>
+</tr>
+<tr>
+<td>Materials</td>
+<td>Roughness, matte or glossy finish, and reflections on roads, walls, or water</td>
+</tr>
+<tr>
+<td>Detail density</td>
+<td>Objects to include, areas to leave empty, decorations and details to omit</td>
+</tr>
+</tbody></table></div>
+<h4 id="note-7" class="level-3">Separate two kinds of perspective</h4>
+<p><strong>Geometric perspective</strong> defines the shape of the space: objects getting smaller with distance, a road converging, or buildings lining up.</p>
+<p><strong>Atmospheric perspective</strong> describes how depth becomes visible through reduced contrast and saturation or light haze. Go beyond “use perspective” and describe how the distance should look.</p>
+<h4 id="note-8" class="level-3">Be more specific about style and lighting</h4>
+<p>Add a period, coloring method, shading style, and level of surface detail to <code>anime style</code>. For a flatter result, describe the desired appearance with phrases such as <code>flat coloring</code>, <code>clean cel shading</code>, and <code>simple shadow shapes</code>.</p>
+<p>Distinguish <strong>one main light</strong> from <strong>one visible artificial light in the image</strong>. If sky light and a streetlight coexist, explain their roles separately. If the lamp count matters, say “exactly one visible artificial light source in the entire scene,” and check the result too.</p>
+<h4 id="note-9" class="level-3">Background-only prompt</h4>
+<p>This version adapts the original rural-road scene for background-only generation. A related result from my work appears below. The edited prompt has not been confirmed to be identical to the prompt used for that image.</p>
+<details class="code-example"><summary>View background prompt</summary><pre><code class="language-text"># Purpose
+* background-only image, with no people or characters
+* leave a quiet central area for a later text or image overlay
+
+# Background
+## Art Style
+* modern anime style
+* flat coloring and clean cel shading
+* simple shadow shapes
+* restrained surface detail and reduced painterly rendering
+
+## Field Information
+* a quiet uphill rural road at early night
+* sparse countryside surroundings
+* purple near the horizon, with the sky darkening toward the top
+* one distant streetlight on the left
+
+## Spatial Structure
+* consistent perspective and object scale with distance
+* clear foreground, midground, and background separation
+* distant objects gradually lose contrast and saturation
+* subtle distance haze
+
+# Camera and Composition
+* eye-level view looking along the uphill road
+* moderate perspective
+* keep the central area uncluttered
+* sparse foreground objects
+
+# Lighting
+* soft ambient evening light from the sky
+* exactly one visible artificial light source in the entire scene:
+  the distant streetlight on the left
+* the streetlight casts a small, restrained pool of light nearby
+* shadows and reflections follow the stated lighting
+* no additional lamps, spotlights, or decorative light sources
+* restrained glow and highlights
+
+# Color
+* a controlled palette with purple near the horizon
+* restrained saturation in distant scenery
+* gentle contrast in the central overlay area
+
+# Material Response
+* the dry road and surrounding ground remain mostly matte
+* subtle reflections consistent with the scene lighting
+
+# Overall Direction
+* calm, quiet rural atmosphere
+* controlled environmental detail
+* keep the open central area free of added decorations
+</code></pre></details>
+<figure><img loading="lazy" decoding="async" src="../assets/images/rural-evening-background-example.png" alt="An uphill rural road under a purple early-night sky, with one streetlight on the left and distant mountains and a village on the right"><figcaption>Background example from my own work. Look at the uphill road, the streetlight on the left, the purple horizon, and the layers of distant mountains. Contrast differs between the foreground road and the distant landscape. The road, vegetation, and village still contain detail; specify those areas separately if you want less of it.</figcaption></figure>
+<h4 id="note-10" class="level-3">What to adjust after generation</h4>
+<ul>
+<li><strong>Too much scenery:</strong> Specify where to reduce detail and which objects to omit.</li>
+<li><strong>Extra lights:</strong> Restate the number and positions of visible light sources.</li>
+<li><strong>Too much volume or shine:</strong> Describe the desired result, such as simple shading or matte surfaces.</li>
+<li><strong>Unclear depth:</strong> Explain differences in scale, contrast, and saturation between near and far areas.</li>
+<li><strong>Adding wind:</strong> Define its direction and strength, and which environmental elements respond.</li>
+</ul>
+<p>I found it useful to describe the desired state first, then add short limits for features that repeatedly became excessive. You do not need every section in every prompt. Start with the relationships and limits that matter.</p>
+<h3 id="chibi" class="level-2">Chibi layouts</h3>
+<p>These notes focus on where multiple chibi characters go and the order in which they are noticed, rather than detailed proportions or style. In my work, prominent faces and silhouettes also made awkward placement stand out.</p>
+<h4 id="note-11" class="level-3">What is the focal point?</h4>
+<p>When characters, text, a logo, and props share the image, decide which element should be noticed first.</p>
+<p>When characters are the focus:</p>
+<details class="code-example"><summary>View character-first prompt</summary><pre><code class="language-text"># Priority
+* characters are the primary focal point
+* text remains secondary
+* decorative elements remain supportive
+* character silhouettes remain the strongest visual elements
+</code></pre></details>
+<p>When text is the focus:</p>
+<details class="code-example"><summary>View text-first prompt</summary><pre><code class="language-text"># Priority
+* text is the primary focal point
+* characters function as supporting decoration
+* text must be the first element the viewer notices
+* character placement guides attention toward the text
+</code></pre></details>
+<h4 id="note-12" class="level-3">Layouts by character count</h4>
+<p>These were useful starting points in my work, not fixed rules for every scene.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Table, scroll horizontally if needed"><table>
+<thead>
+<tr>
+<th>Count</th>
+<th>Positions</th>
+<th>Intended reading order</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>A left, B right</td>
+<td>A → B</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A top, B lower left, C lower right</td>
+<td>A → B → C</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A upper left, B upper right, C lower left, D lower right</td>
+<td>A → B → C → D</td>
+</tr>
+</tbody></table></div>
+<p>Keep silhouettes from overlapping too much and identify the character to notice first. For four characters, start with a 2×2 layout or specify a diagonal flow suited to the scene.</p>
+<p>A three-character layout written as a prompt:</p>
+<details class="code-example"><summary>View chibi layout prompt</summary><pre><code class="language-text"># Layout
+* three chibi characters in a triangular composition
+* character A at the top
+* character B at the lower left
+* character C at the lower right
+* keep each character silhouette clearly separated
+
+# Reading Order
+* character A should be noticed first
+* the viewer&#39;s eye then moves to character B, then character C
+* keep decorative elements secondary to the characters
+</code></pre></details>
+<h4 id="note-13" class="level-3">What to adjust after generation</h4>
+<p>If the image is lively but lacks a focus, revisit priority before adding detail. Check who should be seen first, where the eye should go next, and whether text interrupts that flow.</p>
+<h2 id="external" class="level-1">Loading images from outside the platform (external images)</h2>
+<h3 id="principle" class="level-2">How it works</h3>
+<p>An external image is uploaded to a server and displayed using its hosted URL. The service storing the image can be different from the platform displaying it.</p>
+<p>The flow is <strong>upload image → get its URL → output the URL in a supported image format → display the image</strong>.</p>
+<p>Tags let you add rules for choosing an image. This example uses letters and numbers for convenience: letters distinguish outfits or situations, while numbers distinguish expressions or props. A tag is an identifier for selecting an image and is linked to its URL.</p>
+<h3 id="format" class="level-2">Image syntax</h3>
+<p>In an environment that supports Markdown images, use the following format. Replace this illustrative URL with the real image URL. Standard Markdown does not put quotation marks around the URL.</p>
+<pre><code class="language-markdown">![](https://example.com/images/A01.png)
+</code></pre>
+<p>For example, let <code>A</code> mean an outdoor outfit and <code>01</code> mean a smile, and associate <code>A01</code> with that image. The scene rules then only need to choose a code. Naming the file after the code is one way to organize things, not a requirement.</p>
+<details>
+<summary><small>An example for the hardcore tinkerers</small></summary>
+
+<h4 id="note-14" class="level-3">Outfit changes — combining scene state and expressions</h4>
+<blockquote>
+<p><strong>Custom image-call registration is limited to Rplay / StoryEngine / RomanticPlay.</strong> This example uses an option that lets you disable certain features and register your own image-call format. That platform restriction applies to this option, not to the general practice of displaying an externally hosted image by URL.</p>
+</blockquote>
+<p>This is a real usage example that selects an outfit from location, time, and sleep state, then adds an expression number to form an image identifier. On the platform I use, disabling certain features allows custom image-call registration; I added selection rules on top of it. The original outputs the registered <code>(tag:)</code> format rather than a direct external URL. The necessary settings depend on the platform.</p>
+<p>The key is not to select a new outfit every sentence. Store the current outfit code, <code>ENV</code>, in the HUD&#39;s <code>🧷</code> situation-summary line, and reconsider it only at a state boundary such as going out, returning home, or going to bed. <code>NUM</code> identifies an expression or prop image.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Table, scroll horizontally if needed"><table>
+<thead>
+<tr>
+<th>Outfit code</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>Outside the residence; takes priority regardless of time</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Indoors and in bed: sleeping, drifting off, or just awake</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Indoors, awake, at dusk, night, or dawn</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Indoors, awake, in the morning, at noon, or in the afternoon</td>
+</tr>
+</tbody></table></div>
+<p>Evaluate <strong>A → C → D → B</strong>, stopping at the first match. These are the original instructions supplied from my work, not executable C# code. The Korean HUD label inside the prompt is preserved from the original.</p>
+<details class="code-example"><summary>View the full outfit-change rules</summary><pre><code class="language-text">2. **Image Cue Rules:**
+   - All image output via `(tag:)` only. Direct URL embedding is strictly forbidden.
+   - Format: `(tag: {ENV}{NUM})` — e.g. `(tag: A3)`
+   - Append at the end of EVERY paragraph and dialogue block.
+   - **ENV Resolution (cascade — evaluate top-down, first match locks):**
+     1. Scene is OUTSIDE the residence                         → A  (holds for any TIME_CTX)
+     2. INSIDE + in bed (sleeping / drifting off / just woke)  → C  (frilled sleep set)
+     3. INSIDE + awake + TIME_CTX ∈ {DUSK, NIGHT, DAWN}        → D  (cozy hooded loungewear)
+     4. INSIDE + awake + TIME_CTX ∈ {MORNING, NOON, AFTERNOON} → B  (daytime home casual)
+
+   - **TIME_CTX gate:**
+     • C (sleep) is bound to the in-bed state, valid at any tick but realistically
+       only fires around {DUSK, NIGHT, DAWN}.
+     • D (lounge) is ELIGIBLE ONLY when awake at {DUSK, NIGHT, DAWN}.
+     • B never fires at {NIGHT, DAWN} unless the day has clearly restarted.
+     • A overrides time entirely — outdoors is always A.
+
+   - **ENV Persistence (anti-flicker · HUD-anchored):**
+     ENV is scene state, NOT a per-line choice, and its standing value
+     is STORED in the HUD (상황 요약 line, 🧷).
+
+     Each turn, resolve ENV in this order:
+       (1) READ the previous 🧷 value from the most recent HUD. This is
+           the current ENV unless something below overrides it.
+       (2) Check for a boundary crossing since that value was written:
+             leaves / enters residence        → A ↔ (B|C|D)
+             gets into bed                     → C
+             gets out of bed, still cozy       → D
+             new day starts / dresses          → B (or A if heading out)
+           Only a LOCATION boundary or a TIME_CTX advance that crosses one
+           of the cascade lines may change ENV.
+       (3) If a boundary was crossed, re-run the top-down cascade to get
+           the new letter. If NOT, KEEP the previous 🧷 value verbatim.
+       (4) Write the resulting letter back to 🧷 in this turn&#39;s HUD.
+
+     Within a single response spanning multiple paragraphs, ENV does NOT
+     change unless the prose itself crosses a boundary; do not re-evaluate
+     per paragraph. When ambiguous at any step, KEEP the previous 🧷 value.
+
+     The HUD 🧷 is the single source of truth for current ENV. If prose and
+     🧷 ever disagree, 🧷 wins and the prose is treated as the error.
+
+3. **Tag Index:**
+   EMOTION:
+   [Daily Tag Codes]
+01_Smile|02_light_smile|03_angry|04_pout|05_hurt|06_disappointed|07_sad|08_fear|09_irritated|10_sulk|11_contempt|12_frustrated|13_overwhelmed|14_unhinged|15_expressionless
+
+   PROP:
+17_eating_icecream_solo...
+
+4. **Dialogue Rule:**
+   - Format: `[Character Name]: &quot;Dialogue&quot; (tag: {ENV}{NUM})`
+   - Narrative paragraphs for actions/thoughts ONLY. `(tag: {ENV}{NUM})`
+</code></pre></details>
+<h4 id="note-15" class="level-3">Reuse the selection rules with external image output</h4>
+<p>The original requires output such as <code>(tag: A3)</code>. To output an external image URL directly, keep the outfit, expression, and HUD persistence rules, but change the final output to Markdown image syntax.</p>
+<details class="code-example"><summary>View the image selection flow</summary><pre><code class="language-text">Location, time, sleep state → choose outfit code ENV
+Expression or prop → choose number NUM
+ENV + NUM → select the associated image URL
+Output ![](image URL)
+</code></pre></details>
+<p>If files are organized as <code>A01.png</code>, for example, put the actual URL associated with <code>A01</code> inside <code>![](...)</code>. The letters and numbers are your own convention, so keep the codes, filenames, and URLs consistent.</p>
+<p>Replace the original “Direct URL embedding is strictly forbidden” instruction and the <code>(tag:)</code> format accordingly. Also update the output format in the final Dialogue Rule so the instructions do not conflict. Separating image selection from display syntax makes the method easier to adapt.</p>
+<p>The original example uses <code>A3</code>, while the index uses a number such as <code>03_angry</code>. Choose <code>A3</code> or <code>A03</code> to match the registered keys. Since there is no previous HUD on the first turn, initialize <code>🧷</code> for the opening scene.</p>
+</details>
+
+<h3 id="services" class="level-2">Hosting services</h3>
+<p>Services are grouped by whether they allow NSFW image hosting. Support for external image display and permission to upload NSFW content are separate questions.</p>
+<p>This list is a <strong>working draft based on usage information supplied by the person behind these notes</strong> (2026-09-13). Not every entry has been checked against the latest official policy. “Allowed” does not mean all kinds of NSFW content are allowed without limits.</p>
+<h4 id="nsfw-yes" class="level-3">NSFW images allowed</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Table, scroll horizontally if needed"><table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Reported status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Catbox (<code>catbox.moe</code>)</td>
+<td>Allowed</td>
+<td>Different from Litterbox; see temporary-storage note below</td>
+</tr>
+<tr>
+<td>Image Chest (<code>imgchest.com</code>)</td>
+<td>Allowed</td>
+<td>Detailed content and external-display conditions to be checked</td>
+</tr>
+<tr>
+<td>ImgBB (<code>imgbb.com</code>)</td>
+<td><strong>Partly allowed</strong></td>
+<td>NSFW usage examples have been observed; exact permitted scope to be checked</td>
+</tr>
+<tr>
+<td>Postimages (<code>postimages.org</code>)</td>
+<td><strong>Partly allowed</strong></td>
+<td>Boundary between permitted and prohibited content to be checked</td>
+</tr>
+<tr>
+<td>Imgbox (<code>imgbox.com</code>)</td>
+<td>Allowed</td>
+<td>Detailed content and external-display conditions to be checked</td>
+</tr>
+<tr>
+<td>Pixhost (<code>pixhost.to</code>)</td>
+<td>Allowed</td>
+<td>Detailed content and external-display conditions to be checked</td>
+</tr>
+<tr>
+<td>Freeimage.host (<code>freeimage.host</code>)</td>
+<td>Allowed · <strong>possible public exposure</strong></td>
+<td>Reported possibility of uploaded images appearing elsewhere; exposure routes and visibility settings to be checked</td>
+</tr>
+<tr>
+<td>Upload.cc (<code>upload.cc</code>)</td>
+<td>Allowed</td>
+<td>Detailed content and external-display conditions to be checked</td>
+</tr>
+<tr>
+<td>Imgpile (<code>imgpile.com</code>)</td>
+<td>Allowed</td>
+<td>Detailed content and external-display conditions to be checked</td>
+</tr>
+<tr>
+<td>Cloudflare R2</td>
+<td>Allowed</td>
+<td>Personally used; this classification concerns R2 object storage. See notes below</td>
+</tr>
+<tr>
+<td>ITIMG.KR (<code>itimg.kr</code>)</td>
+<td>Allowed</td>
+<td>Official permission reported as confirmed; details below</td>
+</tr>
+</tbody></table></div>
+<p><strong>Do not confuse Catbox with Litterbox</strong></p>
+<p>According to the usage information supplied for these notes, <code>litterbox.catbox.moe</code> is temporary storage. Do not use it for story-chat image URLs that need to remain available. The exact retention periods will be added after checking the official information.</p>
+<h5 id="itimg" class="level-4">ITIMG.KR — image hosting for AI and story chats</h5>
+<p><a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">ITIMG.KR</a> is an AI-chat image hosting service operated by 문커뮤니티 (Moon Community). It uses short image URLs. Paid plans support dynamic SVGs whose text and shapes change with values in the URL. Public information checked: <strong>2026-09-13</strong>. <a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">Official service information</a></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Table, scroll horizontally if needed"><table>
+<thead>
+<tr>
+<th>Plan</th>
+<th>Storage</th>
+<th>Regular monthly price</th>
+<th>Currently advertised monthly subscription price</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Free</td>
+<td>10MB</td>
+<td>Free</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>5GB</td>
+<td>KRW 11,000</td>
+<td>KRW 8,800</td>
+</tr>
+<tr>
+<td>Premium</td>
+<td>10GB</td>
+<td>KRW 22,000</td>
+<td>KRW 17,600</td>
+</tr>
+</tbody></table></div>
+<p>The official pricing table advertises unlimited traffic and a 20% monthly subscription discount. The same page still has a payment notice showing KRW 11,000 per month, so check the amount actually applied at checkout. <a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">Official pricing</a></p>
+<p><strong>Short URL structure</strong></p>
+<p>These are supplied path examples, not links whose image contents were opened and verified.</p>
+<pre><code class="language-text">https://itimg.kr/27/cb1.webp
+https://itimg.kr/27/a/tr.png
+                   └ folder / filename
+</code></pre>
+<p>According to my usage notes, <code>27</code> is a storage identifier based on signup order. Creating a folder adds its name before the filename. The official introduction also shows a short URL with a numeric path followed by a filename. <a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">Official usage example</a></p>
+<p><strong>Payments and international support</strong></p>
+<p>Based on my experience using the service and asking about payment, paid plans require a Korean-issued card. <strong>International payment support is planned; timing is undecided.</strong> This reflects a reply that I would be notified when international support becomes available. A public schedule and detailed payment-method conditions have not been confirmed. This does not mean a Korean card is required to sign up for the free plan.</p>
+<p><strong>Additional notes from use</strong></p>
+<ul>
+<li>I observed WebP conversion during my last use. Current automatic-conversion conditions and original-file retention have not been confirmed.</li>
+<li>According to the information I supplied, the service was started by the operator of LunaTalk, and SVG creation assistance is available to paid users. The public page confirms dynamic SVG features for paid plans; the scope and conditions of individual SVG creation assistance still need checking.</li>
+</ul>
+<p><strong>Why it is in this category</strong></p>
+<p><strong>NSFW image hosting is allowed.</strong> This reflects information I supplied after confirming official permission (2026-09-13). Refer to the <a href="https://itimg.kr/terms" target="_blank" rel="noopener noreferrer">service terms</a> for detailed upload restrictions.</p>
+<h5 id="r2" class="level-4">Cloudflare R2 — upload files and use their URLs</h5>
+<p>This is an external image store I use myself. When internal images occasionally failed to load in a story chat&#39;s opening message, I used URLs for images uploaded to R2. The NSFW classification is based on supplied usage information; the official documentation checks below concern pricing and setup.</p>
+<p><strong>Free allowance</strong></p>
+<p>As checked on 2026-09-13, Standard storage includes <strong>10 GB-month</strong> of free storage each month: roughly the amount used by keeping 10GB stored for a full month. It also includes one million Class A operations and ten million Class B operations per month, with no Internet egress fees. Storage or operation usage above the allowance can incur charges. This free allowance does not apply to Infrequent Access storage. <a href="https://developers.cloudflare.com/r2/pricing/" target="_blank" rel="noopener noreferrer">Official R2 pricing</a></p>
+<p>I registered and verified a payment card when getting started. In actual use, I have not experienced noticeable delays.</p>
+<p><strong>Try it with a public URL</strong></p>
+<ol>
+<li>Create an R2 bucket, a storage container for your files.</li>
+<li>Upload the images you want to use.</li>
+<li>Open the bucket&#39;s <code>Settings</code> → <code>Public Development URL</code> → <code>Enable</code>.</li>
+<li>Read the public-access notice and enable it to get an <code>r2.dev</code> URL. This makes files in the bucket accessible over the Internet.</li>
+<li>Append the image path and filename to that URL.</li>
+</ol>
+<pre><code class="language-text">https://pub-example-id.r2.dev/folder/A01.webp
+</code></pre>
+<p>This is an illustrative URL. Replace it with your actual bucket URL and uploaded file path.</p>
+<p>Officially, <code>r2.dev</code> is <strong>for development and testing, with request rate limits</strong>. Cloudflare directs production use toward a custom domain. A custom domain provides your preferred address and features such as caching. I have not used custom-domain setup myself. <a href="https://developers.cloudflare.com/r2/buckets/public-buckets/" target="_blank" rel="noopener noreferrer">Public buckets and custom domains</a></p>
+<p><strong>When to change CORS Policy</strong></p>
+<p>Distinguish simply displaying an image from having page code read or process a file from another origin. Plain image display usually needs no extra CORS configuration, but even images may need it when read with JavaScript or when pixels are extracted from a canvas. The distinction is <strong>how you fetch and use the file</strong>, rather than whether it is an image. When necessary, set the allowed sites and request methods under the bucket&#39;s <code>Settings</code> → <code>CORS Policy</code>. <a href="https://developers.cloudflare.com/r2/buckets/cors/" target="_blank" rel="noopener noreferrer">R2 CORS documentation</a></p>
+<h4 id="nsfw-no" class="level-3">NSFW images not allowed</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Table, scroll horizontally if needed"><table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Reported status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Imgur</td>
+<td>Not allowed</td>
+<td>Exact scope of the latest official restrictions to be checked</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Not allowed</td>
+<td>Based on supplied usage information; excluded as an NSFW image host</td>
+</tr>
+</tbody></table></div>
+<h4 id="nsfw-unknown" class="level-3">NSFW status unclear</h4>
+<p>No services are currently listed here. Services whose permitted scope is unclear will be recorded separately in this category.</p>
+<h4 id="note-16" class="level-3">An observation from Japanese usage examples</h4>
+<p>In the Japanese usage examples I encountered, <strong>Catbox + Twitter (X) + a personal server</strong> appeared frequently. This is a personal observation, not a survey of overall usage. It is not a recommendation to use Twitter (X) for long-term image hosting or a guarantee of reliability. Personal servers also depend on their actual storage and operating arrangements.</p>
+</article>
+<section class="feedback" id="feedback" aria-labelledby="feedback-title"><h2 id="feedback-title">Corrections and feedback are welcome</h2><p>Please let me know if something is wrong or could be improved.</p><a class="feedback-link" href="https://github.com/BurnFrozenTuna/Fish_In_the_Toolbox/issues" target="_blank" rel="noopener noreferrer">Send corrections or feedback ↗</a><p class="translation-note">I use LLMs to help translate the Korean original into English and Japanese, so some wording may be awkward or unclear. Sorry about that! Please feel free to point it out.</p></section>
+<footer class="end-note">Working notes · Frozen_Tuna <a href="#top">Back to top ↑</a></footer></main></div>
+<a class="fish-sign" href="https://storyengine.live/c/frozen_tuna" target="_blank" rel="noopener noreferrer" aria-label="Open Frozen_Tuna’s story-chat page"><span class="fish-sign-tip">🐟 Notes by <b>Frozen_Tuna</b> 🐟</span><span class="fish-sign-emoji" aria-hidden="true">🐟</span></a>
+<script>const links=[...document.querySelectorAll('.nav-item')];
+const targets=links.map(link=>({link,el:document.querySelector(link.getAttribute('href'))}));
+let pending=false;
+function markCurrent(){pending=false;let current=targets[0];for(const target of targets){if(target.el.getBoundingClientRect().top<=110)current=target;}for(const target of targets){const active=target===current;target.link.classList.toggle('active',active);if(active)target.link.setAttribute('aria-current','location');else target.link.removeAttribute('aria-current');}}
+addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(markCurrent)}},{passive:true});
+addEventListener('resize',markCurrent);markCurrent();
+document.querySelectorAll('.mobile-toc a').forEach(a=>a.addEventListener('click',()=>{document.querySelector('.mobile-toc').open=false}));
+function syncLanguageLinks(){for(const a of document.querySelectorAll('.language-tab')){const url=new URL(a.getAttribute('href'),location.href);url.hash=location.hash;a.href=url.href;}}
+addEventListener('hashchange',syncLanguageLinks);syncLanguageLinks();
+document.querySelectorAll('.language-tab').forEach(a=>a.addEventListener('click',()=>{
+ if(window.scrollY<80)return;
+ const headings=[...document.querySelectorAll('article h2[id],article h3[id],article h4[id],article h5[id],#feedback')].filter(el=>el.getClientRects().length);
+ let current;for(const h of headings){if(h.getBoundingClientRect().top<=110)current=h;}
+ if(current){const url=new URL(a.href);url.hash=current.id;a.href=url.href;}
+}));
+function revealHash(){const id=decodeURIComponent(location.hash.slice(1));if(!id)return;const el=document.getElementById(id);if(!el)return;let parent=el.parentElement,changed=false;while(parent){if(parent.tagName==='DETAILS'&&!parent.open){parent.open=true;changed=true;}parent=parent.parentElement;}if(changed)el.scrollIntoView();}
+addEventListener('hashchange',revealHash);revealHash();
+</script></body></html>

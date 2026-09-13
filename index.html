@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fish In the Toolbox — 작업 노트</title><meta name="description" content="GPT 타이포·백그라운드·치비 배열과 외부 이미지 호출 방법. 작업하며 정리한 실전 노트."><meta name="author" content="Frozen_Tuna"><meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="ko" href="index.html">
+<link rel="alternate" hreflang="en" href="en/index.html">
+<link rel="alternate" hreflang="ja" href="ja/index.html">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2330;
+    --border: #30363d;
+    --border-bright: #444c56;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #484f58;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --accent4: #ffa657;
+    --accent5: #ff7b72;
+    --tag-bg: #1f3048;
+    --tag-text: #79c0ff;
+    --code-bg: #161b22;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* layout */
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* sidebar */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 0 40px;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .product {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-logo .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sidebar-logo .subtitle {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 8px 0;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 24px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 24px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(88,166,255,0.06);
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* main */
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px 60px 80px;
+    max-width: 860px;
+  }
+
+  /* page header */
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header .eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+
+  .page-header .desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* sections */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-anchor {
+    display: block;
+    position: relative;
+    top: -80px;
+    visibility: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .section p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .section p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* callout */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout.info { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.2); color: #9ecbff; }
+  .callout.tip  { background: rgba(63,185,80,0.08);  border: 1px solid rgba(63,185,80,0.2);  color: #85e89d; }
+  .callout.warn { background: rgba(255,166,87,0.08); border: 1px solid rgba(255,166,87,0.2); color: #ffb86c; }
+
+  /* node cards */
+  .node-grid {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .node-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color 0.15s;
+  }
+
+  .node-card:hover { border-color: var(--border-bright); }
+
+  .node-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .node-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .node-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .node-card-desc {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* field table */
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+
+  .field-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .field-table tr:last-child td { border-bottom: none; }
+
+  .field-table .field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent3);
+    white-space: nowrap;
+  }
+
+  .field-table .field-desc { color: var(--text-muted); }
+
+  /* code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #c9d1d9;
+    overflow-x: auto;
+    margin: 16px 0;
+    white-space: pre;
+  }
+
+  .code-block .cm { color: var(--text-dim); }
+  .code-block .kw { color: var(--accent5); }
+  .code-block .st { color: var(--accent2); }
+  .code-block .nm { color: var(--accent3); }
+  .code-block .vl { color: var(--accent4); }
+
+  /* flow diagram */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .flow-box {
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .flow-down {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-down-arrow {
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 2px 0;
+  }
+
+  /* arch diagram */
+  .arch {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .arch-row:last-child { border-bottom: none; }
+
+  .arch-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .arch-content {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  .arch-content strong { color: var(--text); font-weight: 600; }
+
+  /* tag chip */
+  .chip {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    margin: 1px 2px;
+    white-space: nowrap;
+  }
+
+  .chip.green { background: rgba(63,185,80,0.1); color: #85e89d; }
+  .chip.purple { background: rgba(210,168,255,0.1); color: var(--accent3); }
+  .chip.orange { background: rgba(255,166,87,0.1); color: var(--accent4); }
+  .chip.red { background: rgba(255,123,114,0.1); color: var(--accent5); }
+
+  /* divider */
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* scroll */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+
+  /* ── screenshots ── */
+  .shot { margin: 22px 0 26px; }
+  .shot img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border-bright);
+    border-radius: 10px;
+    background: var(--bg2);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+  }
+  .shot figcaption {
+    margin-top: 9px; font-size: 12.5px; line-height: 1.6;
+    color: var(--text-dim); padding-left: 2px;
+  }
+  .shot figcaption b { color: var(--text-muted); font-weight: 600; }
+  .shot.narrow img { max-width: 620px; }
+
+  /* ── language tabs ── */
+  .lang-tabs { display: flex; gap: 6px; margin: 4px 0 20px; }
+  .lang-tabs a {
+    flex: 1; text-align: center; font-size: 12px; font-weight: 600;
+    padding: 7px 0; border-radius: 7px; text-decoration: none;
+    color: var(--text-muted); background: var(--bg3);
+    border: 1px solid var(--border-bright); transition: all 0.15s ease;
+  }
+  .lang-tabs a:hover { color: var(--text); }
+  .lang-tabs a.active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  .shot-row { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+  .shot-row .shot { flex: 1; min-width: 240px; margin: 0; }
+  @media (max-width: 560px) { .shot-row { flex-direction: column; } }
+
+.fish-sign { position: fixed; bottom: 18px; right: 20px; z-index: 50; display: flex; align-items: center; gap: 8px; text-decoration: none; user-select: none; cursor: pointer; }
+  .fish-sign-tip { font-size: 12px; line-height: 1.4; color: var(--text-muted); background: var(--bg3); border: 1px solid var(--border-bright); padding: 6px 11px; border-radius: 999px; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.35); opacity: 0; transform: translateX(8px); transition: opacity 0.22s ease, transform 0.22s ease; pointer-events: none; }
+  .fish-sign-tip b { color: var(--accent3); font-weight: 600; }
+  .fish-sign-emoji { font-size: 26px; opacity: 0.55; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); transition: opacity 0.22s ease, transform 0.22s ease; }
+  .fish-sign:hover .fish-sign-tip { opacity: 1; transform: translateX(0); }
+  .fish-sign:hover .fish-sign-emoji { opacity: 1; transform: translateY(-2px) scale(1.08); }
+
+:root { --text-muted:#a0acbc; --text-dim:#96a2b2; }
+html{scroll-behavior:smooth;scroll-padding-top:32px}
+body{font-size:16px;line-height:1.85;overflow-wrap:break-word}
+.shell{max-width:1600px;margin:0 auto}
+.sidebar{width:272px;padding-top:35px}
+.brand{display:block;color:var(--text);text-decoration:none;font-size:23px;font-weight:700;line-height:1.3;margin-top:12px;letter-spacing:-.7px}
+.brand span{font-size:23px}.edition{font-size:13px;color:var(--text-muted);margin-top:16px}
+.nav-label.group{display:block;font-size:14px;letter-spacing:0;text-transform:none;color:#d2dbe7;text-decoration:none;line-height:1.7;margin:8px 0}
+.alias{font-size:12px;color:var(--text-muted);display:block}.nav-item{font-size:15px;padding-top:9px;padding-bottom:9px}.blue{background:var(--accent)}.green{background:var(--accent2)}.purple{background:var(--accent3)}.orange{background:var(--accent4)}
+.subnav{display:flex;gap:12px;padding:8px 25px 4px;font-size:12px}.subnav a{color:var(--text-muted);text-decoration:none}.subnav a:hover{color:var(--accent)}
+.sidebar-footer{margin:32px 24px;border-top:1px solid var(--border);padding-top:22px;color:var(--text-muted);font-size:13px}
+.main{padding:48px 64px 80px;max-width:1120px;min-width:0;flex:1;width:calc(100% - 272px)}
+.page-intro{padding-bottom:34px;border-bottom:1px solid var(--border);margin-bottom:42px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:14px}
+.page-intro h1{font-size:clamp(29px,3vw,40px);letter-spacing:-1.2px;line-height:1.3;margin-bottom:18px}
+.page-intro>p:not(.eyebrow){color:#b5c0cf;font-size:16px;line-height:1.9}
+.language-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 27px}
+.language-tab{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:14px;font-weight:500;text-decoration:none;color:var(--text-muted);background:var(--bg2);min-height:40px}
+.language-tab:hover{border-color:var(--accent);color:var(--text)}.language-tab.selected{border-color:var(--accent);color:#b6d9ff;background:#152c47}
+.feedback{border-top:1px solid var(--border);margin-top:55px;padding-top:30px}.feedback h2{font-size:20px;line-height:1.6;margin-bottom:12px}.feedback p{margin-bottom:15px;color:#bdc8d7}.feedback-link{display:inline-block;color:#a4cfff;border:1px solid #365575;border-radius:6px;padding:8px 15px;text-decoration:none;font-size:14px}.feedback-link:hover{background:#152c47}.feedback .translation-note{margin-top:23px;font-size:14px;line-height:1.9;color:var(--text-muted)}
+html[lang="ja"] body{font-family:'Noto Sans JP','Yu Gothic','Meiryo',sans-serif}html[lang="en"] body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+html[lang="en"] .nav-item,html[lang="ja"] .nav-item{line-height:1.6}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}.meta span{font-size:12px;border:1px solid var(--border);padding:2px 10px;border-radius:5px;color:var(--text-muted)}
+article h2.level-1{font-size:26px;line-height:1.5;letter-spacing:-.6px;margin:65px 0 21px;padding-top:30px;border-top:1px solid var(--border)}
+article h2.level-1:first-child{margin-top:0;padding-top:0;border:0}
+article h3.level-2{font-size:24px;line-height:1.45;letter-spacing:-.5px;margin:50px 0 21px;padding-left:14px;border-left:4px solid var(--accent)}
+#background{border-color:var(--accent2)}#chibi{border-color:var(--accent3)}#principle,#format,#services{border-color:var(--accent4)}
+article h4{font-size:18px;margin:30px 0 13px;line-height:1.6}article h5{font-size:19px;color:var(--accent);margin:38px 0 16px;line-height:1.65}
+article p{margin:0 0 18px}article ul,article ol{margin:0 0 22px;padding-left:24px}article li{margin:7px 0}article strong{font-weight:700;color:#f0f5fc}
+article a{color:#79b8ff;text-underline-offset:4px;word-break:break-word}
+article pre{font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;line-height:1.8;background:#111823;border:1px solid var(--border);border-radius:8px;padding:22px 24px;overflow:auto;margin:22px 0;white-space:pre;max-width:100%;tab-size:2}
+article pre code{padding:0;background:none;color:#cbd9eb;font-size:inherit;white-space:pre}
+article :not(pre)>code{font-size:.87em;background:#202b3b;color:#bad7ff;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+article blockquote{border-left:3px solid var(--accent3);background:rgba(210,168,255,.055);padding:18px 22px;margin:22px 0;color:#c7d0df;border-radius:0 7px 7px 0}article blockquote p:last-child{margin:0}
+article figure{margin:28px 0 30px;border:1px solid var(--border);background:#161b22;border-radius:10px;overflow:hidden}
+article figure img{display:block;width:100%;height:auto;margin:0;padding:0}article figure:first-of-type img{padding:18px}
+article figcaption{font-size:13px;line-height:1.8;color:var(--text-muted);padding:17px 20px;border-top:1px solid var(--border)}
+.table-scroll{width:100%;overflow-x:auto;margin:22px 0 28px;border:1px solid var(--border);border-radius:8px}article table{width:100%;border-collapse:collapse;font-size:14px;margin:0}article th{font-size:13px;background:#1c2532;color:#e1e8f1;text-align:left;font-weight:600;white-space:nowrap}article td,article th{padding:13px 15px;border-bottom:1px solid var(--border);vertical-align:top}article tr:last-child td{border-bottom:0}article td{min-width:100px}article td:last-child{min-width:220px}article td:first-child{min-width:125px}
+article details{margin:22px 0 32px;padding:0 20px;background:#141b26;border:1px solid var(--border);border-radius:8px}article summary{padding:14px 0;color:var(--text-muted);cursor:pointer;font-size:13px;line-height:1.7}article summary small{font-size:13px}article details[open]{padding-bottom:14px}article details[open] summary{border-bottom:1px solid var(--border);margin-bottom:20px}article details h4{font-size:17px}
+.fish-sign{right:22px;bottom:20px;padding:8px}.fish-sign:focus-visible .fish-sign-tip{opacity:1;transform:none}.fish-sign:focus-visible .fish-sign-emoji{opacity:1}.fish-sign-emoji{font-size:29px}.fish-sign-tip{font-size:12px}
+.skip{position:fixed;left:12px;top:-80px;z-index:100;background:var(--accent);color:#0d1117;padding:8px 14px}.skip:focus{top:12px}
+a:focus-visible,summary:focus-visible,.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.end-note{font-size:13px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:24px;margin-top:55px;display:flex;justify-content:space-between;gap:20px;padding-right:36px}.end-note a{color:var(--accent);text-decoration:none}
+.mobile-toc{display:none}
+@media(max-width:1000px){.main{padding:36px 32px 70px}.sidebar{width:242px}.brand{font-size:21px}}
+@media(max-width:760px){.shell{display:block}.sidebar{display:none}.main{width:100%;padding:28px 20px 76px}.page-intro{margin-bottom:24px;padding-bottom:24px}.mobile-toc{display:block;border:1px solid var(--border);background:var(--bg2);border-radius:7px;padding:12px 16px;margin-bottom:32px;font-size:14px}.mobile-toc summary{cursor:pointer}.mobile-toc nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:15px}.mobile-toc a{color:var(--accent);text-decoration:none}article h2.level-1{font-size:23px;margin-top:46px}article h3.level-2{font-size:22px;margin-top:38px}article pre{padding:16px;font-size:12px}article details{padding-left:13px;padding-right:13px}article figure:first-of-type img{padding:9px}article figcaption{padding:13px 15px}.fish-sign{right:10px;bottom:12px}.fish-sign-tip{max-width:70vw;white-space:normal}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style></head><body><a class="skip" href="#content">본문으로 바로 가기</a>
+<div class="shell"><aside class="sidebar" aria-label="페이지 목차"><div class="sidebar-logo"><div class="product">FROZEN_TUNA’S NOTES</div><a class="brand" href="#top">Fish In<br>the Toolbox <span>🐟</span></a><div class="edition">한국어 · 작업 노트</div></div>
+<nav><div class="nav-section"><a class="nav-label group" href="#gpt">GPT한테 도움받을 때</a><a class="nav-item" href="#typography"><span class="nav-dot blue"></span>타이포</a><a class="nav-item" href="#background"><span class="nav-dot green"></span>백그라운드</a><a class="nav-item" href="#chibi"><span class="nav-dot purple"></span>치비 배열</a></div><div class="nav-section"><a class="nav-label group" href="#external">플랫폼 밖 서버에서<br>이미지 호출하기 <span class="alias">(외부이미지)</span></a><a class="nav-item" href="#principle"><span class="nav-dot orange"></span>호출 원리</a><a class="nav-item" href="#format"><span class="nav-dot orange"></span>호출 형식</a><a class="nav-item" href="#services"><span class="nav-dot orange"></span>지원되는 사이트 목록</a><div class="subnav"><a href="#nsfw-yes">가능</a><a href="#nsfw-no">불가능</a><a href="#nsfw-unknown">확실치 않음</a></div></div></nav><div class="sidebar-footer">직접 써보고, 정리하고,<br>필요한 만큼 꺼내 쓰는 노트.</div></aside>
+<main id="content" class="main"><header id="top" class="page-intro"><nav class="language-tabs" aria-label="언어 선택"><a class="language-tab selected" href="index.html" hreflang="ko" lang="ko" aria-current="page">한국어</a><a class="language-tab" href="en/index.html" hreflang="en" lang="en">English</a><a class="language-tab" href="ja/index.html" hreflang="ja" lang="ja">日本語</a></nav><p class="eyebrow">AI · VISUALS · IMAGE HOSTING</p><h1>Fish In the Toolbox</h1><p>거창한 목적이 있는 건 아니에요. 공유드리고 싶지만 스토리엔진 가이드에서 다루기에는 조금 애매한 이야기들을 이쪽에 따로 모았어요.<br>한 분에게라도 더 도움이 되었으면 좋겠어요.</p><div class="meta"><span>한국어</span><span>관찰 · 실사용 기반</span><span>2026.09.13</span></div></header>
+<details class="mobile-toc"><summary>목차 펼치기</summary><nav><a href="#typography">타이포</a><a href="#background">백그라운드</a><a href="#chibi">치비 배열</a><a href="#principle">호출 원리</a><a href="#format">호출 형식</a><a href="#services">지원되는 사이트 목록</a></nav></details><article><h2 id="gpt" class="level-1">GPT한테 도움받을 때</h2>
+<p>GPT에게 타이포, 배경, 치비 배열을 부탁할 때 입력을 정리하는 방법입니다. 직접 작업하면서 비교적 의도가 잘 전달됐던 구조를 모았습니다.</p>
+<p>이미지 생성 전반의 정답집은 아닙니다. 결과는 달라질 수 있으며, 아래 방법도 작업 중인 관찰과 예시입니다. 프롬프트 안의 문구와 조건은 필요한 부분만 바꿔 사용하세요.</p>
+<h3 id="typography" class="level-2">타이포</h3>
+<p>문구만 전달하기보다 문자열, 줄 구조, 배치, 글자 스타일, 장식의 범위를 나누면 결과를 점검하기 편했습니다.</p>
+<h4 id="note-1" class="level-3">먼저 정할 것</h4>
+<ul>
+<li><strong>문자열:</strong> 들어갈 문구를 정확하게 적습니다.</li>
+<li><strong>줄과 블록:</strong> 어느 부분에서 줄을 나누고, 어떤 단어를 크게 보여줄지 정합니다.</li>
+<li><strong>우선순위:</strong> 텍스트를 먼저 읽어야 하는지, 함께 있는 캐릭터를 먼저 봐야 하는지 정합니다.</li>
+<li><strong>글자 스타일:</strong> 채움색, 테두리, 글자 굵기와 변형 정도를 적습니다.</li>
+<li><strong>장식:</strong> 종류와 함께 개수나 밀도를 제한합니다.</li>
+<li><strong>문자열 보존:</strong> 철자를 바꾸거나 문구를 추가하지 않도록 요청합니다.</li>
+</ul>
+<h4 id="note-2" class="level-3">기본 입력 예시</h4>
+<details class="code-example"><summary>타이포 입력 예시 보기</summary><pre><code class="language-text"># Typography Priority
+* text is the primary focal point
+* maintain high legibility
+* decorative elements remain secondary
+
+# Text Content
+First line: `Welcome`
+Second line: `Library`
+
+# Layout
+* centered two-line composition
+* first line above second line
+* clear spacing between lines
+* no overlapping decorations
+
+# Letter Style
+* white fill
+* light green outline
+* bold rounded sticker lettering
+* clean readable shapes
+
+# Decoration
+* idol fan-sign sticker atmosphere
+* a few small music notes, sparkles, and hearts
+* keep decorations sparse and outside the lettering
+* no extra ribbons or decorative frames
+* restrained glow and drop shadows
+
+# Background
+* transparent background
+
+# Text Preservation
+* keep all English text exactly as written
+* do not alter spelling
+* do not add extra letters or words
+</code></pre></details>
+<h4 id="note-3" class="level-3">긴 제목은 시각 블록으로 나누기</h4>
+<p>긴 문장을 한 덩어리로 전달했을 때보다, 줄과 강조 부분을 나눴을 때 읽기 편한 결과가 나왔습니다. 예를 들면 다음처럼 구성합니다.</p>
+<details class="code-example"><summary>타이포 블록 배치 예시 보기</summary><pre><code class="language-text">[ GPT한테      ] [ 짬때리기 ]
+[ 비주얼라이즈 ] [          ]
+</code></pre></details>
+<p>왼쪽은 두 줄, 오른쪽은 왼쪽 두 줄 높이에 걸치는 큰 단어로 지정합니다. 기본색과 포인트색 하나를 쓰고, 장식은 글자 바깥에 드문드문 배치합니다.</p>
+<figure><img loading="lazy" decoding="async" src="assets/images/typography-block-example.png" alt="왼쪽에 흰색 ‘GPT한테 / 비주얼라이즈’ 두 줄, 오른쪽에 큰 연두색 ‘짬때리기’를 배치한 스티커형 타이포 결과"><figcaption>작업자 제공 결과 예시. 왼쪽 두 줄과 오른쪽 큰 단어가 하나의 덩어리로 읽히는 구조를 확인할 수 있습니다. 별과 하트는 글자 바깥에 배치되어 있습니다. 블록 배치를 보여주는 예시이며, 장식 최소화 조건을 모두 충족한 예시라는 뜻은 아닙니다.</figcaption></figure>
+<h4 id="note-4" class="level-3">결과를 보고 조정할 것</h4>
+<p>철자와 줄 구조가 맞아도 리본, 광채, 큰 그림자, 추가 아이콘이 붙는 경우가 있었습니다. 장식 종류만 쓰지 말고 “적게”, “글자 바깥에”, “전체 외곽을 크게 넓히지 않게” 같은 허용 범위를 함께 적어보세요.</p>
+<p>강한 스타일이나 많은 색을 요청했을 때 글자가 장식처럼 변하는 경우도 있었습니다. 읽기 어렵다면 장식과 색을 줄이고 문자열부터 다시 확인합니다. 문자열 보존 요청은 결과를 보장하지 않으므로, 최종 이미지의 철자도 직접 확인합니다.</p>
+<h3 id="background" class="level-2">백그라운드</h3>
+<p>배경이 필요할 때는 장소 이름만 적기보다 시점, 깊이, 빛, 정보량을 나누어 전달하면 의도를 설명하기 편했습니다. 여기서는 캐릭터 외형·의상·포즈를 제외하고 배경 입력 방식만 다룹니다.</p>
+<h4 id="note-5" class="level-3">짧은 메모부터 시작하기</h4>
+<p>먼저 한국어로 장면을 정리하고, 필요하면 항목별 문장으로 확장합니다. 아래 장소와 색은 교체해서 쓰는 예시입니다.</p>
+<details class="code-example"><summary>배경을 정리하는 짧은 메모 보기</summary><pre><code class="language-text">용도: 나중에 텍스트나 이미지를 얹을 배경
+장소: 한적한 시골 오르막길
+시간: 초저녁
+시점: 눈높이에서 길을 바라보기
+공간: 가까운 곳·중간·먼 곳을 구분, 멀수록 대비와 채도 감소
+화풍: 현대 애니메이션 느낌, 플랫한 색과 단순한 셀 명암
+하늘: 수평선 부근은 보라색, 위로 갈수록 어둡게
+빛: 하늘의 은은한 주변광, 왼쪽 먼 곳에 가로등 하나
+밀도: 듬성듬성한 풍경, 중앙에는 복잡한 물체를 두지 않기
+제한: 추가 가로등·장식광·강한 글로우 없이
+</code></pre></details>
+<h4 id="note-6" class="level-3">입력을 나눌 기준</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="표, 가로로 스크롤 가능"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>정할 내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>용도와 구도</td>
+<td>풍경 자체가 중심인지, 다른 요소를 얹을 배경인지. 어느 영역을 비울지</td>
+</tr>
+<tr>
+<td>장소와 시간</td>
+<td>지형, 건물이나 사물의 위치, 시간대, 분위기</td>
+</tr>
+<tr>
+<td>카메라</td>
+<td>눈높이·높은 시점·낮은 시점, 바라보는 방향, 거리와 원근 강도</td>
+</tr>
+<tr>
+<td>공간</td>
+<td>전경·중경·후경, 거리에 따른 크기, 대비와 채도의 변화</td>
+</tr>
+<tr>
+<td>화풍</td>
+<td>시대감, 선, 플랫한 색, 셀 명암, 표면 묘사의 정도</td>
+</tr>
+<tr>
+<td>조명</td>
+<td>주광과 주변광의 역할, 보이는 인공광원의 수와 위치, 추가 효과의 상한선</td>
+</tr>
+<tr>
+<td>색</td>
+<td>주요 색과 포인트색, 명도 대비, 먼 배경의 채도</td>
+</tr>
+<tr>
+<td>움직임</td>
+<td>바람 방향과 강도, 풀이나 천 등 환경 요소의 반응</td>
+</tr>
+<tr>
+<td>재질</td>
+<td>길·벽·물 등의 거칠기, 무광·광택, 빛의 반사 정도</td>
+</tr>
+<tr>
+<td>정보량</td>
+<td>넣을 사물, 비워둘 영역, 생략할 장식과 세부 묘사</td>
+</tr>
+</tbody></table></div>
+<h4 id="note-7" class="level-3">원근은 두 가지로 나누기</h4>
+<p><strong>기하학적 원근</strong>은 멀어지는 물체의 크기, 길의 수렴, 건물의 정렬처럼 공간의 형태를 정합니다.</p>
+<p><strong>대기 원근</strong>은 거리에 따른 대비·채도 감소나 옅은 안개처럼 깊이가 보이는 방식을 정합니다. “원근을 넣어줘”에 더해, 먼 곳을 어떻게 표현할지 적습니다.</p>
+<h4 id="note-8" class="level-3">화풍과 조명은 조금 더 구체적으로</h4>
+<p><code>anime style</code>에 시대감, 색을 채우는 방식, 명암과 표면 묘사의 정도를 더해보세요. 플랫한 결과를 원한다면 <code>flat coloring</code>, <code>clean cel shading</code>, <code>simple shadow shapes</code>처럼 원하는 상태를 적을 수 있습니다.</p>
+<p>조명에서는 <strong>주광이 하나인 것</strong>과 <strong>화면에 보이는 인공광원이 하나인 것</strong>을 구분합니다. 하늘의 주변광과 가로등이 함께 있는 장면이라면 각각의 역할을 적습니다. 가로등 수가 중요하면 “장면 전체에서 보이는 인공광원은 정확히 하나”라고 쓰고 결과에서도 확인합니다.</p>
+<h4 id="note-9" class="level-3">배경 전용 입력 예시</h4>
+<p>다음은 원본의 시골길 장면을 배경만 생성하는 용도로 편집한 예시입니다. 아래에는 작업자가 제공한 관련 배경 결과를 함께 배치했습니다. 편집한 입력문과 실제 생성에 사용한 입력문이 완전히 동일한지는 확인하지 않았습니다.</p>
+<details class="code-example"><summary>백그라운드 입력 예시 보기</summary><pre><code class="language-text"># Purpose
+* background-only image, with no people or characters
+* leave a quiet central area for a later text or image overlay
+
+# Background
+## Art Style
+* modern anime style
+* flat coloring and clean cel shading
+* simple shadow shapes
+* restrained surface detail and reduced painterly rendering
+
+## Field Information
+* a quiet uphill rural road at early night
+* sparse countryside surroundings
+* purple near the horizon, with the sky darkening toward the top
+* one distant streetlight on the left
+
+## Spatial Structure
+* consistent perspective and object scale with distance
+* clear foreground, midground, and background separation
+* distant objects gradually lose contrast and saturation
+* subtle distance haze
+
+# Camera and Composition
+* eye-level view looking along the uphill road
+* moderate perspective
+* keep the central area uncluttered
+* sparse foreground objects
+
+# Lighting
+* soft ambient evening light from the sky
+* exactly one visible artificial light source in the entire scene:
+  the distant streetlight on the left
+* the streetlight casts a small, restrained pool of light nearby
+* shadows and reflections follow the stated lighting
+* no additional lamps, spotlights, or decorative light sources
+* restrained glow and highlights
+
+# Color
+* a controlled palette with purple near the horizon
+* restrained saturation in distant scenery
+* gentle contrast in the central overlay area
+
+# Material Response
+* the dry road and surrounding ground remain mostly matte
+* subtle reflections consistent with the scene lighting
+
+# Overall Direction
+* calm, quiet rural atmosphere
+* controlled environmental detail
+* keep the open central area free of added decorations
+</code></pre></details>
+<figure><img loading="lazy" decoding="async" src="assets/images/rural-evening-background-example.png" alt="보라색 초저녁 하늘 아래 시골 오르막길. 왼쪽 가로등 하나가 길을 비추고 오른쪽에는 먼 산과 마을이 보이는 배경 결과"><figcaption>작업자 제공 배경 결과 예시. 오르막길, 왼쪽 가로등, 수평선 부근의 보라색 하늘과 겹쳐지는 먼 산을 살펴보세요. 전경의 길과 먼 풍경 사이에 대비 차이가 있습니다. 도로·풀·마을의 세부 묘사는 남아 있어, 정보량을 더 줄이고 싶다면 해당 영역을 따로 지정할 수 있습니다.</figcaption></figure>
+<h4 id="note-10" class="level-3">결과를 보고 조정할 것</h4>
+<ul>
+<li><strong>풍경이 너무 복잡하다면:</strong> 덜 그릴 영역과 생략할 물체를 지정합니다.</li>
+<li><strong>조명이 늘어났다면:</strong> 보이는 광원의 수와 위치를 다시 적습니다.</li>
+<li><strong>입체감이나 광택이 강하다면:</strong> 단순한 명암, 무광 표면처럼 원하는 상태를 적습니다.</li>
+<li><strong>깊이가 모호하다면:</strong> 가까운 곳과 먼 곳의 크기·대비·채도 차이를 설명합니다.</li>
+<li><strong>바람을 넣는다면:</strong> 방향과 강도를 정하고, 영향을 받는 환경 요소를 함께 적습니다.</li>
+</ul>
+<p>제한어를 길게 나열하기보다 원하는 상태를 먼저 쓰고, 반복해서 과장되는 요소에 짧은 제한을 붙이는 방식으로 조정했습니다. 모든 항목을 매번 채울 필요는 없습니다. 필요한 관계와 제한부터 적어보세요.</p>
+<h3 id="chibi" class="level-2">치비 배열</h3>
+<p>이 노트에서는 치비의 세부 비율이나 화풍보다 여러 캐릭터의 위치와 읽기 순서를 다룹니다. 작업 중에는 얼굴과 실루엣이 큰 만큼 배치의 어색함도 쉽게 드러났습니다.</p>
+<h4 id="note-11" class="level-3">무엇이 주인공인가</h4>
+<p>캐릭터, 텍스트, 로고, 소품이 함께 있다면 가장 먼저 보여야 할 요소를 정합니다.</p>
+<p>캐릭터가 주인공일 때:</p>
+<details class="code-example"><summary>캐릭터 중심 입력 예시 보기</summary><pre><code class="language-text"># Priority
+* characters are the primary focal point
+* text remains secondary
+* decorative elements remain supportive
+* character silhouettes remain the strongest visual elements
+</code></pre></details>
+<p>텍스트가 주인공일 때:</p>
+<details class="code-example"><summary>텍스트 중심 입력 예시 보기</summary><pre><code class="language-text"># Priority
+* text is the primary focal point
+* characters function as supporting decoration
+* text must be the first element the viewer notices
+* character placement guides attention toward the text
+</code></pre></details>
+<h4 id="note-12" class="level-3">인원별 배열 예시</h4>
+<p>아래는 작업에서 출발점으로 쓰기 편했던 배열입니다. 모든 장면에 적용하는 고정 규칙은 아닙니다.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="표, 가로로 스크롤 가능"><table>
+<thead>
+<tr>
+<th>인원</th>
+<th>위치</th>
+<th>의도한 읽기 순서</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2명</td>
+<td>A 왼쪽, B 오른쪽</td>
+<td>A → B</td>
+</tr>
+<tr>
+<td>3명</td>
+<td>A 위, B 왼쪽 아래, C 오른쪽 아래</td>
+<td>A → B → C</td>
+</tr>
+<tr>
+<td>4명</td>
+<td>A 왼쪽 위, B 오른쪽 위, C 왼쪽 아래, D 오른쪽 아래</td>
+<td>A → B → C → D</td>
+</tr>
+</tbody></table></div>
+<p>서로의 실루엣이 과하게 겹치지 않도록 하고, 첫 번째로 눈에 들어올 캐릭터를 지정합니다. 4명은 2×2를 기본으로 삼거나, 장면에 맞춰 대각선 흐름을 따로 정할 수 있습니다.</p>
+<p>3명 배열을 문장으로 옮긴 예시:</p>
+<details class="code-example"><summary>치비 배열 입력 예시 보기</summary><pre><code class="language-text"># Layout
+* three chibi characters in a triangular composition
+* character A at the top
+* character B at the lower left
+* character C at the lower right
+* keep each character silhouette clearly separated
+
+# Reading Order
+* character A should be noticed first
+* the viewer&#39;s eye then moves to character B, then character C
+* keep decorative elements secondary to the characters
+</code></pre></details>
+<h4 id="note-13" class="level-3">결과를 보고 조정할 것</h4>
+<p>화면이 화려한데 중심이 없다면 세부 묘사를 추가하기 전에 우선순위를 다시 확인합니다. 누구를 먼저 볼지, 다음에 어디로 시선이 갈지, 텍스트가 그 흐름을 가리고 있지는 않은지 살펴봅니다.</p>
+<h2 id="external" class="level-1">플랫폼 밖 서버에서 이미지 호출하기 (일명: 외부이미지)</h2>
+<h3 id="principle" class="level-2">호출 원리</h3>
+<p>외부이미지는 외부 서버에 올려 호스팅하는 이미지의 주소를 이용해 화면에 표시하는 방식입니다. 이미지를 올려둔 곳과 이미지를 보여주는 플랫폼이 서로 다를 수 있습니다.</p>
+<p>흐름은 <strong>이미지 업로드 → 이미지 URL 확보 → 지원되는 이미지 문법으로 주소 출력 → 이미지 표시</strong>입니다.</p>
+<p>여기에 태그를 붙이면 어떤 이미지를 선택할지 규칙을 정할 수 있습니다. 이 사례에서는 편의상 알파벳과 숫자를 조합합니다. 알파벳은 의상·상황, 숫자는 표정·소품을 구분합니다. 태그는 이미지 선택에 쓰는 식별자이며, 이미지 주소와 연결해 사용합니다.</p>
+<h3 id="format" class="level-2">호출 형식</h3>
+<p>Markdown 이미지 문법을 지원하는 환경에서는 다음처럼 적습니다. 아래 주소는 구조를 보여주기 위한 예시이며 실제 이미지 주소로 교체합니다. 일반적인 Markdown에서는 주소 양옆에 따옴표를 붙이지 않습니다.</p>
+<pre><code class="language-markdown">![](https://example.com/images/A01.png)
+</code></pre>
+<p>예를 들어 <code>A</code>를 외출복, <code>01</code>을 웃는 표정으로 정하고 해당 이미지에 <code>A01</code>을 연결해두면, 장면 규칙은 어떤 코드를 고를지만 결정하면 됩니다. 파일명을 코드와 같게 만드는 것은 관리 방법의 한 예이며 필수는 아닙니다.</p>
+<details>
+<summary><small>하드코어로 즐기는 활용예시</small></summary>
+
+<h4 id="note-14" class="level-3">옷 갈아입히기 — 장면 상태와 표정을 조합하기</h4>
+<blockquote>
+<p><strong>직접 등록 옵션의 적용 플랫폼: Rplay / StoryEngine / RomanticPlay 한정.</strong> 아래는 일부 기능을 끄고 이미지 호출 방식을 직접 등록하는 옵션을 활용한 사례입니다. 이 플랫폼 제한은 해당 옵션에 관한 것으로, 외부 서버의 이미지를 URL로 표시하는 일반적인 방식의 제한을 뜻하지 않습니다.</p>
+</blockquote>
+<p>장소·시간·수면 상태로 의상을 고르고, 표정 번호를 붙여 이미지 식별자를 만드는 실제 활용 사례입니다. 작업자가 사용하는 플랫폼에서는 일부 기능을 끄면 이미지 호출 방식을 직접 등록할 수 있어, 여기에 이미지 선택 규칙을 얹어 사용했습니다. 원본은 외부 URL을 직접 출력하는 방식이 아니라, 직접 등록한 <code>(tag:)</code> 호출 규칙을 활용한 형태입니다. 필요한 설정은 플랫폼에 따라 다릅니다.</p>
+<p>핵심은 매 문장마다 옷을 다시 고르지 않는 것입니다. 현재 의상 코드 <code>ENV</code>를 HUD의 상황 요약 줄 <code>🧷</code>에 기록하고, 외출·귀가·취침처럼 상태가 바뀌는 경계에서만 다시 판단합니다. <code>NUM</code>은 표정이나 소품 이미지의 번호입니다.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="표, 가로로 스크롤 가능"><table>
+<thead>
+<tr>
+<th>의상 코드</th>
+<th>선택 조건</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>집 밖. 시간대와 무관하게 우선 적용</td>
+</tr>
+<tr>
+<td>C</td>
+<td>집 안에서 침대에 누워 잠들거나, 잠들어 가거나, 막 깬 상태</td>
+</tr>
+<tr>
+<td>D</td>
+<td>집 안에서 깨어 있고, 해질녘·밤·새벽인 상태</td>
+</tr>
+<tr>
+<td>B</td>
+<td>집 안에서 깨어 있고, 아침·정오·오후인 상태</td>
+</tr>
+</tbody></table></div>
+<p>판정은 <strong>A → C → D → B</strong> 순서로 진행하며, 먼저 일치한 조건을 적용합니다. 아래는 작업자가 제공한 원본 규칙입니다. 실행할 C# 코드가 아니라 모델에 전달하는 지시문입니다.</p>
+<details class="code-example"><summary>옷 갈아입히기 전체 입력 규칙 보기</summary><pre><code class="language-text">2. **Image Cue Rules:**
+   - All image output via `(tag:)` only. Direct URL embedding is strictly forbidden.
+   - Format: `(tag: {ENV}{NUM})` — e.g. `(tag: A3)`
+   - Append at the end of EVERY paragraph and dialogue block.
+   - **ENV Resolution (cascade — evaluate top-down, first match locks):**
+     1. Scene is OUTSIDE the residence                         → A  (holds for any TIME_CTX)
+     2. INSIDE + in bed (sleeping / drifting off / just woke)  → C  (frilled sleep set)
+     3. INSIDE + awake + TIME_CTX ∈ {DUSK, NIGHT, DAWN}        → D  (cozy hooded loungewear)
+     4. INSIDE + awake + TIME_CTX ∈ {MORNING, NOON, AFTERNOON} → B  (daytime home casual)
+
+   - **TIME_CTX gate:**
+     • C (sleep) is bound to the in-bed state, valid at any tick but realistically
+       only fires around {DUSK, NIGHT, DAWN}.
+     • D (lounge) is ELIGIBLE ONLY when awake at {DUSK, NIGHT, DAWN}.
+     • B never fires at {NIGHT, DAWN} unless the day has clearly restarted.
+     • A overrides time entirely — outdoors is always A.
+
+   - **ENV Persistence (anti-flicker · HUD-anchored):**
+     ENV is scene state, NOT a per-line choice, and its standing value
+     is STORED in the HUD (상황 요약 line, 🧷).
+
+     Each turn, resolve ENV in this order:
+       (1) READ the previous 🧷 value from the most recent HUD. This is
+           the current ENV unless something below overrides it.
+       (2) Check for a boundary crossing since that value was written:
+             leaves / enters residence        → A ↔ (B|C|D)
+             gets into bed                     → C
+             gets out of bed, still cozy       → D
+             new day starts / dresses          → B (or A if heading out)
+           Only a LOCATION boundary or a TIME_CTX advance that crosses one
+           of the cascade lines may change ENV.
+       (3) If a boundary was crossed, re-run the top-down cascade to get
+           the new letter. If NOT, KEEP the previous 🧷 value verbatim.
+       (4) Write the resulting letter back to 🧷 in this turn&#39;s HUD.
+
+     Within a single response spanning multiple paragraphs, ENV does NOT
+     change unless the prose itself crosses a boundary; do not re-evaluate
+     per paragraph. When ambiguous at any step, KEEP the previous 🧷 value.
+
+     The HUD 🧷 is the single source of truth for current ENV. If prose and
+     🧷 ever disagree, 🧷 wins and the prose is treated as the error.
+
+3. **Tag Index:**
+   EMOTION:
+   [Daily Tag Codes]
+01_Smile|02_light_smile|03_angry|04_pout|05_hurt|06_disappointed|07_sad|08_fear|09_irritated|10_sulk|11_contempt|12_frustrated|13_overwhelmed|14_unhinged|15_expressionless
+
+   PROP:
+17_eating_icecream_solo...
+
+4. **Dialogue Rule:**
+   - Format: `[Character Name]: &quot;Dialogue&quot; (tag: {ENV}{NUM})`
+   - Narrative paragraphs for actions/thoughts ONLY. `(tag: {ENV}{NUM})`
+</code></pre></details>
+<h4 id="note-15" class="level-3">같은 선택 규칙을 외부 이미지 출력에 쓰기</h4>
+<p>위 원본은 최종 출력을 <code>(tag: A3)</code>처럼 하도록 정해둔 버전입니다. 외부 이미지 주소를 직접 출력하는 버전에서는 의상·표정 선택과 HUD 유지 규칙은 그대로 두고, 최종 출력 규칙을 Markdown 이미지 형식으로 맞춥니다.</p>
+<details class="code-example"><summary>이미지 선택 흐름 보기</summary><pre><code class="language-text">장소·시간·수면 상태 → 의상 코드 ENV 결정
+표정·소품 → 번호 NUM 결정
+ENV + NUM → 연결된 이미지 URL 선택
+![](이미지 URL) 출력
+</code></pre></details>
+<p>예를 들어 이미지 파일을 <code>A01.png</code>처럼 정리했다면, <code>A01</code>에 연결된 실제 이미지 주소를 <code>![](...)</code> 안에 넣습니다. 알파벳·숫자는 작업자가 정한 약속이므로, 코드·파일명·주소의 연결이 일치하도록 관리합니다.</p>
+<p>원본의 “Direct URL embedding is strictly forbidden”과 <code>(tag:)</code> 출력 형식은 이 직접 출력 방식에 맞게 바꿉니다. 마지막 Dialogue Rule에 있는 출력 형식도 함께 바꿔야 지시가 서로 충돌하지 않습니다. 이미지를 고르는 규칙과 화면에 표시하는 문법을 나누어 보면 응용하기 쉽습니다.</p>
+<p>원본의 예시에는 <code>A3</code>, 목록에는 <code>03_angry</code>처럼 번호 표기가 섞여 있습니다. 연결할 때는 <code>A3</code> 또는 <code>A03</code> 중 실제 등록 키에 맞춰 통일합니다. 첫 턴에는 이전 HUD가 없으므로 시작 장면에 맞는 <code>🧷</code> 값을 초기 설정해두면 됩니다.</p>
+</details>
+
+<h3 id="services" class="level-2">지원되는 사이트 목록</h3>
+<p>NSFW 이미지 호스팅 허용 여부를 기준으로 분류합니다. 외부 이미지 호출 지원과 NSFW 업로드 허용 여부는 별도로 확인합니다.</p>
+<p>아래 추가 목록은 <strong>작업자가 제공한 사용 정보 기준의 초안</strong>입니다(2026-09-13). 각 서비스의 최신 공식 정책을 모두 대조한 목록은 아닙니다. ‘가능’은 모든 종류의 NSFW 콘텐츠를 제한 없이 허용한다는 뜻이 아닙니다.</p>
+<h4 id="nsfw-yes" class="level-3">NSFW 이미지 가능</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="표, 가로로 스크롤 가능"><table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>작업자 제공 분류</th>
+<th>메모</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Catbox (<code>catbox.moe</code>)</td>
+<td>가능</td>
+<td>Litterbox와 구분. 아래 임시 보관 주의사항 참고</td>
+</tr>
+<tr>
+<td>Image Chest (<code>imgchest.com</code>)</td>
+<td>가능</td>
+<td>세부 허용 범위·외부 호출 조건 확인 예정</td>
+</tr>
+<tr>
+<td>ImgBB (<code>imgbb.com</code>)</td>
+<td><strong>부분적으로 가능</strong></td>
+<td>작업자가 확인한 NSFW 사용 사례 있음. 세부 허용 범위 확인 예정</td>
+</tr>
+<tr>
+<td>Postimages (<code>postimages.org</code>)</td>
+<td><strong>부분적으로 가능</strong></td>
+<td>허용되는 내용과 금지되는 내용의 경계 확인 예정</td>
+</tr>
+<tr>
+<td>Imgbox (<code>imgbox.com</code>)</td>
+<td>가능</td>
+<td>세부 허용 범위·외부 호출 조건 확인 예정</td>
+</tr>
+<tr>
+<td>Pixhost (<code>pixhost.to</code>)</td>
+<td>가능</td>
+<td>세부 허용 범위·외부 호출 조건 확인 예정</td>
+</tr>
+<tr>
+<td>Freeimage.host (<code>freeimage.host</code>)</td>
+<td>가능 · <strong>외부 노출 주의</strong></td>
+<td>작업자 제보: 업로드 이미지가 외부로 노출될 수 있음. 노출 경로·공개 설정 확인 예정</td>
+</tr>
+<tr>
+<td>Upload.cc (<code>upload.cc</code>)</td>
+<td>가능</td>
+<td>세부 허용 범위·외부 호출 조건 확인 예정</td>
+</tr>
+<tr>
+<td>Imgpile (<code>imgpile.com</code>)</td>
+<td>가능</td>
+<td>세부 허용 범위·외부 호출 조건 확인 예정</td>
+</tr>
+<tr>
+<td>Cloudflare R2</td>
+<td>가능</td>
+<td>작업자의 실제 사용 사례 있음. R2 객체 저장소에 관한 분류. 상세 사용 메모는 아래 참고</td>
+</tr>
+<tr>
+<td>ITIMG.KR (<code>itimg.kr</code>)</td>
+<td>가능</td>
+<td>작업자가 공식 허용을 확인. 상세 정보는 아래 참고</td>
+</tr>
+</tbody></table></div>
+<p><strong>Catbox와 Litterbox는 구분하기</strong></p>
+<p>작업자의 안내에 따르면 <code>litterbox.catbox.moe</code>는 휘발성·임시 보관 서비스입니다. 계속 사용하는 스토리채팅 이미지 주소에는 사용하지 않는 것으로 안내합니다. 정확한 보관 기간은 공식 안내 확인 후 추가합니다.</p>
+<h5 id="itimg" class="level-4">ITIMG.KR — AI·스토리채팅용 이미지 호스팅</h5>
+<p><a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">ITIMG.KR</a>은 문커뮤니티가 운영하는 AI 채팅용 이미지 호스팅 서비스입니다. 짧은 이미지 주소를 쓰며, 유료 플랜에서는 URL의 값에 따라 글자와 모양이 바뀌는 동적 SVG를 지원합니다. 공개 정보 확인일: <strong>2026-09-13</strong>. <a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">공식 서비스 안내</a></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="표, 가로로 스크롤 가능"><table>
+<thead>
+<tr>
+<th>플랜</th>
+<th>저장공간</th>
+<th>월 정상가</th>
+<th>현재 표시된 월 구독 할인가</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>무료</td>
+<td>10MB</td>
+<td>무료</td>
+<td>—</td>
+</tr>
+<tr>
+<td>프로</td>
+<td>5GB</td>
+<td>11,000원</td>
+<td>8,800원</td>
+</tr>
+<tr>
+<td>프리미엄</td>
+<td>10GB</td>
+<td>22,000원</td>
+<td>17,600원</td>
+</tr>
+</tbody></table></div>
+<p>공식 요금표에는 트래픽 무제한과 월 구독 20% 할인이 표시되어 있습니다. 같은 페이지의 결제 안내에는 월 11,000원 표기도 남아 있으므로 실제 적용 금액은 결제 화면에서 확인합니다. <a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">공식 요금 안내</a></p>
+<p><strong>짧은 주소 구조</strong></p>
+<p>다음은 작업자가 제공한 주소 구조 예시입니다. 이미지를 열어 확인한 링크가 아니라 경로 설명용입니다.</p>
+<pre><code class="language-text">https://itimg.kr/27/cb1.webp
+https://itimg.kr/27/a/tr.png
+                   └ 폴더 / 파일명
+</code></pre>
+<p>작업자의 설명에 따르면 <code>27</code>은 가입 순번을 이용한 사용자 저장공간 식별자이며, 폴더를 만들면 그 뒤에 폴더명과 파일명이 붙습니다. 공식 소개에서도 숫자 경로 뒤에 파일명을 붙이는 짧은 주소를 예시로 보여줍니다. <a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">공식 사용 예시</a></p>
+<p><strong>결제와 해외 지원</strong></p>
+<p>작업자의 이용·문의 경험 기준으로 유료 결제에는 한국 카드가 필요합니다. <strong>해외 결제 지원 예정 — 일정 미정</strong>이며, 해외 지원이 열리면 안내받기로 했다는 문의 내용을 바탕으로 기재했습니다. 현재 공개 페이지에서 해외 지원 일정이나 결제 수단의 상세 조건은 확인하지 못했습니다. 무료 플랜 가입에도 한국 카드가 필수라는 의미는 아닙니다.</p>
+<p><strong>사용 경험으로 덧붙이는 기능 메모</strong></p>
+<ul>
+<li>작업자는 마지막 사용 당시 WebP 변환이 되는 것을 확인했다고 설명했습니다. 현재 자동 변환 조건과 원본 유지 여부는 미확인입니다.</li>
+<li>작업자의 설명으로는 루나톡 운영자가 만든 서비스이며, 유료 사용자를 위한 SVG 제작도 제공받을 수 있습니다. 공식 페이지에서 확인되는 내용은 동적 SVG 기능의 유료 제공이며, 개별 SVG 제작 지원의 범위·조건은 별도 확인이 필요합니다.</li>
+</ul>
+<p><strong>NSFW 분류 근거</strong></p>
+<p><strong>NSFW 이미지 호스팅 가능.</strong> 작업자가 공식 허용을 확인했다고 제공한 정보를 반영했습니다(2026-09-13). 세부 업로드 제한은 <a href="https://itimg.kr/terms" target="_blank" rel="noopener noreferrer">서비스 이용약관</a>을 함께 참고합니다.</p>
+<h5 id="r2" class="level-4">Cloudflare R2 — 직접 올려서 주소로 불러오기</h5>
+<p>작업자가 실제로 사용하는 외부 이미지 저장소입니다. 스토리채팅의 시작 메시지에서 내부 이미지가 간간이 잘 불러와지지 않을 때, R2에 올린 이미지 주소를 사용했습니다. NSFW 분류는 작업자 제공 사용 정보에 따른 것이며, 아래 공식 문서 확인은 요금과 설정에 관한 것입니다.</p>
+<p><strong>무료 범위</strong></p>
+<p>2026-09-13 공식 문서 확인 기준으로 Standard 저장소에는 매월 <strong>10 GB-month</strong>의 저장공간 무료 사용량이 포함됩니다. 한 달 내내 약 10GB를 저장하는 경우에 해당하는 단위입니다. 월 Class A 작업 100만 회와 Class B 작업 1,000만 회도 무료 범위에 포함되며, 인터넷으로 보내는 전송량에는 요금이 없습니다. 저장공간·작업 횟수의 무료 범위를 넘으면 과금될 수 있고, Infrequent Access에는 이 무료 범위가 적용되지 않습니다. <a href="https://developers.cloudflare.com/r2/pricing/" target="_blank" rel="noopener noreferrer">R2 공식 요금</a></p>
+<p>작업자는 처음 사용을 시작할 때 결제카드 등록·인증을 거쳤습니다. 실제 사용 중에는 체감되는 지연을 경험하지 않았습니다.</p>
+<p><strong>공개 주소로 시험해보는 흐름</strong></p>
+<ol>
+<li>R2에서 버킷(Bucket, 파일을 담는 저장공간)을 만듭니다.</li>
+<li>사용할 이미지를 업로드합니다.</li>
+<li>버킷의 <code>Settings</code> → <code>Public Development URL</code> → <code>Enable</code>로 이동합니다.</li>
+<li>공개 접근 안내를 확인하고 활성화하면 <code>r2.dev</code> 주소가 제공됩니다. 이 설정은 버킷 안의 파일을 인터넷에서 접근 가능하게 합니다.</li>
+<li>제공된 주소 뒤에 이미지의 경로·파일명을 붙여 사용합니다.</li>
+</ol>
+<pre><code class="language-text">https://pub-예시식별자.r2.dev/폴더명/A01.webp
+</code></pre>
+<p>위 주소는 형식 예시입니다. 실제 버킷 주소와 업로드한 파일 경로로 바꿉니다.</p>
+<p><code>r2.dev</code>는 공식적으로 <strong>개발·테스트용이며 요청 속도 제한이 있는 주소</strong>입니다. 실제 공개 서비스 운영에는 사용자 도메인 연결을 안내하고 있습니다. 사용자 도메인은 주소를 원하는 형태로 정하는 것 외에도 캐시 등 기능을 사용하는 방법입니다. 작업자는 도메인 연결을 직접 사용해보지는 않았습니다. <a href="https://developers.cloudflare.com/r2/buckets/public-buckets/" target="_blank" rel="noopener noreferrer">공개 버킷과 도메인 안내</a></p>
+<p><strong>CORS Policy는 언제 만지나</strong></p>
+<p>일반적인 이미지 표시만 하는 경우와, 웹페이지의 코드가 다른 출처의 파일 내용을 읽거나 가공하는 경우를 구분합니다. 단순한 이미지 표시에는 보통 별도 CORS 설정이 필요하지 않지만, 이미지라도 JavaScript로 읽거나 캔버스에서 픽셀을 추출하면 필요할 수 있습니다. 즉, ‘이미지인가 다른 파일인가’보다 <strong>어떻게 가져와 사용하는가</strong>가 기준입니다. 필요한 경우 버킷의 <code>Settings</code> → <code>CORS Policy</code>에서 사용하는 사이트와 요청 방식에 맞게 설정합니다. <a href="https://developers.cloudflare.com/r2/buckets/cors/" target="_blank" rel="noopener noreferrer">R2 CORS 안내</a></p>
+<h4 id="nsfw-no" class="level-3">NSFW 이미지 불가능</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="표, 가로로 스크롤 가능"><table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>작업자 제공 분류</th>
+<th>확인할 내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Imgur</td>
+<td>불가능</td>
+<td>최신 공식 정책의 금지 범위 확인 예정</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>불가능</td>
+<td>작업자 제공 정보 기준. NSFW 이미지 호스팅 용도에서 제외</td>
+</tr>
+</tbody></table></div>
+<h4 id="nsfw-unknown" class="level-3">NSFW 이미지 확실치 않음</h4>
+<p>현재 이 분류에 등록한 사이트는 없습니다. 허용 범위가 확인되지 않은 사이트는 여기에 따로 기록합니다.</p>
+<h4 id="note-16" class="level-3">작업 환경 관찰 — 일본 쪽에서 본 조합</h4>
+<p>작업자가 접한 일본 쪽 사용 사례에서는 <strong>Catbox + 트위터(X) + 개인 서버</strong> 조합이 자주 보였습니다. 전체 이용 경향을 조사한 통계가 아니라 작업자의 관찰 메모입니다. 트위터(X)를 장기 외부 이미지 호스팅으로 추천하거나 안정성을 보장한다는 뜻은 아닙니다. 개인 서버 역시 실제 보관·운영 조건에 따라 달라집니다.</p>
+</article>
+<section class="feedback" id="feedback" aria-labelledby="feedback-title"><h2 id="feedback-title">오류와 피드백을 기다립니다</h2><p>잘못된 내용이나 보완할 점이 있다면 알려주세요.</p><a class="feedback-link" href="https://github.com/BurnFrozenTuna/Fish_In_the_Toolbox/issues" target="_blank" rel="noopener noreferrer">오류·피드백 남기기 ↗</a><p class="translation-note">영어와 일본어 번역은 LLM의 도움을 받고 있어, 종종 어색하거나 뜻이 모호한 표현이 있을 수 있어요. 미안해요! 발견하시면 편하게 알려주세요.</p></section>
+<footer class="end-note">작업 노트 · Frozen_Tuna <a href="#top">맨 위로 ↑</a></footer></main></div>
+<a class="fish-sign" href="https://storyengine.live/c/frozen_tuna" target="_blank" rel="noopener noreferrer" aria-label="작업자 Frozen_Tuna의 스토리채팅 페이지 열기"><span class="fish-sign-tip">🐟 작업자 <b>Frozen_Tuna</b> 🐟</span><span class="fish-sign-emoji" aria-hidden="true">🐟</span></a>
+<script>const links=[...document.querySelectorAll('.nav-item')];
+const targets=links.map(link=>({link,el:document.querySelector(link.getAttribute('href'))}));
+let pending=false;
+function markCurrent(){pending=false;let current=targets[0];for(const target of targets){if(target.el.getBoundingClientRect().top<=110)current=target;}for(const target of targets){const active=target===current;target.link.classList.toggle('active',active);if(active)target.link.setAttribute('aria-current','location');else target.link.removeAttribute('aria-current');}}
+addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(markCurrent)}},{passive:true});
+addEventListener('resize',markCurrent);markCurrent();
+document.querySelectorAll('.mobile-toc a').forEach(a=>a.addEventListener('click',()=>{document.querySelector('.mobile-toc').open=false}));
+function syncLanguageLinks(){for(const a of document.querySelectorAll('.language-tab')){const url=new URL(a.getAttribute('href'),location.href);url.hash=location.hash;a.href=url.href;}}
+addEventListener('hashchange',syncLanguageLinks);syncLanguageLinks();
+document.querySelectorAll('.language-tab').forEach(a=>a.addEventListener('click',()=>{
+ if(window.scrollY<80)return;
+ const headings=[...document.querySelectorAll('article h2[id],article h3[id],article h4[id],article h5[id],#feedback')].filter(el=>el.getClientRects().length);
+ let current;for(const h of headings){if(h.getBoundingClientRect().top<=110)current=h;}
+ if(current){const url=new URL(a.href);url.hash=current.id;a.href=url.href;}
+}));
+function revealHash(){const id=decodeURIComponent(location.hash.slice(1));if(!id)return;const el=document.getElementById(id);if(!el)return;let parent=el.parentElement,changed=false;while(parent){if(parent.tagName==='DETAILS'&&!parent.open){parent.open=true;changed=true;}parent=parent.parentElement;}if(changed)el.scrollIntoView();}
+addEventListener('hashchange',revealHash);revealHash();
+</script></body></html>

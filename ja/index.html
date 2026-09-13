@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fish In the Toolbox — 作業ノート</title><meta name="description" content="GPTにタイポグラフィ・背景・ちびキャラの配置を頼むときの工夫と、外部画像の表示方法をまとめた作業ノート。"><meta name="author" content="Frozen_Tuna"><meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="ko" href="../index.html">
+<link rel="alternate" hreflang="en" href="../en/index.html">
+<link rel="alternate" hreflang="ja" href="../ja/index.html">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2330;
+    --border: #30363d;
+    --border-bright: #444c56;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #484f58;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --accent4: #ffa657;
+    --accent5: #ff7b72;
+    --tag-bg: #1f3048;
+    --tag-text: #79c0ff;
+    --code-bg: #161b22;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* layout */
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* sidebar */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 32px 0 40px;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .product {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-logo .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sidebar-logo .subtitle {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 8px 0;
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 24px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 24px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(88,166,255,0.06);
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* main */
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 48px 60px 80px;
+    max-width: 860px;
+  }
+
+  /* page header */
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header .eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+
+  .page-header .desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* sections */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-anchor {
+    display: block;
+    position: relative;
+    top: -80px;
+    visibility: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .section p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .section p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* callout */
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout.info { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.2); color: #9ecbff; }
+  .callout.tip  { background: rgba(63,185,80,0.08);  border: 1px solid rgba(63,185,80,0.2);  color: #85e89d; }
+  .callout.warn { background: rgba(255,166,87,0.08); border: 1px solid rgba(255,166,87,0.2); color: #ffb86c; }
+
+  /* node cards */
+  .node-grid {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .node-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color 0.15s;
+  }
+
+  .node-card:hover { border-color: var(--border-bright); }
+
+  .node-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .node-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .node-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .node-card-desc {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* field table */
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+
+  .field-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .field-table tr:last-child td { border-bottom: none; }
+
+  .field-table .field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent3);
+    white-space: nowrap;
+  }
+
+  .field-table .field-desc { color: var(--text-muted); }
+
+  /* code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #c9d1d9;
+    overflow-x: auto;
+    margin: 16px 0;
+    white-space: pre;
+  }
+
+  .code-block .cm { color: var(--text-dim); }
+  .code-block .kw { color: var(--accent5); }
+  .code-block .st { color: var(--accent2); }
+  .code-block .nm { color: var(--accent3); }
+  .code-block .vl { color: var(--accent4); }
+
+  /* flow diagram */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .flow-box {
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .flow-down {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-down-arrow {
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 2px 0;
+  }
+
+  /* arch diagram */
+  .arch {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .arch-row:last-child { border-bottom: none; }
+
+  .arch-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .arch-content {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  .arch-content strong { color: var(--text); font-weight: 600; }
+
+  /* tag chip */
+  .chip {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    margin: 1px 2px;
+    white-space: nowrap;
+  }
+
+  .chip.green { background: rgba(63,185,80,0.1); color: #85e89d; }
+  .chip.purple { background: rgba(210,168,255,0.1); color: var(--accent3); }
+  .chip.orange { background: rgba(255,166,87,0.1); color: var(--accent4); }
+  .chip.red { background: rgba(255,123,114,0.1); color: var(--accent5); }
+
+  /* divider */
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* scroll */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+  }
+
+  /* ── screenshots ── */
+  .shot { margin: 22px 0 26px; }
+  .shot img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border-bright);
+    border-radius: 10px;
+    background: var(--bg2);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+  }
+  .shot figcaption {
+    margin-top: 9px; font-size: 12.5px; line-height: 1.6;
+    color: var(--text-dim); padding-left: 2px;
+  }
+  .shot figcaption b { color: var(--text-muted); font-weight: 600; }
+  .shot.narrow img { max-width: 620px; }
+
+  /* ── language tabs ── */
+  .lang-tabs { display: flex; gap: 6px; margin: 4px 0 20px; }
+  .lang-tabs a {
+    flex: 1; text-align: center; font-size: 12px; font-weight: 600;
+    padding: 7px 0; border-radius: 7px; text-decoration: none;
+    color: var(--text-muted); background: var(--bg3);
+    border: 1px solid var(--border-bright); transition: all 0.15s ease;
+  }
+  .lang-tabs a:hover { color: var(--text); }
+  .lang-tabs a.active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  .shot-row { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+  .shot-row .shot { flex: 1; min-width: 240px; margin: 0; }
+  @media (max-width: 560px) { .shot-row { flex-direction: column; } }
+
+.fish-sign { position: fixed; bottom: 18px; right: 20px; z-index: 50; display: flex; align-items: center; gap: 8px; text-decoration: none; user-select: none; cursor: pointer; }
+  .fish-sign-tip { font-size: 12px; line-height: 1.4; color: var(--text-muted); background: var(--bg3); border: 1px solid var(--border-bright); padding: 6px 11px; border-radius: 999px; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.35); opacity: 0; transform: translateX(8px); transition: opacity 0.22s ease, transform 0.22s ease; pointer-events: none; }
+  .fish-sign-tip b { color: var(--accent3); font-weight: 600; }
+  .fish-sign-emoji { font-size: 26px; opacity: 0.55; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); transition: opacity 0.22s ease, transform 0.22s ease; }
+  .fish-sign:hover .fish-sign-tip { opacity: 1; transform: translateX(0); }
+  .fish-sign:hover .fish-sign-emoji { opacity: 1; transform: translateY(-2px) scale(1.08); }
+
+:root { --text-muted:#a0acbc; --text-dim:#96a2b2; }
+html{scroll-behavior:smooth;scroll-padding-top:32px}
+body{font-size:16px;line-height:1.85;overflow-wrap:break-word}
+.shell{max-width:1600px;margin:0 auto}
+.sidebar{width:272px;padding-top:35px}
+.brand{display:block;color:var(--text);text-decoration:none;font-size:23px;font-weight:700;line-height:1.3;margin-top:12px;letter-spacing:-.7px}
+.brand span{font-size:23px}.edition{font-size:13px;color:var(--text-muted);margin-top:16px}
+.nav-label.group{display:block;font-size:14px;letter-spacing:0;text-transform:none;color:#d2dbe7;text-decoration:none;line-height:1.7;margin:8px 0}
+.alias{font-size:12px;color:var(--text-muted);display:block}.nav-item{font-size:15px;padding-top:9px;padding-bottom:9px}.blue{background:var(--accent)}.green{background:var(--accent2)}.purple{background:var(--accent3)}.orange{background:var(--accent4)}
+.subnav{display:flex;gap:12px;padding:8px 25px 4px;font-size:12px}.subnav a{color:var(--text-muted);text-decoration:none}.subnav a:hover{color:var(--accent)}
+.sidebar-footer{margin:32px 24px;border-top:1px solid var(--border);padding-top:22px;color:var(--text-muted);font-size:13px}
+.main{padding:48px 64px 80px;max-width:1120px;min-width:0;flex:1;width:calc(100% - 272px)}
+.page-intro{padding-bottom:34px;border-bottom:1px solid var(--border);margin-bottom:42px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:14px}
+.page-intro h1{font-size:clamp(29px,3vw,40px);letter-spacing:-1.2px;line-height:1.3;margin-bottom:18px}
+.page-intro>p:not(.eyebrow){color:#b5c0cf;font-size:16px;line-height:1.9}
+.language-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 27px}
+.language-tab{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:14px;font-weight:500;text-decoration:none;color:var(--text-muted);background:var(--bg2);min-height:40px}
+.language-tab:hover{border-color:var(--accent);color:var(--text)}.language-tab.selected{border-color:var(--accent);color:#b6d9ff;background:#152c47}
+.feedback{border-top:1px solid var(--border);margin-top:55px;padding-top:30px}.feedback h2{font-size:20px;line-height:1.6;margin-bottom:12px}.feedback p{margin-bottom:15px;color:#bdc8d7}.feedback-link{display:inline-block;color:#a4cfff;border:1px solid #365575;border-radius:6px;padding:8px 15px;text-decoration:none;font-size:14px}.feedback-link:hover{background:#152c47}.feedback .translation-note{margin-top:23px;font-size:14px;line-height:1.9;color:var(--text-muted)}
+html[lang="ja"] body{font-family:'Noto Sans JP','Yu Gothic','Meiryo',sans-serif}html[lang="en"] body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+html[lang="en"] .nav-item,html[lang="ja"] .nav-item{line-height:1.6}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}.meta span{font-size:12px;border:1px solid var(--border);padding:2px 10px;border-radius:5px;color:var(--text-muted)}
+article h2.level-1{font-size:26px;line-height:1.5;letter-spacing:-.6px;margin:65px 0 21px;padding-top:30px;border-top:1px solid var(--border)}
+article h2.level-1:first-child{margin-top:0;padding-top:0;border:0}
+article h3.level-2{font-size:24px;line-height:1.45;letter-spacing:-.5px;margin:50px 0 21px;padding-left:14px;border-left:4px solid var(--accent)}
+#background{border-color:var(--accent2)}#chibi{border-color:var(--accent3)}#principle,#format,#services{border-color:var(--accent4)}
+article h4{font-size:18px;margin:30px 0 13px;line-height:1.6}article h5{font-size:19px;color:var(--accent);margin:38px 0 16px;line-height:1.65}
+article p{margin:0 0 18px}article ul,article ol{margin:0 0 22px;padding-left:24px}article li{margin:7px 0}article strong{font-weight:700;color:#f0f5fc}
+article a{color:#79b8ff;text-underline-offset:4px;word-break:break-word}
+article pre{font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;line-height:1.8;background:#111823;border:1px solid var(--border);border-radius:8px;padding:22px 24px;overflow:auto;margin:22px 0;white-space:pre;max-width:100%;tab-size:2}
+article pre code{padding:0;background:none;color:#cbd9eb;font-size:inherit;white-space:pre}
+article :not(pre)>code{font-size:.87em;background:#202b3b;color:#bad7ff;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+article blockquote{border-left:3px solid var(--accent3);background:rgba(210,168,255,.055);padding:18px 22px;margin:22px 0;color:#c7d0df;border-radius:0 7px 7px 0}article blockquote p:last-child{margin:0}
+article figure{margin:28px 0 30px;border:1px solid var(--border);background:#161b22;border-radius:10px;overflow:hidden}
+article figure img{display:block;width:100%;height:auto;margin:0;padding:0}article figure:first-of-type img{padding:18px}
+article figcaption{font-size:13px;line-height:1.8;color:var(--text-muted);padding:17px 20px;border-top:1px solid var(--border)}
+.table-scroll{width:100%;overflow-x:auto;margin:22px 0 28px;border:1px solid var(--border);border-radius:8px}article table{width:100%;border-collapse:collapse;font-size:14px;margin:0}article th{font-size:13px;background:#1c2532;color:#e1e8f1;text-align:left;font-weight:600;white-space:nowrap}article td,article th{padding:13px 15px;border-bottom:1px solid var(--border);vertical-align:top}article tr:last-child td{border-bottom:0}article td{min-width:100px}article td:last-child{min-width:220px}article td:first-child{min-width:125px}
+article details{margin:22px 0 32px;padding:0 20px;background:#141b26;border:1px solid var(--border);border-radius:8px}article summary{padding:14px 0;color:var(--text-muted);cursor:pointer;font-size:13px;line-height:1.7}article summary small{font-size:13px}article details[open]{padding-bottom:14px}article details[open] summary{border-bottom:1px solid var(--border);margin-bottom:20px}article details h4{font-size:17px}
+.fish-sign{right:22px;bottom:20px;padding:8px}.fish-sign:focus-visible .fish-sign-tip{opacity:1;transform:none}.fish-sign:focus-visible .fish-sign-emoji{opacity:1}.fish-sign-emoji{font-size:29px}.fish-sign-tip{font-size:12px}
+.skip{position:fixed;left:12px;top:-80px;z-index:100;background:var(--accent);color:#0d1117;padding:8px 14px}.skip:focus{top:12px}
+a:focus-visible,summary:focus-visible,.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.end-note{font-size:13px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:24px;margin-top:55px;display:flex;justify-content:space-between;gap:20px;padding-right:36px}.end-note a{color:var(--accent);text-decoration:none}
+.mobile-toc{display:none}
+@media(max-width:1000px){.main{padding:36px 32px 70px}.sidebar{width:242px}.brand{font-size:21px}}
+@media(max-width:760px){.shell{display:block}.sidebar{display:none}.main{width:100%;padding:28px 20px 76px}.page-intro{margin-bottom:24px;padding-bottom:24px}.mobile-toc{display:block;border:1px solid var(--border);background:var(--bg2);border-radius:7px;padding:12px 16px;margin-bottom:32px;font-size:14px}.mobile-toc summary{cursor:pointer}.mobile-toc nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:15px}.mobile-toc a{color:var(--accent);text-decoration:none}article h2.level-1{font-size:23px;margin-top:46px}article h3.level-2{font-size:22px;margin-top:38px}article pre{padding:16px;font-size:12px}article details{padding-left:13px;padding-right:13px}article figure:first-of-type img{padding:9px}article figcaption{padding:13px 15px}.fish-sign{right:10px;bottom:12px}.fish-sign-tip{max-width:70vw;white-space:normal}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style></head><body><a class="skip" href="#content">本文へスキップ</a>
+<div class="shell"><aside class="sidebar" aria-label="ページの目次"><div class="sidebar-logo"><div class="product">FROZEN_TUNA’S NOTES</div><a class="brand" href="#top">Fish In<br>the Toolbox <span>🐟</span></a><div class="edition">日本語 · 作業ノート</div></div>
+<nav><div class="nav-section"><a class="nav-label group" href="#gpt">GPTに手伝ってもらうとき</a><a class="nav-item" href="#typography"><span class="nav-dot blue"></span>タイポグラフィ</a><a class="nav-item" href="#background"><span class="nav-dot green"></span>背景</a><a class="nav-item" href="#chibi"><span class="nav-dot purple"></span>ちびキャラの配置</a></div><div class="nav-section"><a class="nav-label group" href="#external">プラットフォーム外の<br>サーバーから画像を表示する <span class="alias">（外部画像）</span></a><a class="nav-item" href="#principle"><span class="nav-dot orange"></span>仕組み</a><a class="nav-item" href="#format"><span class="nav-dot orange"></span>表示の書式</a><a class="nav-item" href="#services"><span class="nav-dot orange"></span>利用できるホスティングサービス</a><div class="subnav"><a href="#nsfw-yes">可能</a><a href="#nsfw-no">不可</a><a href="#nsfw-unknown">不明</a></div></div></nav><div class="sidebar-footer">自分で試して、整理して、<br>必要なときに取り出すノート。</div></aside>
+<main id="content" class="main"><header id="top" class="page-intro"><nav class="language-tabs" aria-label="言語を選択"><a class="language-tab" href="../index.html" hreflang="ko" lang="ko">한국어</a><a class="language-tab" href="../en/index.html" hreflang="en" lang="en">English</a><a class="language-tab selected" href="../ja/index.html" hreflang="ja" lang="ja" aria-current="page">日本語</a></nav><p class="eyebrow">AI · VISUALS · IMAGE HOSTING</p><h1>Fish In the Toolbox</h1><p>大げさな目的があるわけではありません。共有したいけれど、StoryEngineのガイドで扱うには少しなじまない話を、こちらに分けてまとめました。<br>一人でも多くの方のお役に立てたらうれしいです。</p><div class="meta"><span>日本語</span><span>観察・実際の利用に基づくノート</span><span>2026.09.13</span></div></header>
+<details class="mobile-toc"><summary>目次を開く</summary><nav><a href="#typography">タイポグラフィ</a><a href="#background">背景</a><a href="#chibi">ちびキャラの配置</a><a href="#principle">仕組み</a><a href="#format">表示の書式</a><a href="#services">利用できるホスティングサービス</a></nav></details><article><h2 id="gpt" class="level-1">GPTに手伝ってもらうとき</h2>
+<p>GPTに文字のデザインや背景、ちびキャラの配置を頼むとき、入力をどう整理するかをまとめたノートです。実際の作業で、比較的意図が伝わりやすかった構成を集めています。</p>
+<p>画像生成全般の「正解集」ではありません。結果にはばらつきがあり、ここで紹介する方法も作業を通じた観察と例です。文言や条件は、必要なところを置き換えて使ってください。</p>
+<h3 id="typography" class="level-2">タイポグラフィ</h3>
+<p>文言だけを渡すよりも、正確な文字列、改行、配置、文字のスタイル、装飾の範囲を分けて指定すると、結果を確認しやすくなりました。</p>
+<h4 id="note-1" class="level-3">最初に決めること</h4>
+<ul>
+<li><strong>文字列：</strong> 入れたい文言を正確に書きます。</li>
+<li><strong>行とブロック：</strong> どこで改行し、どの言葉を大きく見せるかを決めます。</li>
+<li><strong>優先順位：</strong> 文字を先に読ませたいのか、添えたキャラクターを先に見せたいのかを決めます。</li>
+<li><strong>文字のスタイル：</strong> 塗り、縁取り、太さ、変形をどこまで許すかを指定します。</li>
+<li><strong>装飾：</strong> 種類に加えて、数や密度にも上限を設けます。</li>
+<li><strong>文字列の保持：</strong> 表記を変えたり、言葉を足したりしないように伝えます。</li>
+</ul>
+<h4 id="note-2" class="level-3">基本の入力例</h4>
+<details class="code-example"><summary>タイポグラフィの入力例を見る</summary><pre><code class="language-text"># Typography Priority
+* text is the primary focal point
+* maintain high legibility
+* decorative elements remain secondary
+
+# Text Content
+First line: `Welcome`
+Second line: `Library`
+
+# Layout
+* centered two-line composition
+* first line above second line
+* clear spacing between lines
+* no overlapping decorations
+
+# Letter Style
+* white fill
+* light green outline
+* bold rounded sticker lettering
+* clean readable shapes
+
+# Decoration
+* idol fan-sign sticker atmosphere
+* a few small music notes, sparkles, and hearts
+* keep decorations sparse and outside the lettering
+* no extra ribbons or decorative frames
+* restrained glow and drop shadows
+
+# Background
+* transparent background
+
+# Text Preservation
+* keep all English text exactly as written
+* do not alter spelling
+* do not add extra letters or words
+</code></pre></details>
+<h4 id="note-3" class="level-3">長いタイトルは見た目のまとまりで分ける</h4>
+<p>長い文をひとかたまりで渡すより、行と強調部分を分けたほうが読みやすい結果になりました。たとえば、次のように配置します。</p>
+<details class="code-example"><summary>文字ブロックの配置例を見る</summary><pre><code class="language-text">[ GPT한테      ] [ 짬때리기 ]
+[ 비주얼라이즈 ] [          ]
+</code></pre></details>
+<p>左は2行、右は左の2行分の高さにまたがる大きな言葉、と指定します。基本色と差し色を1色ずつ使い、装飾は文字の外側に少なめに置きます。ここでは実際の結果と対応させるため、韓国語の文字列をそのまま残しています。</p>
+<figure><img loading="lazy" decoding="async" src="../assets/images/typography-block-example.png" alt="左に白い韓国語の文字を2行、右に大きな黄緑色の文字を配置したステッカー風タイポグラフィ"><figcaption>実際の作業で得られた結果例。左の2行と右の大きな言葉が、ひとつのまとまりとして読めます。星やハートは文字の外側にあります。ブロック配置を示す例であり、装飾を抑える条件がすべて守られた例ではありません。</figcaption></figure>
+<h4 id="note-4" class="level-3">結果を見て調整すること</h4>
+<p>表記や改行が合っていても、リボン、光彩、大きな影、アイコンなどが追加されることがありました。装飾の種類だけでなく、「少なめに」「文字の外側に」「全体の輪郭を大きく広げない」といった範囲も指定してみてください。</p>
+<p>強いスタイルや多くの色を指定すると、文字そのものが装飾のようになることもありました。読みにくいときは装飾と色数を減らし、まず文字列を確認します。文字列を保持するよう頼んでも保証にはならないので、完成画像の表記は自分でも確認してください。</p>
+<h3 id="background" class="level-2">背景</h3>
+<p>背景がほしいときは、場所の名前だけでなく、視点、奥行き、光、描き込みの量を分けて伝えると意図を説明しやすくなりました。ここではキャラクターの外見・服装・ポーズを除き、背景の入力方法だけを扱います。</p>
+<h4 id="note-5" class="level-3">短いメモから始める</h4>
+<p>まずは使い慣れた言葉で場面を簡単に整理し、必要に応じて項目ごとの文に広げます。以下の場所や色は、置き換えて使うための例です。</p>
+<details class="code-example"><summary>背景を整理する短いメモを見る</summary><pre><code class="language-text">用途：後から文字や画像を重ねる背景
+場所：静かな田舎の上り坂
+時間：宵の口
+視点：目の高さから道を見る
+空間：前景・中景・遠景を分け、遠いほどコントラストと彩度を下げる
+画風：現代のアニメ風、フラットな色と単純なセル塗り
+空：地平線付近は紫、上へ行くほど暗く
+光：空からの穏やかな環境光、左奥に街灯を1つ
+密度：まばらな風景、中央に複雑な物を置かない
+制限：追加の街灯・装飾光・強いグローなし
+</code></pre></details>
+<h4 id="note-6" class="level-3">入力を分ける目安</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="表。必要に応じて横にスクロールできます"><table>
+<thead>
+<tr>
+<th>項目</th>
+<th>決める内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用途と構図</td>
+<td>風景自体を見せるのか、別の要素を重ねる背景なのか。どこを空けるか</td>
+</tr>
+<tr>
+<td>場所と時間</td>
+<td>地形、建物や物の位置、時間帯、雰囲気</td>
+</tr>
+<tr>
+<td>カメラ</td>
+<td>目の高さ・見下ろし・見上げ、見る方向、距離、遠近感の強さ</td>
+</tr>
+<tr>
+<td>空間</td>
+<td>前景・中景・遠景、距離による大きさ・コントラスト・彩度の変化</td>
+</tr>
+<tr>
+<td>画風</td>
+<td>時代感、線、フラットな色、セル塗り、表面の描き込み</td>
+</tr>
+<tr>
+<td>照明</td>
+<td>主光と環境光の役割、見える人工光源の数と位置、追加効果の上限</td>
+</tr>
+<tr>
+<td>色</td>
+<td>主な色と差し色、明暗差、遠景の彩度</td>
+</tr>
+<tr>
+<td>動き</td>
+<td>風向きと強さ、草や布など周囲の要素の反応</td>
+</tr>
+<tr>
+<td>質感</td>
+<td>道・壁・水などの粗さ、つやの有無、光の反射</td>
+</tr>
+<tr>
+<td>描き込みの量</td>
+<td>入れる物、空けておく場所、省く装飾や細部</td>
+</tr>
+</tbody></table></div>
+<h4 id="note-7" class="level-3">遠近感を2つに分ける</h4>
+<p><strong>幾何学的な遠近法</strong>は、遠くの物ほど小さくなること、道の収束、建物の並びなど、空間の形を決めます。</p>
+<p><strong>空気遠近法</strong>は、距離に応じたコントラストや彩度の低下、薄い霞など、奥行きの見せ方を決めます。「遠近法を使って」に加えて、遠くをどう見せたいかを書きます。</p>
+<h4 id="note-8" class="level-3">画風と照明は、もう少し具体的に</h4>
+<p><code>anime style</code>に、時代感、色の塗り方、陰影、表面の描き込み具合を加えてみてください。フラットにしたいなら、<code>flat coloring</code>、<code>clean cel shading</code>、<code>simple shadow shapes</code>のように、求める状態を指定できます。</p>
+<p>照明では、<strong>主光源が1つであること</strong>と、<strong>画面に見える人工光源が1つであること</strong>を区別します。空からの環境光と街灯がある場面なら、それぞれの役割を書きます。街灯の数が大切なら「場面全体で見える人工光源は正確に1つ」と指定し、結果でも確認します。</p>
+<h4 id="note-9" class="level-3">背景だけを作る入力例</h4>
+<p>元の田舎道の場面を、背景だけ生成する用途に合わせて編集した例です。下には実際の作業で得られた関連画像も載せています。編集後の入力文と、この画像の生成に使った入力文が完全に同じかどうかは確認していません。</p>
+<details class="code-example"><summary>背景の入力例を見る</summary><pre><code class="language-text"># Purpose
+* background-only image, with no people or characters
+* leave a quiet central area for a later text or image overlay
+
+# Background
+## Art Style
+* modern anime style
+* flat coloring and clean cel shading
+* simple shadow shapes
+* restrained surface detail and reduced painterly rendering
+
+## Field Information
+* a quiet uphill rural road at early night
+* sparse countryside surroundings
+* purple near the horizon, with the sky darkening toward the top
+* one distant streetlight on the left
+
+## Spatial Structure
+* consistent perspective and object scale with distance
+* clear foreground, midground, and background separation
+* distant objects gradually lose contrast and saturation
+* subtle distance haze
+
+# Camera and Composition
+* eye-level view looking along the uphill road
+* moderate perspective
+* keep the central area uncluttered
+* sparse foreground objects
+
+# Lighting
+* soft ambient evening light from the sky
+* exactly one visible artificial light source in the entire scene:
+  the distant streetlight on the left
+* the streetlight casts a small, restrained pool of light nearby
+* shadows and reflections follow the stated lighting
+* no additional lamps, spotlights, or decorative light sources
+* restrained glow and highlights
+
+# Color
+* a controlled palette with purple near the horizon
+* restrained saturation in distant scenery
+* gentle contrast in the central overlay area
+
+# Material Response
+* the dry road and surrounding ground remain mostly matte
+* subtle reflections consistent with the scene lighting
+
+# Overall Direction
+* calm, quiet rural atmosphere
+* controlled environmental detail
+* keep the open central area free of added decorations
+</code></pre></details>
+<figure><img loading="lazy" decoding="async" src="../assets/images/rural-evening-background-example.png" alt="紫色の宵の空の下にある田舎の上り坂。左に街灯が1つ、右の遠景に山と集落が見える背景"><figcaption>実際の作業で得られた背景の例。上り坂、左の街灯、地平線近くの紫色、重なって見える遠くの山に注目してください。手前の道と遠景にはコントラストの差があります。道・草木・集落には細かな描写が残っているので、もっと簡素にしたいときは、その場所を個別に指定できます。</figcaption></figure>
+<h4 id="note-10" class="level-3">結果を見て調整すること</h4>
+<ul>
+<li><strong>風景が複雑すぎる：</strong> 描き込みを減らす場所と、省く物を指定します。</li>
+<li><strong>照明が増えた：</strong> 見える光源の数と位置を改めて書きます。</li>
+<li><strong>立体感やつやが強い：</strong> 単純な陰影、つやを抑えた表面など、求める状態を書きます。</li>
+<li><strong>奥行きが曖昧：</strong> 手前と奥で、大きさ・コントラスト・彩度がどう違うかを説明します。</li>
+<li><strong>風を入れる：</strong> 向きと強さを決め、影響を受ける周囲の要素も書きます。</li>
+</ul>
+<p>禁止事項を長く並べるより、まず求める状態を書き、繰り返し強く出る要素に短い制限を添える形で調整していました。毎回すべての項目を埋める必要はありません。必要な関係や制限から書いてみてください。</p>
+<h3 id="chibi" class="level-2">ちびキャラの配置</h3>
+<p>ここでは細かな頭身や画風よりも、複数のキャラクターの位置と見る順番を扱います。実際に作業していると、顔やシルエットが大きいぶん、配置の不自然さも目につきやすく感じました。</p>
+<h4 id="note-11" class="level-3">何を主役にするか</h4>
+<p>キャラクター、文字、ロゴ、小物を一緒に入れるなら、最初に目に入ってほしいものを決めます。</p>
+<p>キャラクターを主役にするとき：</p>
+<details class="code-example"><summary>キャラクター中心の入力例を見る</summary><pre><code class="language-text"># Priority
+* characters are the primary focal point
+* text remains secondary
+* decorative elements remain supportive
+* character silhouettes remain the strongest visual elements
+</code></pre></details>
+<p>文字を主役にするとき：</p>
+<details class="code-example"><summary>文字中心の入力例を見る</summary><pre><code class="language-text"># Priority
+* text is the primary focal point
+* characters function as supporting decoration
+* text must be the first element the viewer notices
+* character placement guides attention toward the text
+</code></pre></details>
+<h4 id="note-12" class="level-3">人数別の配置例</h4>
+<p>作業の出発点として使いやすかった配置です。どの場面にも当てはまる固定ルールではありません。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="表。必要に応じて横にスクロールできます"><table>
+<thead>
+<tr>
+<th>人数</th>
+<th>位置</th>
+<th>意図する見る順番</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2人</td>
+<td>Aが左、Bが右</td>
+<td>A → B</td>
+</tr>
+<tr>
+<td>3人</td>
+<td>Aが上、Bが左下、Cが右下</td>
+<td>A → B → C</td>
+</tr>
+<tr>
+<td>4人</td>
+<td>Aが左上、Bが右上、Cが左下、Dが右下</td>
+<td>A → B → C → D</td>
+</tr>
+</tbody></table></div>
+<p>シルエットが重なりすぎないようにし、最初に見てほしいキャラクターを指定します。4人なら2×2を基本にするか、場面に合わせて斜めに視線が流れるように決めることもできます。</p>
+<p>3人の配置を文章にした例：</p>
+<details class="code-example"><summary>ちびキャラ配置の入力例を見る</summary><pre><code class="language-text"># Layout
+* three chibi characters in a triangular composition
+* character A at the top
+* character B at the lower left
+* character C at the lower right
+* keep each character silhouette clearly separated
+
+# Reading Order
+* character A should be noticed first
+* the viewer&#39;s eye then moves to character B, then character C
+* keep decorative elements secondary to the characters
+</code></pre></details>
+<h4 id="note-13" class="level-3">結果を見て調整すること</h4>
+<p>華やかでも中心がはっきりしないときは、描き込みを足す前に優先順位を見直します。誰を最初に見せたいか、次にどこへ視線を誘導したいか、文字がその流れを遮っていないかを確認します。</p>
+<h2 id="external" class="level-1">プラットフォーム外のサーバーから画像を表示する（外部画像）</h2>
+<h3 id="principle" class="level-2">仕組み</h3>
+<p>外部画像は、別のサーバーにアップロードしてホスティングした画像を、そのURLで表示する方法です。画像を置くサービスと、表示するプラットフォームは別でもかまいません。</p>
+<p>流れは、<strong>画像をアップロード → 画像URLを取得 → 対応する画像記法でURLを出力 → 画像を表示</strong>です。</p>
+<p>タグを付けると、どの画像を選ぶかのルールを設定できます。この例では扱いやすいように英字と数字を組み合わせ、英字で服装や状況、数字で表情や小物を区別しています。タグは画像を選ぶための識別子で、画像URLと対応させて使います。</p>
+<h3 id="format" class="level-2">表示の書式</h3>
+<p>Markdownの画像記法に対応する環境では、次のように書きます。URLは構造を示すための例なので、実際の画像URLに置き換えてください。一般的なMarkdownでは、URLを引用符で囲みません。</p>
+<pre><code class="language-markdown">![](https://example.com/images/A01.png)
+</code></pre>
+<p>たとえば<code>A</code>を外出着、<code>01</code>を笑顔と決め、その画像に<code>A01</code>を対応させれば、場面のルールではコードを選ぶだけで済みます。ファイル名をコードと同じにするのは管理方法の一例で、必須ではありません。</p>
+<details>
+<summary><small>とことん遊びたい人向けの活用例</small></summary>
+
+<h4 id="note-14" class="level-3">着せ替え — 場面の状態と表情を組み合わせる</h4>
+<blockquote>
+<p><strong>呼び出し形式を直接登録するオプションは、Rplay / StoryEngine / RomanticPlay限定です。</strong> 以下は、一部の機能をオフにして画像の呼び出し形式を登録するオプションを使った例です。この制限はそのオプションに関するもので、外部サーバーの画像をURLで表示する一般的な方法の制限ではありません。</p>
+</blockquote>
+<p>場所・時間・睡眠状態から服装を選び、表情の番号を付けて画像の識別子を作る、実際の活用例です。利用しているプラットフォームでは一部の機能をオフにすると呼び出し形式を登録できるため、そこに画像の選択ルールを重ねています。原文は外部URLを直接出力せず、登録した<code>(tag:)</code>形式を使うものです。必要な設定はプラットフォームによって異なります。</p>
+<p>大切なのは、文が変わるたびに服装を選び直さないことです。現在の服装コード<code>ENV</code>をHUDの状況要約欄<code>🧷</code>に記録し、外出・帰宅・就寝など、状態が切り替わるときだけ再判定します。<code>NUM</code>は表情や小物画像の番号です。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="表。必要に応じて横にスクロールできます"><table>
+<thead>
+<tr>
+<th>服装コード</th>
+<th>選ぶ条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>家の外。時間帯にかかわらず最優先</td>
+</tr>
+<tr>
+<td>C</td>
+<td>家の中でベッドに入り、眠っている・寝入りかけている・目覚めた直後</td>
+</tr>
+<tr>
+<td>D</td>
+<td>家の中で起きていて、夕暮れ・夜・夜明けの時間帯</td>
+</tr>
+<tr>
+<td>B</td>
+<td>家の中で起きていて、朝・正午・午後の時間帯</td>
+</tr>
+</tbody></table></div>
+<p><strong>A → C → D → B</strong>の順に判定し、最初に一致した条件を採用します。以下は実際に使った原文です。実行するC#コードではなく、モデルに渡す指示文です。指示文内の韓国語のHUD項目名も原文のまま残しています。</p>
+<details class="code-example"><summary>着せ替えの入力ルール全文を見る</summary><pre><code class="language-text">2. **Image Cue Rules:**
+   - All image output via `(tag:)` only. Direct URL embedding is strictly forbidden.
+   - Format: `(tag: {ENV}{NUM})` — e.g. `(tag: A3)`
+   - Append at the end of EVERY paragraph and dialogue block.
+   - **ENV Resolution (cascade — evaluate top-down, first match locks):**
+     1. Scene is OUTSIDE the residence                         → A  (holds for any TIME_CTX)
+     2. INSIDE + in bed (sleeping / drifting off / just woke)  → C  (frilled sleep set)
+     3. INSIDE + awake + TIME_CTX ∈ {DUSK, NIGHT, DAWN}        → D  (cozy hooded loungewear)
+     4. INSIDE + awake + TIME_CTX ∈ {MORNING, NOON, AFTERNOON} → B  (daytime home casual)
+
+   - **TIME_CTX gate:**
+     • C (sleep) is bound to the in-bed state, valid at any tick but realistically
+       only fires around {DUSK, NIGHT, DAWN}.
+     • D (lounge) is ELIGIBLE ONLY when awake at {DUSK, NIGHT, DAWN}.
+     • B never fires at {NIGHT, DAWN} unless the day has clearly restarted.
+     • A overrides time entirely — outdoors is always A.
+
+   - **ENV Persistence (anti-flicker · HUD-anchored):**
+     ENV is scene state, NOT a per-line choice, and its standing value
+     is STORED in the HUD (상황 요약 line, 🧷).
+
+     Each turn, resolve ENV in this order:
+       (1) READ the previous 🧷 value from the most recent HUD. This is
+           the current ENV unless something below overrides it.
+       (2) Check for a boundary crossing since that value was written:
+             leaves / enters residence        → A ↔ (B|C|D)
+             gets into bed                     → C
+             gets out of bed, still cozy       → D
+             new day starts / dresses          → B (or A if heading out)
+           Only a LOCATION boundary or a TIME_CTX advance that crosses one
+           of the cascade lines may change ENV.
+       (3) If a boundary was crossed, re-run the top-down cascade to get
+           the new letter. If NOT, KEEP the previous 🧷 value verbatim.
+       (4) Write the resulting letter back to 🧷 in this turn&#39;s HUD.
+
+     Within a single response spanning multiple paragraphs, ENV does NOT
+     change unless the prose itself crosses a boundary; do not re-evaluate
+     per paragraph. When ambiguous at any step, KEEP the previous 🧷 value.
+
+     The HUD 🧷 is the single source of truth for current ENV. If prose and
+     🧷 ever disagree, 🧷 wins and the prose is treated as the error.
+
+3. **Tag Index:**
+   EMOTION:
+   [Daily Tag Codes]
+01_Smile|02_light_smile|03_angry|04_pout|05_hurt|06_disappointed|07_sad|08_fear|09_irritated|10_sulk|11_contempt|12_frustrated|13_overwhelmed|14_unhinged|15_expressionless
+
+   PROP:
+17_eating_icecream_solo...
+
+4. **Dialogue Rule:**
+   - Format: `[Character Name]: &quot;Dialogue&quot; (tag: {ENV}{NUM})`
+   - Narrative paragraphs for actions/thoughts ONLY. `(tag: {ENV}{NUM})`
+</code></pre></details>
+<h4 id="note-15" class="level-3">同じ選択ルールを外部画像の出力に使う</h4>
+<p>原文では、最後に<code>(tag: A3)</code>のように出力する指定になっています。外部画像のURLを直接出力する場合は、服装・表情の選択とHUDでの状態保持はそのままにし、最後の出力をMarkdownの画像記法に合わせます。</p>
+<details class="code-example"><summary>画像を選ぶ流れを見る</summary><pre><code class="language-text">場所・時間・睡眠状態 → 服装コードENVを決める
+表情・小物 → 番号NUMを決める
+ENV + NUM → 対応する画像URLを選ぶ
+![](画像URL)を出力
+</code></pre></details>
+<p>たとえば画像を<code>A01.png</code>のような名前で整理しているなら、<code>A01</code>に対応する実際の画像URLを<code>![](...)</code>の中に入れます。英字と数字は自分で決めたルールなので、コード・ファイル名・URLの対応をそろえて管理します。</p>
+<p>原文の「Direct URL embedding is strictly forbidden」と<code>(tag:)</code>の出力指定は、この直接出力の方法に合わせて変更します。指示が食い違わないよう、最後のDialogue Ruleにある出力形式も一緒に変えてください。画像を選ぶルールと表示の書式を分けて考えると応用しやすくなります。</p>
+<p>原文では例に<code>A3</code>、一覧に<code>03_angry</code>と、番号の表記が混在しています。実際に登録したキーに合わせて<code>A3</code>か<code>A03</code>に統一してください。最初のターンには前のHUDがないので、開始場面に合う<code>🧷</code>の初期値を設定しておくとよいでしょう。</p>
+</details>
+
+<h3 id="services" class="level-2">利用できるホスティングサービス</h3>
+<p>NSFW画像のホスティングが許可されているかどうかで分類しています。外部から画像を表示できることと、NSFW画像をアップロードできることは別に確認します。</p>
+<p>以下は、<strong>このノートをまとめた本人の利用情報をもとにした草案</strong>です（2026-09-13）。すべてのサービスについて最新の公式規約を照合した一覧ではありません。「可能」は、あらゆるNSFWコンテンツを無制限に許可するという意味ではありません。</p>
+<h4 id="nsfw-yes" class="level-3">NSFW画像：可能</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="表。必要に応じて横にスクロールできます"><table>
+<thead>
+<tr>
+<th>サービス</th>
+<th>利用情報に基づく分類</th>
+<th>メモ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Catbox (<code>catbox.moe</code>)</td>
+<td>可能</td>
+<td>Litterboxとは別。下の一時保管に関する注意を参照</td>
+</tr>
+<tr>
+<td>Image Chest (<code>imgchest.com</code>)</td>
+<td>可能</td>
+<td>詳細な許可範囲・外部表示の条件は確認予定</td>
+</tr>
+<tr>
+<td>ImgBB (<code>imgbb.com</code>)</td>
+<td><strong>一部可能</strong></td>
+<td>NSFWでの利用例を確認済み。詳しい許可範囲は確認予定</td>
+</tr>
+<tr>
+<td>Postimages (<code>postimages.org</code>)</td>
+<td><strong>一部可能</strong></td>
+<td>許可される内容と禁止される内容の境界は確認予定</td>
+</tr>
+<tr>
+<td>Imgbox (<code>imgbox.com</code>)</td>
+<td>可能</td>
+<td>詳細な許可範囲・外部表示の条件は確認予定</td>
+</tr>
+<tr>
+<td>Pixhost (<code>pixhost.to</code>)</td>
+<td>可能</td>
+<td>詳細な許可範囲・外部表示の条件は確認予定</td>
+</tr>
+<tr>
+<td>Freeimage.host (<code>freeimage.host</code>)</td>
+<td>可能・<strong>画像の外部露出に注意</strong></td>
+<td>アップロード画像が外部に露出する可能性があるとの利用情報。経路や公開設定は確認予定</td>
+</tr>
+<tr>
+<td>Upload.cc (<code>upload.cc</code>)</td>
+<td>可能</td>
+<td>詳細な許可範囲・外部表示の条件は確認予定</td>
+</tr>
+<tr>
+<td>Imgpile (<code>imgpile.com</code>)</td>
+<td>可能</td>
+<td>詳細な許可範囲・外部表示の条件は確認予定</td>
+</tr>
+<tr>
+<td>Cloudflare R2</td>
+<td>可能</td>
+<td>本人の利用例あり。R2オブジェクトストレージについての分類。詳細は下記</td>
+</tr>
+<tr>
+<td>ITIMG.KR (<code>itimg.kr</code>)</td>
+<td>可能</td>
+<td>本人が公式の許可を確認。詳細は下記</td>
+</tr>
+</tbody></table></div>
+<p><strong>CatboxとLitterboxは区別する</strong></p>
+<p>このノートに寄せた利用情報では、<code>litterbox.catbox.moe</code>は一時保管用のサービスです。継続して使うストーリーチャットの画像URLには使わないものとして案内します。正確な保管期間は、公式案内を確認してから追記します。</p>
+<h5 id="itimg" class="level-4">ITIMG.KR — AI・ストーリーチャット向け画像ホスティング</h5>
+<p><a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">ITIMG.KR</a>は、문커뮤니티（ムーンコミュニティ）が運営するAIチャット向けの画像ホスティングサービスです。画像URLが短く、有料プランではURLの値に応じて文字や形が変わる動的SVGに対応しています。公開情報の確認日：<strong>2026-09-13</strong>。<a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">公式サービス案内</a></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="表。必要に応じて横にスクロールできます"><table>
+<thead>
+<tr>
+<th>プラン</th>
+<th>保存容量</th>
+<th>月額通常料金</th>
+<th>現在表示されている月額サブスクリプション料金</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>無料</td>
+<td>10MB</td>
+<td>無料</td>
+<td>—</td>
+</tr>
+<tr>
+<td>プロ</td>
+<td>5GB</td>
+<td>11,000 KRW</td>
+<td>8,800 KRW</td>
+</tr>
+<tr>
+<td>プレミアム</td>
+<td>10GB</td>
+<td>22,000 KRW</td>
+<td>17,600 KRW</td>
+</tr>
+</tbody></table></div>
+<p>公式料金表には通信量無制限と月額サブスクリプションの20%割引が表示されています。同じページの決済案内には月額11,000ウォンの表記も残っているため、実際の適用額は決済画面で確認してください。<a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">公式料金案内</a></p>
+<p><strong>短いURLの構造</strong></p>
+<p>以下は作業時の情報として提供したパスの例です。画像を開いて確認したリンクではなく、構造の説明用です。</p>
+<pre><code class="language-text">https://itimg.kr/27/cb1.webp
+https://itimg.kr/27/a/tr.png
+                   └ フォルダー / ファイル名
+</code></pre>
+<p>利用時の説明では、<code>27</code>は登録順を使ったユーザーの保存領域の識別子です。フォルダーを作ると、その後ろにフォルダー名とファイル名が続きます。公式紹介でも、数字のパスの後ろにファイル名を付ける短いURLが例として示されています。<a href="https://itimg.kr/" target="_blank" rel="noopener noreferrer">公式の使用例</a></p>
+<p><strong>決済と海外対応</strong></p>
+<p>利用・問い合わせ時の経験では、有料決済には韓国発行のカードが必要です。<strong>海外決済は対応予定・時期未定</strong>で、対応が始まったら知らせてもらえるという問い合わせへの回答をもとに記載しています。公開ページでは、海外対応の日程や決済手段の詳細条件は確認できていません。無料プランへの登録にも韓国のカードが必須、という意味ではありません。</p>
+<p><strong>利用経験からの補足</strong></p>
+<ul>
+<li>最後に使ったときはWebPへの変換ができることを確認しています。現在の自動変換の条件や、元ファイルが保持されるかどうかは未確認です。</li>
+<li>提供した情報では、ルナトークの運営者が立ち上げたサービスで、有料利用者向けにSVG作成の支援も受けられます。公式ページで確認できるのは動的SVG機能の有料提供までで、個別の作成支援の範囲・条件は別途確認が必要です。</li>
+</ul>
+<p><strong>NSFWの分類について</strong></p>
+<p><strong>NSFW画像のホスティングは可能です。</strong> 本人が公式の許可を確認したという情報を反映しています（2026-09-13）。アップロードに関する細かな制限は<a href="https://itimg.kr/terms" target="_blank" rel="noopener noreferrer">利用規約</a>も参照してください。</p>
+<h5 id="r2" class="level-4">Cloudflare R2 — アップロードしてURLで表示する</h5>
+<p>実際に使っている外部画像の保存先です。ストーリーチャットの開始メッセージで内部の画像をうまく呼び出せないことがあり、その際にR2へアップロードした画像のURLを使っています。NSFWの分類は利用情報に基づくもので、以下の公式文書での確認は料金と設定に関するものです。</p>
+<p><strong>無料で使える範囲</strong></p>
+<p>2026-09-13に確認した公式文書では、Standardストレージに毎月<strong>10 GB-month</strong>の無料枠があります。おおよそ10GBを1か月間保存する量に相当する単位です。Class A操作は月100万回、Class B操作は月1,000万回まで無料枠に含まれ、インターネットへの転送量には料金がかかりません。保存量や操作回数が無料枠を超えると課金される場合があります。Infrequent Accessにはこの無料枠は適用されません。<a href="https://developers.cloudflare.com/r2/pricing/" target="_blank" rel="noopener noreferrer">R2公式料金</a></p>
+<p>使い始めるときに決済カードの登録・認証を行いました。実際に使う中で、体感できる遅延は経験していません。</p>
+<p><strong>公開URLで試す流れ</strong></p>
+<ol>
+<li>R2でバケット（Bucket、ファイルを入れる保存領域）を作ります。</li>
+<li>使いたい画像をアップロードします。</li>
+<li>バケットの<code>Settings</code> → <code>Public Development URL</code> → <code>Enable</code>へ進みます。</li>
+<li>公開アクセスの案内を確認して有効にすると、<code>r2.dev</code>のURLが発行されます。これによりバケット内のファイルがインターネットからアクセス可能になります。</li>
+<li>そのURLの後ろに画像のパスとファイル名を付けて使います。</li>
+</ol>
+<pre><code class="language-text">https://pub-example-id.r2.dev/folder/A01.webp
+</code></pre>
+<p>上記は書式の例です。実際のバケットURLと、アップロードしたファイルのパスに置き換えてください。</p>
+<p><code>r2.dev</code>は公式には<strong>開発・テスト用で、リクエストのレート制限があるURL</strong>です。本番運用では独自ドメインの接続が案内されています。独自ドメインは好みのURLにするだけでなく、キャッシュなどの機能を使う方法でもあります。独自ドメインの接続は、私自身はまだ試していません。<a href="https://developers.cloudflare.com/r2/buckets/public-buckets/" target="_blank" rel="noopener noreferrer">公開バケットとドメインの案内</a></p>
+<p><strong>CORS Policyを設定するのはどんなとき？</strong></p>
+<p>画像を表示するだけの場合と、Webページのコードが別のオリジンにあるファイルを読み取ったり加工したりする場合を分けて考えます。単純な画像表示では通常CORSの追加設定は不要ですが、画像でもJavaScriptで読み取ったり、キャンバスからピクセルを取り出したりする場合は必要になることがあります。「画像かどうか」ではなく、<strong>どう取得して使うか</strong>が基準です。必要な場合は、バケットの<code>Settings</code> → <code>CORS Policy</code>で、利用するサイトとリクエストの方法に合わせて設定します。<a href="https://developers.cloudflare.com/r2/buckets/cors/" target="_blank" rel="noopener noreferrer">R2のCORS案内</a></p>
+<h4 id="nsfw-no" class="level-3">NSFW画像：不可</h4>
+<div class="table-scroll" tabindex="0" role="region" aria-label="表。必要に応じて横にスクロールできます"><table>
+<thead>
+<tr>
+<th>サービス</th>
+<th>利用情報に基づく分類</th>
+<th>確認事項</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Imgur</td>
+<td>不可</td>
+<td>最新の公式規約における禁止範囲は確認予定</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>不可</td>
+<td>提供された利用情報に基づき、NSFW画像の保存先からは除外</td>
+</tr>
+</tbody></table></div>
+<h4 id="nsfw-unknown" class="level-3">NSFW画像：不明</h4>
+<p>現在この分類に登録したサービスはありません。許可範囲を確認できていないサービスは、ここに分けて記録します。</p>
+<h4 id="note-16" class="level-3">利用環境の観察 — 日本で見かけた組み合わせ</h4>
+<p>私が見かけた日本の利用例では、<strong>Catbox＋Twitter（X）＋個人サーバー</strong>という組み合わせがよくありました。利用動向全体を調べた統計ではなく、個人的な観察メモです。Twitter（X）を長期的な外部画像ホスティング先として勧めたり、安定性を保証したりするものではありません。個人サーバーも、実際の保管方法や運用条件によって異なります。</p>
+</article>
+<section class="feedback" id="feedback" aria-labelledby="feedback-title"><h2 id="feedback-title">間違いのご指摘・フィードバックをお待ちしています</h2><p>内容の誤りや、補足したほうがよい点があれば教えてください。</p><a class="feedback-link" href="https://github.com/BurnFrozenTuna/Fish_In_the_Toolbox/issues" target="_blank" rel="noopener noreferrer">誤り・フィードバックを送る ↗</a><p class="translation-note">韓国語の原文から英語・日本語への翻訳にはLLMの力を借りているため、ときどき不自然な言い回しや、意味が分かりにくい表現があるかもしれません。ごめんなさい！ 気づいたところがあれば、気軽に教えてください。</p></section>
+<footer class="end-note">作業ノート · Frozen_Tuna <a href="#top">ページ先頭へ ↑</a></footer></main></div>
+<a class="fish-sign" href="https://storyengine.live/c/frozen_tuna" target="_blank" rel="noopener noreferrer" aria-label="冷凍ツナのストーリーチャットページを開く"><span class="fish-sign-tip">🐟 作業ノート： <b>冷凍ツナ</b> 🐟</span><span class="fish-sign-emoji" aria-hidden="true">🐟</span></a>
+<script>const links=[...document.querySelectorAll('.nav-item')];
+const targets=links.map(link=>({link,el:document.querySelector(link.getAttribute('href'))}));
+let pending=false;
+function markCurrent(){pending=false;let current=targets[0];for(const target of targets){if(target.el.getBoundingClientRect().top<=110)current=target;}for(const target of targets){const active=target===current;target.link.classList.toggle('active',active);if(active)target.link.setAttribute('aria-current','location');else target.link.removeAttribute('aria-current');}}
+addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(markCurrent)}},{passive:true});
+addEventListener('resize',markCurrent);markCurrent();
+document.querySelectorAll('.mobile-toc a').forEach(a=>a.addEventListener('click',()=>{document.querySelector('.mobile-toc').open=false}));
+function syncLanguageLinks(){for(const a of document.querySelectorAll('.language-tab')){const url=new URL(a.getAttribute('href'),location.href);url.hash=location.hash;a.href=url.href;}}
+addEventListener('hashchange',syncLanguageLinks);syncLanguageLinks();
+document.querySelectorAll('.language-tab').forEach(a=>a.addEventListener('click',()=>{
+ if(window.scrollY<80)return;
+ const headings=[...document.querySelectorAll('article h2[id],article h3[id],article h4[id],article h5[id],#feedback')].filter(el=>el.getClientRects().length);
+ let current;for(const h of headings){if(h.getBoundingClientRect().top<=110)current=h;}
+ if(current){const url=new URL(a.href);url.hash=current.id;a.href=url.href;}
+}));
+function revealHash(){const id=decodeURIComponent(location.hash.slice(1));if(!id)return;const el=document.getElementById(id);if(!el)return;let parent=el.parentElement,changed=false;while(parent){if(parent.tagName==='DETAILS'&&!parent.open){parent.open=true;changed=true;}parent=parent.parentElement;}if(changed)el.scrollIntoView();}
+addEventListener('hashchange',revealHash);revealHash();
+</script></body></html>

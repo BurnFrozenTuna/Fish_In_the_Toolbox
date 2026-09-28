@@ -16,6 +16,14 @@ select.addEventListener('change',()=>{const url=new URL(location.href);url.searc
 document.querySelectorAll('.languages a').forEach(a=>{a.href='?lang='+a.hreflang+'&mode='+(isBatch?'batch':'single');});
 
 if(isBatch){// Export only image chunks. RIFF layout: https://developers.google.com/speed/webp/docs/riff_container
+function assertOpaqueWebp(bytes){
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+ for(let pos=12;pos<bytes.length;){
+  const name=String.fromCharCode(...bytes.subarray(pos,pos+4)),size=view.getUint32(pos+4,true);
+  if(name==='ALPH'||(name==='VP8X'&&(bytes[pos+8]&0x10))||(name==='VP8L'&&(bytes[pos+12]&0x10)))throw Error('encode');
+  pos+=8+size+(size%2);
+ }
+}
 function inspectPng(bytes) {
   const fail = () => { throw new Error('invalid'); };
   if (bytes.length < 33 || ![137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v)) fail();
@@ -92,6 +100,22 @@ class StoreZip {
  }
 }
 
+function setupAlphaOptions(language,onChange=()=>{}){
+ const words={ko:['알파 채널 제거 (투명 배경 없애기)','배경색','켜면 선택한 배경색으로 합쳐서 저장하며, 알파 채널에 숨긴 정보를 제거합니다. 색상 픽셀에 숨긴 정보까지 모두 제거한다고 보장하지는 않습니다. 끄면 투명도를 유지하며 알파 채널의 숨은 정보가 남을 수 있습니다.'],en:['Remove alpha channel (remove transparency)','Background color','When enabled, the image is flattened onto the selected color, removing data stored in the alpha channel. This does not guarantee removal of information hidden in color pixels. When disabled, transparency and hidden alpha data may be retained.'],ja:['アルファチャンネルを削除（透明背景をなくす）','背景色','オンにすると選択した背景色と合成し、アルファチャンネル内の隠し情報を除去します。色の画素に隠された情報の完全な除去は保証しません。オフでは透明度を維持するため、アルファ内の隠し情報が残る可能性があります。']}[language];
+ const box=document.createElement('fieldset');box.style.cssText='margin:24px 0;padding:16px;border:1px solid #526781;border-radius:10px';
+ const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.id='remove-alpha';label.append(check,' '+words[0]);
+ const colorLabel=document.createElement('label'),color=document.createElement('input');color.type='color';color.value='#ffffff';color.id='alpha-background';color.disabled=true;colorLabel.htmlFor=color.id;colorLabel.textContent=words[1];colorLabel.style.cssText='display:block;margin:12px 0 6px';
+ const note=document.createElement('p');note.id='alpha-note';note.className='hint';note.textContent=words[2];check.setAttribute('aria-describedby',note.id);
+ box.append(label,colorLabel,color,note);document.querySelector('.settings').before(box);
+ check.addEventListener('change',()=>{color.disabled=!check.checked;onChange();});color.addEventListener('input',onChange);
+ return {read:()=>({removeAlpha:check.checked,background:color.value}),lock:(locked)=>{check.disabled=locked;color.disabled=locked||!check.checked;}};
+}
+function drawForWebp(canvas,bitmap,options){
+ const ctx=canvas.getContext('2d',{alpha:!options.removeAlpha});if(!ctx)throw Error('encode');
+ if(options.removeAlpha){ctx.fillStyle=options.background;ctx.fillRect(0,0,canvas.width,canvas.height);}
+ ctx.drawImage(bitmap,0,0);
+}
+
 // Shared navigation for standalone image tools.
 {
  const labels={ko:{nav:'도구 바로가기',png:'이미지 변환기',animation:'움짤 용량 줄이기',guide:'SE 가이드',guideHint:'영어·일본어 제공'},en:{nav:'Tool shortcuts',png:'Image converter',animation:'Shrink animated WebP',guide:'SE Guide',guideHint:''},ja:{nav:'ツールへのリンク',png:'画像変換',animation:'アニメWebPの容量削減',guide:'SEガイド',guideHint:''}};
@@ -107,18 +131,19 @@ class StoreZip {
 }
 
 const texts={
- ko:{title:'PNG → WebP · ZIP',back:'← 도구함으로',eyebrow:'이미지 도구 · 03',intro:'100장도 한 번에. 변환한 이미지는 ZIP으로.',privacy:'서버 업로드 없이, 이 브라우저 안에서만 처리해요.',choose:'PNG 여러 장 선택',drop:'PNG 파일들을 여기에 놓아주세요',limit:'선택 장수 제한 없음 · 한 장당 최대 30 MiB / 2,400만 픽셀 · 정지 PNG',quality:'화질',qualityNote:'높을수록 선명하고 파일이 커질 수 있어요. 손실 압축이며 100도 무손실을 뜻하지 않아요.',convert:'변환하고 ZIP 만들기',clear:'비우기 / 취소',save:'ZIP 저장',next:'저장했어요 — 다음 묶음 변환',after:'저장할 ZIP',details:'알아두기',note:'파일을 한 장씩 처리하고, 최대 100개 또는 결과 약 64 MiB마다 ZIP을 나눕니다. 큰 이미지 한 장 때문에 묶음이 64 MiB를 넘을 수 있습니다. ZIP을 저장한 뒤 다음 묶음으로 넘어가면 이전 결과는 메모리에서 해제됩니다. 새 파일 선택·비우기·페이지 이동 전에 ZIP을 저장해주세요. 한 장당 한 변 16,383픽셀 이하이며, 움직이는 PNG는 지원하지 않습니다. 투명 배경과 크기를 유지하고 프롬프트·EXIF·XMP 등 부가 메타데이터는 제외합니다. 파일명 앞의 번호로 같은 이름도 구분합니다. 실패한 파일은 건너뛰고 ZIP 안의 errors.txt에 기록합니다. 원본은 바꾸지 않습니다.',ready:'PNG 파일들을 선택해주세요.',selected:'선택 완료',files:'개',busy:'변환 중',part:'묶음',success:'성공',failure:'건너뜀',done:'전체 처리가 끝났어요. ZIP을 저장해주세요.',paused:'이 묶음의 ZIP을 저장한 뒤 다음 묶음을 진행해주세요.',invalid:'올바른 PNG가 아닙니다.',animated:'움직이는 PNG는 지원하지 않습니다.',large:'한 장당 파일 크기·이미지 크기 제한을 넘었습니다.',encode:'이 브라우저에서 WebP 변환에 실패했습니다.',zip:'ZIP을 만들지 못했어요. 선택한 파일을 줄여서 다시 시도해주세요.',saveFirst:'먼저 ZIP 저장을 눌러주세요. 다운로드가 끝난 뒤 다음 묶음으로 진행하세요.',progress:'일괄 변환 진행률'},
- en:{title:'PNG → WebP · ZIP',back:'← Back to the toolbox',eyebrow:'IMAGE TOOL · 03',intro:'100 images at once. Converted files in a ZIP.',privacy:'Processed only in this browser. No server upload.',choose:'Choose multiple PNGs',drop:'Drop your PNG files here',limit:'No selection count cap · up to 30 MiB / 24 megapixels per still PNG',quality:'Quality',qualityNote:'Higher quality may make larger files. Compression is lossy; 100 does not mean lossless.',convert:'Convert & create ZIP',clear:'Clear / cancel',save:'Save ZIP',next:'Saved — convert next batch',after:'Your ZIP',details:'Good to know',note:'Images are processed one at a time, with a ZIP after up to 100 files or about 64 MiB of output. A large final image can take a batch above 64 MiB. Save each ZIP before continuing; the previous result is released from memory when you continue. Save before selecting new files, clearing or leaving. Each side must be at most 16,383 pixels; animated PNG is unsupported. Transparency and dimensions are retained; extra metadata such as prompts, EXIF and XMP is excluded. Numbered filenames prevent collisions. Failed files are skipped and listed in errors.txt inside the ZIP. Originals stay unchanged.',ready:'Choose your PNG files.',selected:'Selected',files:'files',busy:'Converting',part:'Batch',success:'Converted',failure:'Skipped',done:'All files processed. Save your ZIP.',paused:'Save this ZIP, then continue to the next batch.',invalid:'Not a valid PNG.',animated:'Animated PNG is unsupported.',large:'Exceeds the per-file size or image dimension limit.',encode:'This browser could not convert this file to WebP.',zip:'Could not create ZIP. Try selecting fewer files.',saveFirst:'Click Save ZIP first. Wait for the download to finish before continuing.',progress:'Batch conversion progress'},
- ja:{title:'PNG → WebP · ZIP',back:'← 道具箱に戻る',eyebrow:'画像ツール · 03',intro:'100枚もまとめて。変換した画像はZIPで。',privacy:'サーバーにアップロードせず、このブラウザ内だけで処理します。',choose:'PNGを複数選択',drop:'ここにPNGファイルをまとめてドロップ',limit:'選択枚数の上限なし · 1枚あたり最大30 MiB／2,400万画素 · 静止PNG',quality:'画質',qualityNote:'高画質ほどファイルが大きくなる場合があります。非可逆圧縮のため、100でも可逆圧縮にはなりません。',convert:'変換してZIPを作成',clear:'クリア／中止',save:'ZIPを保存',next:'保存しました — 次のグループへ',after:'保存するZIP',details:'ご利用にあたって',note:'1枚ずつ処理し、最大100ファイルまたは出力約64 MiBごとにZIPを分けます。最後の画像が大きいと64 MiBを超える場合があります。ZIPを保存してから次へ進むと、前の結果をメモリから解放します。新しいファイルの選択・クリア・画面移動の前に保存してください。各辺16,383ピクセル以下で、アニメーションPNGは未対応です。透明部分と画像サイズを維持し、プロンプト・EXIF・XMPなどの付加メタデータを除きます。同じ名前の画像は連番で区別します。失敗したファイルはスキップし、ZIP内のerrors.txtに記録します。元のファイルは変更しません。',ready:'PNGファイルを選択してください。',selected:'選択済み',files:'枚',busy:'変換中',part:'グループ',success:'成功',failure:'スキップ',done:'すべて処理しました。ZIPを保存してください。',paused:'このZIPを保存してから、次のグループに進んでください。',invalid:'有効なPNGではありません。',animated:'アニメーションPNGは未対応です。',large:'1枚あたりの容量・画像サイズ制限を超えています。',encode:'このブラウザではWebPに変換できませんでした。',zip:'ZIPを作れませんでした。選択するファイルを減らしてお試しください。',saveFirst:'まずZIPを保存してください。ダウンロード完了後に次へ進んでください。',progress:'一括変換の進行状況'}
+ ko:{title:'PNG → WebP · ZIP',back:'← 도구함으로',eyebrow:'이미지 도구 · 03',intro:'100장도 한 번에. 변환한 이미지는 ZIP으로.',privacy:'서버 업로드 없이, 이 브라우저 안에서만 처리해요.',choose:'PNG 여러 장 선택',drop:'PNG 파일들을 여기에 놓아주세요',limit:'선택 장수 제한 없음 · 한 장당 최대 30 MiB / 2,400만 픽셀 · 정지 PNG',quality:'화질',qualityNote:'높을수록 선명하고 파일이 커질 수 있어요. 손실 압축이며 100도 무손실을 뜻하지 않아요.',convert:'변환하고 ZIP 만들기',clear:'비우기 / 취소',save:'ZIP 저장',next:'저장했어요 — 다음 묶음 변환',after:'저장할 ZIP',details:'알아두기',note:'파일을 한 장씩 처리하고, 최대 100개 또는 결과 약 64 MiB마다 ZIP을 나눕니다. 큰 이미지 한 장 때문에 묶음이 64 MiB를 넘을 수 있습니다. ZIP을 저장한 뒤 다음 묶음으로 넘어가면 이전 결과는 메모리에서 해제됩니다. 새 파일 선택·비우기·페이지 이동 전에 ZIP을 저장해주세요. 한 장당 한 변 16,383픽셀 이하이며, 움직이는 PNG는 지원하지 않습니다. 알파 채널 제거 옵션을 끄면 투명 배경을 유지합니다. 크기를 유지하고 프롬프트·EXIF·XMP 등 부가 메타데이터는 제외합니다. 파일명 앞의 번호로 같은 이름도 구분합니다. 실패한 파일은 건너뛰고 ZIP 안의 errors.txt에 기록합니다. 원본은 바꾸지 않습니다.',ready:'PNG 파일들을 선택해주세요.',selected:'선택 완료',files:'개',busy:'변환 중',part:'묶음',success:'성공',failure:'건너뜀',done:'전체 처리가 끝났어요. ZIP을 저장해주세요.',paused:'이 묶음의 ZIP을 저장한 뒤 다음 묶음을 진행해주세요.',invalid:'올바른 PNG가 아닙니다.',animated:'움직이는 PNG는 지원하지 않습니다.',large:'한 장당 파일 크기·이미지 크기 제한을 넘었습니다.',encode:'이 브라우저에서 WebP 변환에 실패했습니다.',zip:'ZIP을 만들지 못했어요. 선택한 파일을 줄여서 다시 시도해주세요.',saveFirst:'먼저 ZIP 저장을 눌러주세요. 다운로드가 끝난 뒤 다음 묶음으로 진행하세요.',progress:'일괄 변환 진행률'},
+ en:{title:'PNG → WebP · ZIP',back:'← Back to the toolbox',eyebrow:'IMAGE TOOL · 03',intro:'100 images at once. Converted files in a ZIP.',privacy:'Processed only in this browser. No server upload.',choose:'Choose multiple PNGs',drop:'Drop your PNG files here',limit:'No selection count cap · up to 30 MiB / 24 megapixels per still PNG',quality:'Quality',qualityNote:'Higher quality may make larger files. Compression is lossy; 100 does not mean lossless.',convert:'Convert & create ZIP',clear:'Clear / cancel',save:'Save ZIP',next:'Saved — convert next batch',after:'Your ZIP',details:'Good to know',note:'Images are processed one at a time, with a ZIP after up to 100 files or about 64 MiB of output. A large final image can take a batch above 64 MiB. Save each ZIP before continuing; the previous result is released from memory when you continue. Save before selecting new files, clearing or leaving. Each side must be at most 16,383 pixels; animated PNG is unsupported. Transparency is retained when alpha removal is off. Dimensions are retained; extra metadata such as prompts, EXIF and XMP is excluded. Numbered filenames prevent collisions. Failed files are skipped and listed in errors.txt inside the ZIP. Originals stay unchanged.',ready:'Choose your PNG files.',selected:'Selected',files:'files',busy:'Converting',part:'Batch',success:'Converted',failure:'Skipped',done:'All files processed. Save your ZIP.',paused:'Save this ZIP, then continue to the next batch.',invalid:'Not a valid PNG.',animated:'Animated PNG is unsupported.',large:'Exceeds the per-file size or image dimension limit.',encode:'This browser could not convert this file to WebP.',zip:'Could not create ZIP. Try selecting fewer files.',saveFirst:'Click Save ZIP first. Wait for the download to finish before continuing.',progress:'Batch conversion progress'},
+ ja:{title:'PNG → WebP · ZIP',back:'← 道具箱に戻る',eyebrow:'画像ツール · 03',intro:'100枚もまとめて。変換した画像はZIPで。',privacy:'サーバーにアップロードせず、このブラウザ内だけで処理します。',choose:'PNGを複数選択',drop:'ここにPNGファイルをまとめてドロップ',limit:'選択枚数の上限なし · 1枚あたり最大30 MiB／2,400万画素 · 静止PNG',quality:'画質',qualityNote:'高画質ほどファイルが大きくなる場合があります。非可逆圧縮のため、100でも可逆圧縮にはなりません。',convert:'変換してZIPを作成',clear:'クリア／中止',save:'ZIPを保存',next:'保存しました — 次のグループへ',after:'保存するZIP',details:'ご利用にあたって',note:'1枚ずつ処理し、最大100ファイルまたは出力約64 MiBごとにZIPを分けます。最後の画像が大きいと64 MiBを超える場合があります。ZIPを保存してから次へ進むと、前の結果をメモリから解放します。新しいファイルの選択・クリア・画面移動の前に保存してください。各辺16,383ピクセル以下で、アニメーションPNGは未対応です。アルファ削除がオフの場合、透明部分を維持します。画像サイズを維持し、プロンプト・EXIF・XMPなどの付加メタデータを除きます。同じ名前の画像は連番で区別します。失敗したファイルはスキップし、ZIP内のerrors.txtに記録します。元のファイルは変更しません。',ready:'PNGファイルを選択してください。',selected:'選択済み',files:'枚',busy:'変換中',part:'グループ',success:'成功',failure:'スキップ',done:'すべて処理しました。ZIPを保存してください。',paused:'このZIPを保存してから、次のグループに進んでください。',invalid:'有効なPNGではありません。',animated:'アニメーションPNGは未対応です。',large:'1枚あたりの容量・画像サイズ制限を超えています。',encode:'このブラウザではWebPに変換できませんでした。',zip:'ZIPを作れませんでした。選択するファイルを減らしてお試しください。',saveFirst:'まずZIPを保存してください。ダウンロード完了後に次へ進んでください。',progress:'一括変換の進行状況'}
 };
 const query=new URLSearchParams(location.search).get('lang'),lang=Object.hasOwn(texts,query)?query:'ko',t=texts[lang];
 document.documentElement.lang=lang;document.title=t.title+' · Fish In the Toolbox';document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t[el.dataset.i18n]);
 document.querySelector('#back').href='../../'+(lang==='ko'?'':lang+'/')+'index.html#tools';document.querySelectorAll('.languages a').forEach(a=>{if(a.hreflang===lang)a.setAttribute('aria-current','page');});
 const $=id=>document.getElementById(id),input=$('file'),quality=$('quality'),convert=$('convert'),status=$('status'),progress=$('progress');progress.setAttribute('aria-label',t.progress);
+const alphaOptions=setupAlphaOptions(lang);
 let files=[],index=0,serial=0,part=0,url=null,saved=false,started=false,busy=false,totalGood=0,totalBad=0;
 const say=(key,error=false)=>{status.textContent=t[key]||key;status.classList.toggle('error',error);};
 function clearZip(){if(url)URL.revokeObjectURL(url);url=null;saved=false;$('result').hidden=true;$('download').removeAttribute('href');$('next').disabled=true;}
-function reset(){serial++;clearZip();files=[];index=0;part=0;started=false;busy=false;totalGood=0;totalBad=0;quality.disabled=false;convert.disabled=true;input.value='';progress.hidden=true;$('selection').textContent='';say('ready');}
+function reset(){serial++;clearZip();files=[];index=0;part=0;started=false;busy=false;totalGood=0;totalBad=0;quality.disabled=false;alphaOptions.lock(false);convert.disabled=true;input.value='';progress.hidden=true;$('selection').textContent='';say('ready');}
 function select(selected){const list=Array.from(selected);reset();files=list;if(!files.length)return;convert.disabled=false;$('selection').textContent=t.selected+': '+files.length.toLocaleString()+' '+t.files;say('selected');}
 input.addEventListener('change',()=>select(input.files));$('clear').addEventListener('click',reset);quality.addEventListener('input',()=>{$('quality-value').value=quality.value;});
 $('download').addEventListener('click',()=>{saved=true;$('next').disabled=false;});
@@ -127,7 +152,7 @@ convert.addEventListener('click',run);
 const drop=$('drop');for(const name of ['dragenter','dragover'])drop.addEventListener(name,e=>{e.preventDefault();drop.classList.add('drag');});drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');select(e.dataTransfer.files);});window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
 async function run(){
  if(busy||!files.length||index>=files.length)return;
- const id=++serial,q=Number(quality.value),start=index;clearZip();busy=true;started=true;quality.disabled=true;convert.disabled=true;progress.hidden=false;progress.max=files.length;progress.value=index;
+ const id=++serial,q=Number(quality.value),start=index,alpha=alphaOptions.read();clearZip();busy=true;started=true;quality.disabled=true;alphaOptions.lock(true);convert.disabled=true;progress.hidden=false;progress.max=files.length;progress.value=index;
  const zip=new StoreZip(),errors=[];let good=0,bytes=0;
  try{
   while(index<files.length&&index-start<100&&bytes<64*1048576){
@@ -136,9 +161,9 @@ async function run(){
    try{
     if(file.size>30*1048576)throw Error('large');inspectPng(new Uint8Array(await file.arrayBuffer()));if(id!==serial)return;
     bitmap=await createImageBitmap(file);if(id!==serial)return;canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
-    const ctx=canvas.getContext('2d');if(!ctx)throw Error('encode');ctx.drawImage(bitmap,0,0);
+    drawForWebp(canvas,bitmap,alpha);
     const encoded=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',q/100));if(!encoded||encoded.type!=='image/webp')throw Error('encode');
-    const clean=cleanWebp(new Uint8Array(await encoded.arrayBuffer()));if(id!==serial)return;
+    const clean=cleanWebp(new Uint8Array(await encoded.arrayBuffer()));if(alpha.removeAlpha)assertOpaqueWebp(clean);if(id!==serial)return;
     const stem=file.name.replace(/\.png$/i,'').replace(/[\\/<>:"|?*\x00-\x1f]/g,'_').slice(0,100)||'image';
     zip.add(String(currentIndex+1).padStart(6,'0')+'-'+stem+'-clean.webp',clean);bytes+=clean.length;good++;totalGood++;
    }catch(e){if(id!==serial)return;errors.push(file.name+' — '+(t[e.message]||t.encode));totalBad++;}
@@ -156,6 +181,14 @@ async function run(){
 }
 window.addEventListener('pagehide',reset);say('ready');
 }else{// Export only image chunks. RIFF layout: https://developers.google.com/speed/webp/docs/riff_container
+function assertOpaqueWebp(bytes){
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+ for(let pos=12;pos<bytes.length;){
+  const name=String.fromCharCode(...bytes.subarray(pos,pos+4)),size=view.getUint32(pos+4,true);
+  if(name==='ALPH'||(name==='VP8X'&&(bytes[pos+8]&0x10))||(name==='VP8L'&&(bytes[pos+12]&0x10)))throw Error('encode');
+  pos+=8+size+(size%2);
+ }
+}
 function inspectPng(bytes) {
   const fail = () => { throw new Error('invalid'); };
   if (bytes.length < 33 || ![137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v)) fail();
@@ -207,6 +240,22 @@ function cleanWebp(bytes) {
   return result;
 }
 
+function setupAlphaOptions(language,onChange=()=>{}){
+ const words={ko:['알파 채널 제거 (투명 배경 없애기)','배경색','켜면 선택한 배경색으로 합쳐서 저장하며, 알파 채널에 숨긴 정보를 제거합니다. 색상 픽셀에 숨긴 정보까지 모두 제거한다고 보장하지는 않습니다. 끄면 투명도를 유지하며 알파 채널의 숨은 정보가 남을 수 있습니다.'],en:['Remove alpha channel (remove transparency)','Background color','When enabled, the image is flattened onto the selected color, removing data stored in the alpha channel. This does not guarantee removal of information hidden in color pixels. When disabled, transparency and hidden alpha data may be retained.'],ja:['アルファチャンネルを削除（透明背景をなくす）','背景色','オンにすると選択した背景色と合成し、アルファチャンネル内の隠し情報を除去します。色の画素に隠された情報の完全な除去は保証しません。オフでは透明度を維持するため、アルファ内の隠し情報が残る可能性があります。']}[language];
+ const box=document.createElement('fieldset');box.style.cssText='margin:24px 0;padding:16px;border:1px solid #526781;border-radius:10px';
+ const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.id='remove-alpha';label.append(check,' '+words[0]);
+ const colorLabel=document.createElement('label'),color=document.createElement('input');color.type='color';color.value='#ffffff';color.id='alpha-background';color.disabled=true;colorLabel.htmlFor=color.id;colorLabel.textContent=words[1];colorLabel.style.cssText='display:block;margin:12px 0 6px';
+ const note=document.createElement('p');note.id='alpha-note';note.className='hint';note.textContent=words[2];check.setAttribute('aria-describedby',note.id);
+ box.append(label,colorLabel,color,note);document.querySelector('.settings').before(box);
+ check.addEventListener('change',()=>{color.disabled=!check.checked;onChange();});color.addEventListener('input',onChange);
+ return {read:()=>({removeAlpha:check.checked,background:color.value}),lock:(locked)=>{check.disabled=locked;color.disabled=locked||!check.checked;}};
+}
+function drawForWebp(canvas,bitmap,options){
+ const ctx=canvas.getContext('2d',{alpha:!options.removeAlpha});if(!ctx)throw Error('encode');
+ if(options.removeAlpha){ctx.fillStyle=options.background;ctx.fillRect(0,0,canvas.width,canvas.height);}
+ ctx.drawImage(bitmap,0,0);
+}
+
 // Shared navigation for standalone image tools.
 {
  const labels={ko:{nav:'도구 바로가기',png:'이미지 변환기',animation:'움짤 용량 줄이기',guide:'SE 가이드',guideHint:'영어·일본어 제공'},en:{nav:'Tool shortcuts',png:'Image converter',animation:'Shrink animated WebP',guide:'SE Guide',guideHint:''},ja:{nav:'ツールへのリンク',png:'画像変換',animation:'アニメWebPの容量削減',guide:'SEガイド',guideHint:''}};
@@ -222,9 +271,9 @@ function cleanWebp(bytes) {
 }
 
 const dictionaries={
- ko:{title:'PNG → WebP',back:'← 도구함으로',eyebrow:'이미지 도구 · 01',intro:'메타데이터는 비우고, 이미지만 가져가세요.',privacy:'서버 업로드 없이, 이 브라우저 안에서만 처리해요.',choose:'PNG 선택',drop:'PNG 파일을 여기에 놓아주세요',limit:'한 번에 1장 · 최대 30 MiB / 2,400만 픽셀 · 정지 PNG',quality:'화질',qualityNote:'높을수록 선명하고 파일이 커질 수 있어요. 손실 압축이며 100도 무손실을 뜻하지 않아요.',convert:'메타데이터 제거하고 변환',clear:'비우기',save:'WebP 저장',before:'원본 PNG',after:'변환한 WebP',details:'알아두기',note:'투명 배경과 이미지 크기는 유지합니다. 프롬프트·텍스트·EXIF·XMP·ICC 등 부가 메타데이터는 결과 파일에 넣지 않습니다. 색감은 브라우저 변환에 따라 조금 달라질 수 있어요. 그림에 보이는 글자나 워터마크는 지워지지 않으며, 원본 파일은 바뀌지 않습니다.',ready:'PNG를 선택하면 시작할 수 있어요.',selected:'준비됐어요. 화질을 정하고 변환 버튼을 눌러주세요.',busy:'이미지를 변환하고 메타데이터를 정리하고 있어요…',done:'완료! 미리보기를 확인하고 WebP를 저장하세요.',invalid:'올바른 PNG 파일을 선택해주세요.',animated:'움직이는 PNG(APNG)는 아직 지원하지 않아요. 정지 PNG를 선택해주세요.',large:'파일이 너무 커요. 30 MiB 이하, 2,400만 픽셀 이하, 한 변 16,383픽셀 이하로 선택해주세요.',encode:'이 브라우저에서 WebP로 변환하지 못했어요. 다른 최신 브라우저에서 시도해주세요.',many:'PNG 한 장씩 선택해주세요.',changed:'화질을 바꿨어요. 변환 버튼을 다시 눌러주세요.'},
- en:{title:'PNG → WebP',back:'← Back to the toolbox',eyebrow:'IMAGE TOOL · 01',intro:'Keep the image. Leave the metadata behind.',privacy:'Processed only in this browser. No server upload.',choose:'Choose PNG',drop:'Drop a PNG file here',limit:'One image · up to 30 MiB / 24 megapixels · still PNG',quality:'Quality',qualityNote:'Higher quality may make a larger file. Compression is lossy; 100 does not mean lossless.',convert:'Remove metadata & convert',clear:'Clear',save:'Save WebP',before:'Original PNG',after:'Converted WebP',details:'Good to know',note:'Transparency and image dimensions are preserved. Extra metadata such as prompts, text, EXIF, XMP and ICC is excluded from the output. Browser conversion may slightly change colors. Visible text and watermarks are not removed. Your original file stays unchanged.',ready:'Choose a PNG to start.',selected:'Ready. Choose the quality and press Convert.',busy:'Converting the image and removing metadata…',done:'Done! Check the preview and save your WebP.',invalid:'Please choose a valid PNG file.',animated:'Animated PNG (APNG) is not supported yet. Choose a still PNG.',large:'Too large. Use up to 30 MiB, 24 megapixels and 16,383 pixels per side.',encode:'This browser could not encode WebP. Please try another up-to-date browser.',many:'Please choose one PNG at a time.',changed:'Quality changed. Press Convert again.'},
- ja:{title:'PNG → WebP',back:'← 道具箱に戻る',eyebrow:'画像ツール · 01',intro:'メタデータを除いて、画像だけを持ち帰ろう。',privacy:'サーバーにアップロードせず、このブラウザ内だけで処理します。',choose:'PNGを選択',drop:'ここにPNGファイルをドロップ',limit:'1枚ずつ · 最大30 MiB／2,400万画素 · 静止PNG',quality:'画質',qualityNote:'高画質ほどファイルが大きくなる場合があります。非可逆圧縮のため、100でも可逆圧縮にはなりません。',convert:'メタデータを削除して変換',clear:'クリア',save:'WebPを保存',before:'元のPNG',after:'変換後のWebP',details:'ご利用にあたって',note:'透明な背景と画像サイズを維持します。プロンプト・テキスト・EXIF・XMP・ICCなどの付加メタデータは出力に含めません。ブラウザでの変換により、色が多少変わる場合があります。画像に描かれた文字や透かしは消えません。元のファイルは変更されません。',ready:'PNGを選択すると始められます。',selected:'準備できました。画質を選んで変換してください。',busy:'画像を変換し、メタデータを除去しています…',done:'完了！プレビューを確認してWebPを保存してください。',invalid:'有効なPNGファイルを選択してください。',animated:'アニメーションPNG（APNG）は未対応です。静止PNGを選択してください。',large:'ファイルが大きすぎます。30 MiB以下、2,400万画素以下、各辺16,383ピクセル以下で選択してください。',encode:'このブラウザではWebPに変換できませんでした。別の最新ブラウザでお試しください。',many:'PNGを1枚ずつ選択してください。',changed:'画質を変更しました。もう一度変換してください。'}
+ ko:{title:'PNG → WebP',back:'← 도구함으로',eyebrow:'이미지 도구 · 01',intro:'메타데이터는 비우고, 이미지만 가져가세요.',privacy:'서버 업로드 없이, 이 브라우저 안에서만 처리해요.',choose:'PNG 선택',drop:'PNG 파일을 여기에 놓아주세요',limit:'한 번에 1장 · 최대 30 MiB / 2,400만 픽셀 · 정지 PNG',quality:'화질',qualityNote:'높을수록 선명하고 파일이 커질 수 있어요. 손실 압축이며 100도 무손실을 뜻하지 않아요.',convert:'메타데이터 제거하고 변환',clear:'비우기',save:'WebP 저장',before:'원본 PNG',after:'변환한 WebP',details:'알아두기',note:'알파 채널 제거 옵션을 끄면 투명 배경을 유지합니다. 이미지 크기는 유지합니다. 프롬프트·텍스트·EXIF·XMP·ICC 등 부가 메타데이터는 결과 파일에 넣지 않습니다. 색감은 브라우저 변환에 따라 조금 달라질 수 있어요. 그림에 보이는 글자나 워터마크는 지워지지 않으며, 원본 파일은 바뀌지 않습니다.',ready:'PNG를 선택하면 시작할 수 있어요.',selected:'준비됐어요. 화질을 정하고 변환 버튼을 눌러주세요.',busy:'이미지를 변환하고 메타데이터를 정리하고 있어요…',done:'완료! 미리보기를 확인하고 WebP를 저장하세요.',invalid:'올바른 PNG 파일을 선택해주세요.',animated:'움직이는 PNG(APNG)는 아직 지원하지 않아요. 정지 PNG를 선택해주세요.',large:'파일이 너무 커요. 30 MiB 이하, 2,400만 픽셀 이하, 한 변 16,383픽셀 이하로 선택해주세요.',encode:'이 브라우저에서 WebP로 변환하지 못했어요. 다른 최신 브라우저에서 시도해주세요.',many:'PNG 한 장씩 선택해주세요.',changed:'화질을 바꿨어요. 변환 버튼을 다시 눌러주세요.'},
+ en:{title:'PNG → WebP',back:'← Back to the toolbox',eyebrow:'IMAGE TOOL · 01',intro:'Keep the image. Leave the metadata behind.',privacy:'Processed only in this browser. No server upload.',choose:'Choose PNG',drop:'Drop a PNG file here',limit:'One image · up to 30 MiB / 24 megapixels · still PNG',quality:'Quality',qualityNote:'Higher quality may make a larger file. Compression is lossy; 100 does not mean lossless.',convert:'Remove metadata & convert',clear:'Clear',save:'Save WebP',before:'Original PNG',after:'Converted WebP',details:'Good to know',note:'Transparency is preserved when alpha removal is off. Image dimensions are preserved. Extra metadata such as prompts, text, EXIF, XMP and ICC is excluded from the output. Browser conversion may slightly change colors. Visible text and watermarks are not removed. Your original file stays unchanged.',ready:'Choose a PNG to start.',selected:'Ready. Choose the quality and press Convert.',busy:'Converting the image and removing metadata…',done:'Done! Check the preview and save your WebP.',invalid:'Please choose a valid PNG file.',animated:'Animated PNG (APNG) is not supported yet. Choose a still PNG.',large:'Too large. Use up to 30 MiB, 24 megapixels and 16,383 pixels per side.',encode:'This browser could not encode WebP. Please try another up-to-date browser.',many:'Please choose one PNG at a time.',changed:'Quality changed. Press Convert again.'},
+ ja:{title:'PNG → WebP',back:'← 道具箱に戻る',eyebrow:'画像ツール · 01',intro:'メタデータを除いて、画像だけを持ち帰ろう。',privacy:'サーバーにアップロードせず、このブラウザ内だけで処理します。',choose:'PNGを選択',drop:'ここにPNGファイルをドロップ',limit:'1枚ずつ · 最大30 MiB／2,400万画素 · 静止PNG',quality:'画質',qualityNote:'高画質ほどファイルが大きくなる場合があります。非可逆圧縮のため、100でも可逆圧縮にはなりません。',convert:'メタデータを削除して変換',clear:'クリア',save:'WebPを保存',before:'元のPNG',after:'変換後のWebP',details:'ご利用にあたって',note:'アルファ削除がオフの場合、透明な背景を維持します。画像サイズは維持します。プロンプト・テキスト・EXIF・XMP・ICCなどの付加メタデータは出力に含めません。ブラウザでの変換により、色が多少変わる場合があります。画像に描かれた文字や透かしは消えません。元のファイルは変更されません。',ready:'PNGを選択すると始められます。',selected:'準備できました。画質を選んで変換してください。',busy:'画像を変換し、メタデータを除去しています…',done:'完了！プレビューを確認してWebPを保存してください。',invalid:'有効なPNGファイルを選択してください。',animated:'アニメーションPNG（APNG）は未対応です。静止PNGを選択してください。',large:'ファイルが大きすぎます。30 MiB以下、2,400万画素以下、各辺16,383ピクセル以下で選択してください。',encode:'このブラウザではWebPに変換できませんでした。別の最新ブラウザでお試しください。',many:'PNGを1枚ずつ選択してください。',changed:'画質を変更しました。もう一度変換してください。'}
 };
 const lang=new URLSearchParams(location.search).get('lang');
 const active=Object.hasOwn(dictionaries,lang)?lang:'ko',t=dictionaries[active];
@@ -234,6 +283,7 @@ document.querySelector('#back').href='../../'+(active==='ko'?'':active+'/')+'ind
 for(const a of document.querySelectorAll('.languages a'))if(a.hreflang===active)a.setAttribute('aria-current','page');
 const $=id=>document.getElementById(id);
 const input=$('file'), quality=$('quality'), convert=$('convert'), result=$('result'), status=$('status');
+const alphaOptions=setupAlphaOptions(active,()=>{generation++;clearOutput();convert.disabled=!source;if(source)message('selected');});
 let source=null, sourceUrl=null, outputUrl=null, generation=0;
 function message(key,error=false){status.textContent=t[key]||t.invalid;status.classList.toggle('error',error);}
 function clearOutput(){result.hidden=true;$('output').removeAttribute('src');$('download').removeAttribute('href');if(outputUrl)URL.revokeObjectURL(outputUrl);outputUrl=null;}
@@ -261,15 +311,15 @@ drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag'
 window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
 convert.addEventListener('click',async()=>{
  if(!source)return;
- const id=++generation,current=source,q=Number(quality.value);clearOutput();convert.disabled=true;message('busy');
+ const id=++generation,current=source,q=Number(quality.value),alpha=alphaOptions.read();clearOutput();convert.disabled=true;message('busy');
  let bitmap,canvas;
  try{
   bitmap=await createImageBitmap(current.file);if(id!==generation)return;
   canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
-  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('encode');ctx.drawImage(bitmap,0,0);
+  drawForWebp(canvas,bitmap,alpha);
   const encoded=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',q/100));
   if(!encoded||encoded.type!=='image/webp')throw new Error('encode');
-  const clean=cleanWebp(new Uint8Array(await encoded.arrayBuffer()));
+  const clean=cleanWebp(new Uint8Array(await encoded.arrayBuffer()));if(alpha.removeAlpha)assertOpaqueWebp(clean);
   if(id!==generation)return;
   const blob=new Blob([clean],{type:'image/webp'});outputUrl=URL.createObjectURL(blob);
   $('output').src=outputUrl;$('download').href=outputUrl;$('download').download=current.file.name.replace(/\.png$/i,'')+'-clean.webp';

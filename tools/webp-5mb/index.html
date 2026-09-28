@@ -65,13 +65,7 @@ function packAnimation(frames,width,height,loop){
  document.getElementById('tool-shortcuts').setAttribute('aria-label',words.nav);
  other.textContent='↔ '+(isAnimation?words.png:words.animation);
  other.href='../'+(isAnimation?'png-to-webp':'webp-5mb')+'/index.html?lang='+language;
- const batchLabels={ko:'여러 장 변환 · ZIP',en:'Batch conversion · ZIP',ja:'一括変換 · ZIP'};
- const batch=document.createElement('a');
- if(location.pathname.includes('/png-batch/')){
-  other.textContent='↔ '+words.png;other.href='../png-to-webp/index.html?lang='+language;
-  batch.textContent='↔ '+words.animation;batch.href='../webp-5mb/index.html?lang='+language;
- }else{batch.textContent='↔ '+batchLabels[language];batch.href='../png-batch/index.html?lang='+language;}
- guide.before(batch);
+
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }

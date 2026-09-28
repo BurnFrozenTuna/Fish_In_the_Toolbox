@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'none'; base-uri 'none'; form-action 'none'"><title>PNG → WebP · Fish In the Toolbox</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#e6edf3;background:#0d1117;color-scheme:dark}*{box-sizing:border-box}body{margin:0}main{max-width:980px;margin:auto;padding:28px 24px 60px}a{color:#8fc6ff;text-underline-offset:4px}nav{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.languages{display:flex;gap:12px;font-size:14px}.languages [aria-current]{color:#7ee787;text-decoration-thickness:3px}header{margin:52px 0 28px}.eyebrow{color:#7ee787;font-size:12px;letter-spacing:2px;font-weight:700}h1{font-size:clamp(36px,7vw,60px);letter-spacing:-2px;margin:10px 0}header>p{font-size:18px;color:#bac6d5}.privacy{color:#8ddba3;font-size:14px}.panel{padding:24px;border:1px solid #303b4b;border-radius:16px;background:#151c27}.drop{text-align:center;padding:36px 16px;border:1px dashed #526781;border-radius:12px;background:#101722}.drop.drag,.drop:focus-within{border-color:#7ee787;background:#13251d}.drop p{margin-top:0;font-weight:650}.hint{font-size:13px;color:#9baabd;line-height:1.7}input[type=file]{max-width:100%;font:inherit}input::file-selector-button,button,.download{font:inherit;border-radius:8px;border:1px solid #415775;padding:11px 16px;background:#22334b;color:#e6edf3;cursor:pointer}input::file-selector-button{margin-right:12px}.settings{margin:24px 0;display:flex;align-items:center;gap:16px}.settings input{flex:1;min-width:50px;accent-color:#7ee787}.actions{display:flex;gap:12px;flex-wrap:wrap}#convert,.download{background:#7ee787;color:#102019;border-color:#7ee787;font-weight:750}button:disabled{opacity:.4;cursor:default}#status{min-height:24px;margin:20px 0 0;font-size:14px;color:#b5c6d9}.error{color:#ffa6a6!important}.previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}.preview{min-width:0}h2{font-size:16px}.checker{background-color:#202833;background-image:conic-gradient(#34404e 25%,transparent 0 50%,#34404e 0 75%,transparent 0);background-size:20px 20px;border:1px solid #344052;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:140px}.checker img{display:block;max-width:100%;max-height:400px;object-fit:contain}.info{font-size:13px;color:#b7c4d4;overflow-wrap:anywhere;line-height:1.7}.download{display:inline-block;text-decoration:none;margin-top:4px}details{margin-top:28px;color:#a8b7c9;font-size:14px;line-height:1.8}summary{cursor:pointer}footer{border-top:1px solid #293442;margin-top:36px;padding-top:20px;color:#91a0b2;font-size:13px}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #79b8ff;outline-offset:4px}[hidden]{display:none!important}@media(max-width:600px){main{padding:20px 16px 40px}header{margin-top:36px}.panel{padding:18px}.previews{grid-template-columns:1fr}.actions button{flex:1}.settings{gap:10px}}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:linear-gradient(#06172d33,#06172d55),url('../../assets/images/tool-background-landscape.png') center/cover no-repeat}main{max-width:850px;background:rgba(8,19,34,.78);min-height:100vh;box-shadow:0 0 80px #00172b55}header{margin:32px 0 24px}.panel{background:rgba(12,25,43,.78)}.drop{background:rgba(10,23,41,.55)}@media(orientation:portrait){body::before{background-image:linear-gradient(#06172d33,#06172d55),url('../../assets/images/tool-background-portrait.png')}main{max-width:720px;background:rgba(8,19,34,.72)}}</style></head><body><main><nav><a id="back" href="../../index.html#tools" data-i18n="back">← 도구함으로</a><div class="languages" aria-label="Language"><a href="?lang=ko" hreflang="ko" lang="ko">한국어</a><a href="?lang=en" hreflang="en" lang="en">English</a><a href="?lang=ja" hreflang="ja" lang="ja">日本語</a></div></nav>
+<header><div class="eyebrow" data-i18n="eyebrow"></div><h1 data-i18n="title">PNG → WebP</h1><p data-i18n="intro"></p><div class="privacy" data-i18n="privacy"></div></header>
+<section class="panel"><div class="drop" id="drop"><p data-i18n="drop"></p><label for="file" data-i18n="choose"></label> <input id="file" type="file" accept="image/png,.png"><div class="hint" data-i18n="limit"></div></div>
+<div class="settings"><label for="quality" data-i18n="quality"></label><input id="quality" type="range" min="10" max="100" value="90" step="1" aria-describedby="quality-note"><output id="quality-value" for="quality">90</output></div><p id="quality-note" class="hint" data-i18n="qualityNote"></p>
+<div class="actions"><button id="convert" disabled data-i18n="convert"></button><button id="clear" data-i18n="clear"></button></div><p id="status" role="status" aria-live="polite"></p></section>
+<div class="previews"><section class="preview" id="original" hidden><h2 data-i18n="before"></h2><div class="checker"><img id="source" alt="PNG"></div><p id="source-info" class="info"></p></section><section class="preview" id="result" hidden><h2 data-i18n="after"></h2><div class="checker"><img id="output" alt="WebP"></div><p id="output-info" class="info"></p><a id="download" class="download" data-i18n="save"></a></section></div>
+<details><summary data-i18n="details"></summary><p data-i18n="note"></p></details><noscript>JavaScript를 켜주세요. Please enable JavaScript. JavaScriptを有効にしてください。</noscript><footer>Fish In the Toolbox · <a href="https://storyengine.live/c/frozen_tuna" target="_blank" rel="noopener noreferrer">Frozen_Tuna 🐟</a></footer></main><script type="module">// Export only image chunks. RIFF layout: https://developers.google.com/speed/webp/docs/riff_container
+function inspectPng(bytes) {
+  const fail = () => { throw new Error('invalid'); };
+  if (bytes.length < 33 || ![137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v)) fail();
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let pos=8, width=0, height=0, end=false, data=false;
+  while (pos < bytes.length) {
+    if(pos+12>bytes.length) fail();
+    const size=view.getUint32(pos), name=String.fromCharCode(...bytes.subarray(pos+4,pos+8));
+    if(pos+12+size>bytes.length) fail();
+    if(pos===8 && (name!=='IHDR'||size!==13)) fail();
+    if(name==='IHDR') { if(width||size!==13) fail(); width=view.getUint32(pos+8); height=view.getUint32(pos+12); }
+    if(name==='acTL') throw new Error('animated');
+    if(name==='IDAT') data=true;
+    pos+=size+12;
+    if(name==='IEND') { if(size!==0) fail(); end=true; break; }
+  }
+  if(!end||!data||!width||!height) fail();
+  if(width>16383||height>16383||width*height>24000000) throw new Error('large');
+  return {width,height};
+}
+
+function cleanWebp(bytes) {
+  const text=(a,b)=>String.fromCharCode(...bytes.subarray(a,b));
+  const fail=()=>{throw new Error('encode');};
+  if(bytes.length<20||text(0,4)!=='RIFF'||text(8,12)!=='WEBP') fail();
+  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  const end=view.getUint32(4,true)+8;
+  if(end!==bytes.length) fail();
+  const keep=[]; let pos=12, frames=0;
+  while(pos<end) {
+    if(pos+8>end) fail();
+    const name=text(pos,pos+4),size=view.getUint32(pos+4,true),next=pos+8+size+(size%2);
+    if(next>end) fail();
+    if(name==='ANIM'||name==='ANMF') fail();
+    if(['VP8X','ALPH','VP8 ','VP8L'].includes(name)) {
+      const chunk=bytes.slice(pos,next);
+      if(name==='VP8X') { if(size!==10||(chunk[8]&2)) fail(); chunk[8]&=0x10; chunk.fill(0,9,12); }
+      if(name==='VP8 '||name==='VP8L') frames++;
+      if(size%2)chunk[chunk.length-1]=0;
+      keep.push(chunk);
+    }
+    pos=next;
+  }
+  if(frames!==1)fail();
+  const result=new Uint8Array(12+keep.reduce((sum,c)=>sum+c.length,0));
+  result.set([82,73,70,70,0,0,0,0,87,69,66,80]);
+  new DataView(result.buffer).setUint32(4,result.length-8,true);
+  pos=12; for(const chunk of keep){result.set(chunk,pos);pos+=chunk.length;}
+  return result;
+}
+
+const dictionaries={
+ ko:{title:'PNG → WebP',back:'← 도구함으로',eyebrow:'이미지 도구 · 01',intro:'메타데이터는 비우고, 이미지만 가져가세요.',privacy:'서버 업로드 없이, 이 브라우저 안에서만 처리해요.',choose:'PNG 선택',drop:'PNG 파일을 여기에 놓아주세요',limit:'한 번에 1장 · 최대 30 MiB / 2,400만 픽셀 · 정지 PNG',quality:'화질',qualityNote:'높을수록 선명하고 파일이 커질 수 있어요. 손실 압축이며 100도 무손실을 뜻하지 않아요.',convert:'메타데이터 제거하고 변환',clear:'비우기',save:'WebP 저장',before:'원본 PNG',after:'변환한 WebP',details:'알아두기',note:'투명 배경과 이미지 크기는 유지합니다. 프롬프트·텍스트·EXIF·XMP·ICC 등 부가 메타데이터는 결과 파일에 넣지 않습니다. 색감은 브라우저 변환에 따라 조금 달라질 수 있어요. 그림에 보이는 글자나 워터마크는 지워지지 않으며, 원본 파일은 바뀌지 않습니다.',ready:'PNG를 선택하면 시작할 수 있어요.',selected:'준비됐어요. 화질을 정하고 변환 버튼을 눌러주세요.',busy:'이미지를 변환하고 메타데이터를 정리하고 있어요…',done:'완료! 미리보기를 확인하고 WebP를 저장하세요.',invalid:'올바른 PNG 파일을 선택해주세요.',animated:'움직이는 PNG(APNG)는 아직 지원하지 않아요. 정지 PNG를 선택해주세요.',large:'파일이 너무 커요. 30 MiB 이하, 2,400만 픽셀 이하, 한 변 16,383픽셀 이하로 선택해주세요.',encode:'이 브라우저에서 WebP로 변환하지 못했어요. 다른 최신 브라우저에서 시도해주세요.',many:'PNG 한 장씩 선택해주세요.',changed:'화질을 바꿨어요. 변환 버튼을 다시 눌러주세요.'},
+ en:{title:'PNG → WebP',back:'← Back to the toolbox',eyebrow:'IMAGE TOOL · 01',intro:'Keep the image. Leave the metadata behind.',privacy:'Processed only in this browser. No server upload.',choose:'Choose PNG',drop:'Drop a PNG file here',limit:'One image · up to 30 MiB / 24 megapixels · still PNG',quality:'Quality',qualityNote:'Higher quality may make a larger file. Compression is lossy; 100 does not mean lossless.',convert:'Remove metadata & convert',clear:'Clear',save:'Save WebP',before:'Original PNG',after:'Converted WebP',details:'Good to know',note:'Transparency and image dimensions are preserved. Extra metadata such as prompts, text, EXIF, XMP and ICC is excluded from the output. Browser conversion may slightly change colors. Visible text and watermarks are not removed. Your original file stays unchanged.',ready:'Choose a PNG to start.',selected:'Ready. Choose the quality and press Convert.',busy:'Converting the image and removing metadata…',done:'Done! Check the preview and save your WebP.',invalid:'Please choose a valid PNG file.',animated:'Animated PNG (APNG) is not supported yet. Choose a still PNG.',large:'Too large. Use up to 30 MiB, 24 megapixels and 16,383 pixels per side.',encode:'This browser could not encode WebP. Please try another up-to-date browser.',many:'Please choose one PNG at a time.',changed:'Quality changed. Press Convert again.'},
+ ja:{title:'PNG → WebP',back:'← 道具箱に戻る',eyebrow:'画像ツール · 01',intro:'メタデータを除いて、画像だけを持ち帰ろう。',privacy:'サーバーにアップロードせず、このブラウザ内だけで処理します。',choose:'PNGを選択',drop:'ここにPNGファイルをドロップ',limit:'1枚ずつ · 最大30 MiB／2,400万画素 · 静止PNG',quality:'画質',qualityNote:'高画質ほどファイルが大きくなる場合があります。非可逆圧縮のため、100でも可逆圧縮にはなりません。',convert:'メタデータを削除して変換',clear:'クリア',save:'WebPを保存',before:'元のPNG',after:'変換後のWebP',details:'ご利用にあたって',note:'透明な背景と画像サイズを維持します。プロンプト・テキスト・EXIF・XMP・ICCなどの付加メタデータは出力に含めません。ブラウザでの変換により、色が多少変わる場合があります。画像に描かれた文字や透かしは消えません。元のファイルは変更されません。',ready:'PNGを選択すると始められます。',selected:'準備できました。画質を選んで変換してください。',busy:'画像を変換し、メタデータを除去しています…',done:'完了！プレビューを確認してWebPを保存してください。',invalid:'有効なPNGファイルを選択してください。',animated:'アニメーションPNG（APNG）は未対応です。静止PNGを選択してください。',large:'ファイルが大きすぎます。30 MiB以下、2,400万画素以下、各辺16,383ピクセル以下で選択してください。',encode:'このブラウザではWebPに変換できませんでした。別の最新ブラウザでお試しください。',many:'PNGを1枚ずつ選択してください。',changed:'画質を変更しました。もう一度変換してください。'}
+};
+const lang=new URLSearchParams(location.search).get('lang');
+const active=Object.hasOwn(dictionaries,lang)?lang:'ko',t=dictionaries[active];
+document.documentElement.lang=active;document.title=t.title+' · Fish In the Toolbox';
+for(const el of document.querySelectorAll('[data-i18n]'))el.textContent=t[el.dataset.i18n];
+document.querySelector('#back').href='../../'+(active==='ko'?'':active+'/')+'index.html#tools';
+for(const a of document.querySelectorAll('.languages a'))if(a.hreflang===active)a.setAttribute('aria-current','page');
+const $=id=>document.getElementById(id);
+const input=$('file'), quality=$('quality'), convert=$('convert'), result=$('result'), status=$('status');
+let source=null, sourceUrl=null, outputUrl=null, generation=0;
+function message(key,error=false){status.textContent=t[key]||t.invalid;status.classList.toggle('error',error);}
+function clearOutput(){result.hidden=true;$('output').removeAttribute('src');$('download').removeAttribute('href');if(outputUrl)URL.revokeObjectURL(outputUrl);outputUrl=null;}
+function reset(){generation++;source=null;convert.disabled=true;clearOutput();$('source').removeAttribute('src');if(sourceUrl)URL.revokeObjectURL(sourceUrl);sourceUrl=null;$('original').hidden=true;input.value='';message('ready');}
+function size(bytes){return bytes<1048576?(bytes/1024).toFixed(1)+' KiB':(bytes/1048576).toFixed(2)+' MiB';}
+async function select(files){
+ reset();if(!files.length)return;if(files.length!==1){message('many',true);return;}
+ const file=files[0],id=generation;
+ try{
+  if(file.size>30*1048576)throw new Error('large');
+  const dimensions=inspectPng(new Uint8Array(await file.arrayBuffer()));if(id!==generation)return;
+  source={file,...dimensions};sourceUrl=URL.createObjectURL(file);$('source').src=sourceUrl;
+  $('source-info').textContent=file.name+' · '+dimensions.width+' × '+dimensions.height+' · '+size(file.size);
+  $('original').hidden=false;convert.disabled=false;message('selected');
+ }catch(e){if(id===generation)message(e.message,true);}
+}
+input.addEventListener('change',()=>{const files=Array.from(input.files);select(files);});
+$('clear').addEventListener('click',reset);
+quality.addEventListener('input',()=>{ $('quality-value').value=quality.value; generation++;clearOutput();convert.disabled=!source;if(source)message('changed'); });
+const drop=$('drop');
+for(const name of ['dragenter','dragover'])drop.addEventListener(name,e=>{e.preventDefault();drop.classList.add('drag');});
+drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');select(Array.from(e.dataTransfer.files));});
+// Prevent a missed drop from navigating away and discarding the selected image.
+window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
+convert.addEventListener('click',async()=>{
+ if(!source)return;
+ const id=++generation,current=source,q=Number(quality.value);clearOutput();convert.disabled=true;message('busy');
+ let bitmap,canvas;
+ try{
+  bitmap=await createImageBitmap(current.file);if(id!==generation)return;
+  canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
+  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('encode');ctx.drawImage(bitmap,0,0);
+  const encoded=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',q/100));
+  if(!encoded||encoded.type!=='image/webp')throw new Error('encode');
+  const clean=cleanWebp(new Uint8Array(await encoded.arrayBuffer()));
+  if(id!==generation)return;
+  const blob=new Blob([clean],{type:'image/webp'});outputUrl=URL.createObjectURL(blob);
+  $('output').src=outputUrl;$('download').href=outputUrl;$('download').download=current.file.name.replace(/\.png$/i,'')+'-clean.webp';
+  $('output-info').textContent=bitmap.width+' × '+bitmap.height+' · '+size(blob.size)+' · '+t.quality+' '+q;
+  result.hidden=false;message('done');
+ }catch(e){if(id===generation)message('encode',true);}
+ finally{bitmap?.close();if(canvas){canvas.width=0;canvas.height=0;}if(id===generation)convert.disabled=!source;}
+});
+window.addEventListener('pagehide',reset);message('ready');
+</script></body></html>

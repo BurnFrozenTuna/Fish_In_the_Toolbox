@@ -102,11 +102,13 @@ class StoreZip {
 
 function setupAlphaOptions(language,onChange=()=>{}){
  const words={ko:['알파 채널 제거 (투명 배경 없애기)','배경색','켜면 선택한 배경색으로 합쳐서 저장하며, 알파 채널에 숨긴 정보를 제거합니다. 색상 픽셀에 숨긴 정보까지 모두 제거한다고 보장하지는 않습니다. 끄면 투명도를 유지하며 알파 채널의 숨은 정보가 남을 수 있습니다.'],en:['Remove alpha channel (remove transparency)','Background color','When enabled, the image is flattened onto the selected color, removing data stored in the alpha channel. This does not guarantee removal of information hidden in color pixels. When disabled, transparency and hidden alpha data may be retained.'],ja:['アルファチャンネルを削除（透明背景をなくす）','背景色','オンにすると選択した背景色と合成し、アルファチャンネル内の隠し情報を除去します。色の画素に隠された情報の完全な除去は保証しません。オフでは透明度を維持するため、アルファ内の隠し情報が残る可能性があります。']}[language];
+ const reasons={ko:'왜 제거하나요? NovelAI 등 일부 생성 도구는 프롬프트·생성 설정을 알파 채널(투명도)에 저장하기도 해요. 일반 메타데이터만 지우면 이 정보가 남을 수 있어, 공유 전에 알파 채널도 제거하는 옵션입니다.',en:'Why remove it? Some generators, including NovelAI, can store prompts and generation settings in the alpha (transparency) channel. Removing ordinary metadata may leave this information behind; this option removes the alpha channel before sharing.',ja:'なぜ削除するの？ NovelAIなど一部の生成ツールは、プロンプトや生成設定をアルファチャンネル（透明度）にも保存します。通常のメタデータを削除するだけでは残る場合があるため、共有前にアルファチャンネルも除去するためのオプションです。'};
+ const reason=document.createElement('p');reason.className='hint';reason.textContent=reasons[language];
  const box=document.createElement('fieldset');box.style.cssText='margin:24px 0;padding:16px;border:1px solid #526781;border-radius:10px';
  const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.id='remove-alpha';label.append(check,' '+words[0]);
  const colorLabel=document.createElement('label'),color=document.createElement('input');color.type='color';color.value='#ffffff';color.id='alpha-background';color.disabled=true;colorLabel.htmlFor=color.id;colorLabel.textContent=words[1];colorLabel.style.cssText='display:block;margin:12px 0 6px';
  const note=document.createElement('p');note.id='alpha-note';note.className='hint';note.textContent=words[2];check.setAttribute('aria-describedby',note.id);
- box.append(label,colorLabel,color,note);document.querySelector('.settings').before(box);
+ box.append(label,reason,colorLabel,color,note);document.querySelector('.settings').before(box);
  check.addEventListener('change',()=>{color.disabled=!check.checked;onChange();});color.addEventListener('input',onChange);
  return {read:()=>({removeAlpha:check.checked,background:color.value}),lock:(locked)=>{check.disabled=locked;color.disabled=locked||!check.checked;}};
 }
@@ -242,11 +244,13 @@ function cleanWebp(bytes) {
 
 function setupAlphaOptions(language,onChange=()=>{}){
  const words={ko:['알파 채널 제거 (투명 배경 없애기)','배경색','켜면 선택한 배경색으로 합쳐서 저장하며, 알파 채널에 숨긴 정보를 제거합니다. 색상 픽셀에 숨긴 정보까지 모두 제거한다고 보장하지는 않습니다. 끄면 투명도를 유지하며 알파 채널의 숨은 정보가 남을 수 있습니다.'],en:['Remove alpha channel (remove transparency)','Background color','When enabled, the image is flattened onto the selected color, removing data stored in the alpha channel. This does not guarantee removal of information hidden in color pixels. When disabled, transparency and hidden alpha data may be retained.'],ja:['アルファチャンネルを削除（透明背景をなくす）','背景色','オンにすると選択した背景色と合成し、アルファチャンネル内の隠し情報を除去します。色の画素に隠された情報の完全な除去は保証しません。オフでは透明度を維持するため、アルファ内の隠し情報が残る可能性があります。']}[language];
+ const reasons={ko:'왜 제거하나요? NovelAI 등 일부 생성 도구는 프롬프트·생성 설정을 알파 채널(투명도)에 저장하기도 해요. 일반 메타데이터만 지우면 이 정보가 남을 수 있어, 공유 전에 알파 채널도 제거하는 옵션입니다.',en:'Why remove it? Some generators, including NovelAI, can store prompts and generation settings in the alpha (transparency) channel. Removing ordinary metadata may leave this information behind; this option removes the alpha channel before sharing.',ja:'なぜ削除するの？ NovelAIなど一部の生成ツールは、プロンプトや生成設定をアルファチャンネル（透明度）にも保存します。通常のメタデータを削除するだけでは残る場合があるため、共有前にアルファチャンネルも除去するためのオプションです。'};
+ const reason=document.createElement('p');reason.className='hint';reason.textContent=reasons[language];
  const box=document.createElement('fieldset');box.style.cssText='margin:24px 0;padding:16px;border:1px solid #526781;border-radius:10px';
  const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.id='remove-alpha';label.append(check,' '+words[0]);
  const colorLabel=document.createElement('label'),color=document.createElement('input');color.type='color';color.value='#ffffff';color.id='alpha-background';color.disabled=true;colorLabel.htmlFor=color.id;colorLabel.textContent=words[1];colorLabel.style.cssText='display:block;margin:12px 0 6px';
  const note=document.createElement('p');note.id='alpha-note';note.className='hint';note.textContent=words[2];check.setAttribute('aria-describedby',note.id);
- box.append(label,colorLabel,color,note);document.querySelector('.settings').before(box);
+ box.append(label,reason,colorLabel,color,note);document.querySelector('.settings').before(box);
  check.addEventListener('change',()=>{color.disabled=!check.checked;onChange();});color.addEventListener('input',onChange);
  return {read:()=>({removeAlpha:check.checked,background:color.value}),lock:(locked)=>{check.disabled=locked;color.disabled=locked||!check.checked;}};
 }

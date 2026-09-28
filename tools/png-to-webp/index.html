@@ -2,14 +2,160 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'none'; base-uri 'none'; form-action 'none'"><title>PNG → WebP · Fish In the Toolbox</title>
 <style>
 :root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#e6edf3;background:#0d1117;color-scheme:dark}*{box-sizing:border-box}body{margin:0}main{max-width:980px;margin:auto;padding:28px 24px 60px}a{color:#8fc6ff;text-underline-offset:4px}nav{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.languages{display:flex;gap:12px;font-size:14px}.languages [aria-current]{color:#7ee787;text-decoration-thickness:3px}header{margin:52px 0 28px}.eyebrow{color:#7ee787;font-size:12px;letter-spacing:2px;font-weight:700}h1{font-size:clamp(36px,7vw,60px);letter-spacing:-2px;margin:10px 0}header>p{font-size:18px;color:#bac6d5}.privacy{color:#8ddba3;font-size:14px}.panel{padding:24px;border:1px solid #303b4b;border-radius:16px;background:#151c27}.drop{text-align:center;padding:36px 16px;border:1px dashed #526781;border-radius:12px;background:#101722}.drop.drag,.drop:focus-within{border-color:#7ee787;background:#13251d}.drop p{margin-top:0;font-weight:650}.hint{font-size:13px;color:#9baabd;line-height:1.7}input[type=file]{max-width:100%;font:inherit}input::file-selector-button,button,.download{font:inherit;border-radius:8px;border:1px solid #415775;padding:11px 16px;background:#22334b;color:#e6edf3;cursor:pointer}input::file-selector-button{margin-right:12px}.settings{margin:24px 0;display:flex;align-items:center;gap:16px}.settings input{flex:1;min-width:50px;accent-color:#7ee787}.actions{display:flex;gap:12px;flex-wrap:wrap}#convert,.download{background:#7ee787;color:#102019;border-color:#7ee787;font-weight:750}button:disabled{opacity:.4;cursor:default}#status{min-height:24px;margin:20px 0 0;font-size:14px;color:#b5c6d9}.error{color:#ffa6a6!important}.previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}.preview{min-width:0}h2{font-size:16px}.checker{background-color:#202833;background-image:conic-gradient(#34404e 25%,transparent 0 50%,#34404e 0 75%,transparent 0);background-size:20px 20px;border:1px solid #344052;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:140px}.checker img{display:block;max-width:100%;max-height:400px;object-fit:contain}.info{font-size:13px;color:#b7c4d4;overflow-wrap:anywhere;line-height:1.7}.download{display:inline-block;text-decoration:none;margin-top:4px}details{margin-top:28px;color:#a8b7c9;font-size:14px;line-height:1.8}summary{cursor:pointer}footer{border-top:1px solid #293442;margin-top:36px;padding-top:20px;color:#91a0b2;font-size:13px}a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #79b8ff;outline-offset:4px}[hidden]{display:none!important}@media(max-width:600px){main{padding:20px 16px 40px}header{margin-top:36px}.panel{padding:18px}.previews{grid-template-columns:1fr}.actions button{flex:1}.settings{gap:10px}}
-body::before{content:'';position:fixed;inset:0;z-index:-1;background:linear-gradient(#06172d33,#06172d55),url('../../assets/images/tool-background-landscape-v2.png') center/cover no-repeat}main{max-width:850px;background:rgba(8,19,34,.78);min-height:100vh;box-shadow:0 0 80px #00172b55}header{margin:32px 0 24px}.panel{background:rgba(12,25,43,.78)}.drop{background:rgba(10,23,41,.55)}@media(orientation:portrait){body::before{background-image:linear-gradient(#06172d33,#06172d55),url('../../assets/images/tool-background-portrait-v2.png')}main{max-width:720px;background:rgba(8,19,34,.72)}}.quick-links{justify-content:flex-end;gap:8px;margin-top:16px}.quick-links a{font-size:13px;font-weight:650;text-decoration:none;padding:9px 12px;border:1px solid #506882;border-radius:8px;background:rgba(15,33,52,.85)}.quick-links a:hover{background:#28465e;color:#fff}</style></head><body><main><nav><a id="back" href="../../index.html#tools" data-i18n="back">← 도구함으로</a><div class="languages" aria-label="Language"><a href="?lang=ko" hreflang="ko" lang="ko">한국어</a><a href="?lang=en" hreflang="en" lang="en">English</a><a href="?lang=ja" hreflang="ja" lang="ja">日本語</a></div></nav>
-<nav id="tool-shortcuts" class="quick-links" aria-label="도구 바로가기"><a id="other-tool" href="../webp-5mb/index.html?lang=ko">↔ 움짤 용량 줄이기</a><a id="se-guide-link" href="https://burnfrozentuna.github.io/SE_Guide/" target="_blank" rel="noopener noreferrer">SE 가이드 ↗</a></nav>
-<header><div class="eyebrow" data-i18n="eyebrow"></div><h1 data-i18n="title">PNG → WebP</h1><p data-i18n="intro"></p><div class="privacy" data-i18n="privacy"></div></header>
-<section class="panel"><div class="drop" id="drop"><p data-i18n="drop"></p><label for="file" data-i18n="choose"></label> <input id="file" type="file" accept="image/png,.png"><div class="hint" data-i18n="limit"></div></div>
-<div class="settings"><label for="quality" data-i18n="quality"></label><input id="quality" type="range" min="10" max="100" value="90" step="1" aria-describedby="quality-note"><output id="quality-value" for="quality">90</output></div><p id="quality-note" class="hint" data-i18n="qualityNote"></p>
-<div class="actions"><button id="convert" disabled data-i18n="convert"></button><button id="clear" data-i18n="clear"></button></div><p id="status" role="status" aria-live="polite"></p></section>
-<div class="previews"><section class="preview" id="original" hidden><h2 data-i18n="before"></h2><div class="checker"><img id="source" alt="PNG"></div><p id="source-info" class="info"></p></section><section class="preview" id="result" hidden><h2 data-i18n="after"></h2><div class="checker"><img id="output" alt="WebP"></div><p id="output-info" class="info"></p><a id="download" class="download" data-i18n="save"></a></section></div>
-<details><summary data-i18n="details"></summary><p data-i18n="note"></p></details><noscript>JavaScript를 켜주세요. Please enable JavaScript. JavaScriptを有効にしてください。</noscript><footer>Fish In the Toolbox · <a href="https://storyengine.live/c/frozen_tuna" target="_blank" rel="noopener noreferrer">Frozen_Tuna 🐟</a></footer></main><script type="module">// Export only image chunks. RIFF layout: https://developers.google.com/speed/webp/docs/riff_container
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:linear-gradient(#06172d33,#06172d55),url('../../assets/images/tool-background-landscape-v2.png') center/cover no-repeat}main{max-width:850px;background:rgba(8,19,34,.78);min-height:100vh;box-shadow:0 0 80px #00172b55}header{margin:32px 0 24px}.panel{background:rgba(12,25,43,.78)}.drop{background:rgba(10,23,41,.55)}@media(orientation:portrait){body::before{background-image:linear-gradient(#06172d33,#06172d55),url('../../assets/images/tool-background-portrait-v2.png')}main{max-width:720px;background:rgba(8,19,34,.72)}}.quick-links{justify-content:flex-end;gap:8px;margin-top:16px}.quick-links a{font-size:13px;font-weight:650;text-decoration:none;padding:9px 12px;border:1px solid #506882;border-radius:8px;background:rgba(15,33,52,.85)}.quick-links a:hover{background:#28465e;color:#fff}.mode-picker{margin:20px 0}.mode-picker label{display:block;margin-bottom:8px;font-weight:700}.mode-picker select{width:100%;padding:12px;border:1px solid #526781;border-radius:8px;background:#152b42;color:#e6edf3;font:inherit}.mode-picker select:focus-visible{outline:3px solid #79b8ff}</style></head><body><main></main><script type="module">
+const params=new URLSearchParams(location.search),isBatch=params.get('mode')==='batch';
+const lang=['ko','en','ja'].includes(params.get('lang'))?params.get('lang'):'ko';
+const labels={ko:['변환 방식','한 장 변환','여러 장 변환 · ZIP','방식을 바꾸기 전에 변환한 파일을 저장해주세요.'],en:['Conversion mode','Single image','Multiple images · ZIP','Save your converted files before switching modes.'],ja:['変換モード','1枚ずつ変換','まとめて変換 · ZIP','モードを切り替える前に、変換したファイルを保存してください。']}[lang];
+document.querySelector('main').innerHTML=isBatch?"<nav><a id=\"back\" href=\"../../index.html#tools\" data-i18n=\"back\">← 도구함으로</a><div class=\"languages\" aria-label=\"Language\"><a href=\"?lang=ko\" hreflang=\"ko\" lang=\"ko\">한국어</a><a href=\"?lang=en\" hreflang=\"en\" lang=\"en\">English</a><a href=\"?lang=ja\" hreflang=\"ja\" lang=\"ja\">日本語</a></div></nav>\n<nav id=\"tool-shortcuts\" class=\"quick-links\" aria-label=\"도구 바로가기\"><a id=\"other-tool\" href=\"../webp-5mb/index.html?lang=ko\">↔ 움짤 용량 줄이기</a><a id=\"se-guide-link\" href=\"https://burnfrozentuna.github.io/SE_Guide/\" target=\"_blank\" rel=\"noopener noreferrer\">SE 가이드 ↗</a></nav>\n<header><div class=\"eyebrow\" data-i18n=\"eyebrow\"></div><h1 data-i18n=\"title\">PNG → WebP</h1><p data-i18n=\"intro\"></p><div class=\"privacy\" data-i18n=\"privacy\"></div></header>\n<section class=\"panel\"><div class=\"drop\" id=\"drop\"><p data-i18n=\"drop\"></p><label for=\"file\" data-i18n=\"choose\"></label> <input id=\"file\" type=\"file\" multiple accept=\"image/png,.png\"><div class=\"hint\" data-i18n=\"limit\"></div></div>\n<p id=\"selection\" class=\"info\"></p><div class=\"settings\"><label for=\"quality\" data-i18n=\"quality\"></label><input id=\"quality\" type=\"range\" min=\"10\" max=\"100\" value=\"90\" step=\"1\" aria-describedby=\"quality-note\"><output id=\"quality-value\" for=\"quality\">90</output></div><p id=\"quality-note\" class=\"hint\" data-i18n=\"qualityNote\"></p>\n<div class=\"actions\"><button id=\"convert\" disabled data-i18n=\"convert\"></button><button id=\"clear\" data-i18n=\"clear\"></button></div><progress id=\"progress\" hidden style=\"width:100%;margin-top:20px\"></progress><p id=\"status\" role=\"status\" aria-live=\"polite\"></p></section>\n<section id=\"result\" hidden class=\"panel\" style=\"margin-top:24px\"><h2 data-i18n=\"after\"></h2><p id=\"output-info\" class=\"info\"></p><p id=\"totals\" class=\"info\"></p><div class=\"actions\"><a id=\"download\" class=\"download\" data-i18n=\"save\"></a><button id=\"next\" disabled data-i18n=\"next\"></button></div></section><details><summary data-i18n=\"details\"></summary><p data-i18n=\"note\"></p></details><noscript>JavaScript를 켜주세요. Please enable JavaScript. JavaScriptを有効にしてください。</noscript><footer>Fish In the Toolbox · <a href=\"https://storyengine.live/c/frozen_tuna\" target=\"_blank\" rel=\"noopener noreferrer\">Frozen_Tuna 🐟</a></footer>":"<nav><a id=\"back\" href=\"../../index.html#tools\" data-i18n=\"back\">← 도구함으로</a><div class=\"languages\" aria-label=\"Language\"><a href=\"?lang=ko\" hreflang=\"ko\" lang=\"ko\">한국어</a><a href=\"?lang=en\" hreflang=\"en\" lang=\"en\">English</a><a href=\"?lang=ja\" hreflang=\"ja\" lang=\"ja\">日本語</a></div></nav>\n<nav id=\"tool-shortcuts\" class=\"quick-links\" aria-label=\"도구 바로가기\"><a id=\"other-tool\" href=\"../webp-5mb/index.html?lang=ko\">↔ 움짤 용량 줄이기</a><a id=\"se-guide-link\" href=\"https://burnfrozentuna.github.io/SE_Guide/\" target=\"_blank\" rel=\"noopener noreferrer\">SE 가이드 ↗</a></nav>\n<header><div class=\"eyebrow\" data-i18n=\"eyebrow\"></div><h1 data-i18n=\"title\">PNG → WebP</h1><p data-i18n=\"intro\"></p><div class=\"privacy\" data-i18n=\"privacy\"></div></header>\n<section class=\"panel\"><div class=\"drop\" id=\"drop\"><p data-i18n=\"drop\"></p><label for=\"file\" data-i18n=\"choose\"></label> <input id=\"file\" type=\"file\" accept=\"image/png,.png\"><div class=\"hint\" data-i18n=\"limit\"></div></div>\n<div class=\"settings\"><label for=\"quality\" data-i18n=\"quality\"></label><input id=\"quality\" type=\"range\" min=\"10\" max=\"100\" value=\"90\" step=\"1\" aria-describedby=\"quality-note\"><output id=\"quality-value\" for=\"quality\">90</output></div><p id=\"quality-note\" class=\"hint\" data-i18n=\"qualityNote\"></p>\n<div class=\"actions\"><button id=\"convert\" disabled data-i18n=\"convert\"></button><button id=\"clear\" data-i18n=\"clear\"></button></div><p id=\"status\" role=\"status\" aria-live=\"polite\"></p></section>\n<div class=\"previews\"><section class=\"preview\" id=\"original\" hidden><h2 data-i18n=\"before\"></h2><div class=\"checker\"><img id=\"source\" alt=\"PNG\"></div><p id=\"source-info\" class=\"info\"></p></section><section class=\"preview\" id=\"result\" hidden><h2 data-i18n=\"after\"></h2><div class=\"checker\"><img id=\"output\" alt=\"WebP\"></div><p id=\"output-info\" class=\"info\"></p><a id=\"download\" class=\"download\" data-i18n=\"save\"></a></section></div>\n<details><summary data-i18n=\"details\"></summary><p data-i18n=\"note\"></p></details><noscript>JavaScript를 켜주세요. Please enable JavaScript. JavaScriptを有効にしてください。</noscript><footer>Fish In the Toolbox · <a href=\"https://storyengine.live/c/frozen_tuna\" target=\"_blank\" rel=\"noopener noreferrer\">Frozen_Tuna 🐟</a></footer>";
+const box=document.createElement('div');box.className='mode-picker';
+const label=document.createElement('label');label.htmlFor='conversion-mode';label.textContent=labels[0];
+const select=document.createElement('select');select.id='conversion-mode';
+for(const [i,value] of ['single','batch'].entries()){const option=document.createElement('option');option.value=value;option.textContent=labels[i+1];select.append(option);}
+select.value=isBatch?'batch':'single';const note=document.createElement('p');note.className='hint';note.textContent=labels[3];box.append(label,select,note);document.querySelector('header').after(box);
+select.addEventListener('change',()=>{const url=new URL(location.href);url.searchParams.set('mode',select.value);location.assign(url.href);});
+document.querySelectorAll('.languages a').forEach(a=>{a.href='?lang='+a.hreflang+'&mode='+(isBatch?'batch':'single');});
+
+if(isBatch){// Export only image chunks. RIFF layout: https://developers.google.com/speed/webp/docs/riff_container
+function inspectPng(bytes) {
+  const fail = () => { throw new Error('invalid'); };
+  if (bytes.length < 33 || ![137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v)) fail();
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let pos=8, width=0, height=0, end=false, data=false;
+  while (pos < bytes.length) {
+    if(pos+12>bytes.length) fail();
+    const size=view.getUint32(pos), name=String.fromCharCode(...bytes.subarray(pos+4,pos+8));
+    if(pos+12+size>bytes.length) fail();
+    if(pos===8 && (name!=='IHDR'||size!==13)) fail();
+    if(name==='IHDR') { if(width||size!==13) fail(); width=view.getUint32(pos+8); height=view.getUint32(pos+12); }
+    if(name==='acTL') throw new Error('animated');
+    if(name==='IDAT') data=true;
+    pos+=size+12;
+    if(name==='IEND') { if(size!==0) fail(); end=true; break; }
+  }
+  if(!end||!data||!width||!height) fail();
+  if(width>16383||height>16383||width*height>24000000) throw new Error('large');
+  return {width,height};
+}
+
+function cleanWebp(bytes) {
+  const text=(a,b)=>String.fromCharCode(...bytes.subarray(a,b));
+  const fail=()=>{throw new Error('encode');};
+  if(bytes.length<20||text(0,4)!=='RIFF'||text(8,12)!=='WEBP') fail();
+  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  const end=view.getUint32(4,true)+8;
+  if(end!==bytes.length) fail();
+  const keep=[]; let pos=12, frames=0;
+  while(pos<end) {
+    if(pos+8>end) fail();
+    const name=text(pos,pos+4),size=view.getUint32(pos+4,true),next=pos+8+size+(size%2);
+    if(next>end) fail();
+    if(name==='ANIM'||name==='ANMF') fail();
+    if(['VP8X','ALPH','VP8 ','VP8L'].includes(name)) {
+      const chunk=bytes.slice(pos,next);
+      if(name==='VP8X') { if(size!==10||(chunk[8]&2)) fail(); chunk[8]&=0x10; chunk.fill(0,9,12); }
+      if(name==='VP8 '||name==='VP8L') frames++;
+      if(size%2)chunk[chunk.length-1]=0;
+      keep.push(chunk);
+    }
+    pos=next;
+  }
+  if(frames!==1)fail();
+  const result=new Uint8Array(12+keep.reduce((sum,c)=>sum+c.length,0));
+  result.set([82,73,70,70,0,0,0,0,87,69,66,80]);
+  new DataView(result.buffer).setUint32(4,result.length-8,true);
+  pos=12; for(const chunk of keep){result.set(chunk,pos);pos+=chunk.length;}
+  return result;
+}
+
+// ZIP STORE: WebP is already compressed. UTF-8 names, per-entry CRC32, no external library.
+const crcTable=Uint32Array.from({length:256},(_,i)=>{let c=i;for(let n=0;n<8;n++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;return c>>>0;});
+function crc32(bytes){let c=0xffffffff;for(const b of bytes)c=crcTable[(c^b)&255]^(c>>>8);return (c^0xffffffff)>>>0;}
+class StoreZip {
+ constructor(){this.entries=[];this.length=0;}
+ add(name,bytes){
+  const encoded=new TextEncoder().encode(name);
+  if(encoded.length>65535||bytes.length>0xffffffff||this.entries.length>=65535)throw Error('zip');
+  const header=new Uint8Array(30+encoded.length),view=new DataView(header.buffer),crc=crc32(bytes);
+  view.setUint32(0,0x04034b50,true);view.setUint16(4,20,true);view.setUint16(6,0x800,true);view.setUint16(12,33,true);
+  view.setUint32(14,crc,true);view.setUint32(18,bytes.length,true);view.setUint32(22,bytes.length,true);view.setUint16(26,encoded.length,true);header.set(encoded,30);
+  this.entries.push({encoded,header,bytes,crc,offset:this.length});this.length+=header.length+bytes.length;
+ }
+ finish(){
+  const chunks=[],directory=[];let directorySize=0;
+  for(const e of this.entries){
+   chunks.push(e.header,e.bytes);const h=new Uint8Array(46+e.encoded.length),v=new DataView(h.buffer);
+   v.setUint32(0,0x02014b50,true);v.setUint16(4,20,true);v.setUint16(6,20,true);v.setUint16(8,0x800,true);v.setUint16(14,33,true);
+   v.setUint32(16,e.crc,true);v.setUint32(20,e.bytes.length,true);v.setUint32(24,e.bytes.length,true);v.setUint16(28,e.encoded.length,true);v.setUint32(42,e.offset,true);h.set(e.encoded,46);directory.push(h);directorySize+=h.length;
+  }
+  const end=new Uint8Array(22),v=new DataView(end.buffer);v.setUint32(0,0x06054b50,true);v.setUint16(8,this.entries.length,true);v.setUint16(10,this.entries.length,true);v.setUint32(12,directorySize,true);v.setUint32(16,this.length,true);
+  return new Blob([...chunks,...directory,end],{type:'application/zip'});
+ }
+}
+
+// Shared navigation for standalone image tools.
+{
+ const labels={ko:{nav:'도구 바로가기',png:'이미지 변환기',animation:'움짤 용량 줄이기',guide:'SE 가이드',guideHint:'영어·일본어 제공'},en:{nav:'Tool shortcuts',png:'Image converter',animation:'Shrink animated WebP',guide:'SE Guide',guideHint:''},ja:{nav:'ツールへのリンク',png:'画像変換',animation:'アニメWebPの容量削減',guide:'SEガイド',guideHint:''}};
+ const requested=new URLSearchParams(location.search).get('lang'),language=Object.hasOwn(labels,requested)?requested:'ko',words=labels[language];
+ const isAnimation=location.pathname.includes('/webp-5mb/');
+ const other=document.getElementById('other-tool'),guide=document.getElementById('se-guide-link');
+ document.getElementById('tool-shortcuts').setAttribute('aria-label',words.nav);
+ other.textContent='↔ '+(isAnimation?words.png:words.animation);
+ other.href='../'+(isAnimation?'png-to-webp':'webp-5mb')+'/index.html?lang='+language;
+
+ guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
+ if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
+}
+
+const texts={
+ ko:{title:'PNG → WebP · ZIP',back:'← 도구함으로',eyebrow:'이미지 도구 · 03',intro:'100장도 한 번에. 변환한 이미지는 ZIP으로.',privacy:'서버 업로드 없이, 이 브라우저 안에서만 처리해요.',choose:'PNG 여러 장 선택',drop:'PNG 파일들을 여기에 놓아주세요',limit:'선택 장수 제한 없음 · 한 장당 최대 30 MiB / 2,400만 픽셀 · 정지 PNG',quality:'화질',qualityNote:'높을수록 선명하고 파일이 커질 수 있어요. 손실 압축이며 100도 무손실을 뜻하지 않아요.',convert:'변환하고 ZIP 만들기',clear:'비우기 / 취소',save:'ZIP 저장',next:'저장했어요 — 다음 묶음 변환',after:'저장할 ZIP',details:'알아두기',note:'파일을 한 장씩 처리하고, 최대 100개 또는 결과 약 64 MiB마다 ZIP을 나눕니다. 큰 이미지 한 장 때문에 묶음이 64 MiB를 넘을 수 있습니다. ZIP을 저장한 뒤 다음 묶음으로 넘어가면 이전 결과는 메모리에서 해제됩니다. 새 파일 선택·비우기·페이지 이동 전에 ZIP을 저장해주세요. 한 장당 한 변 16,383픽셀 이하이며, 움직이는 PNG는 지원하지 않습니다. 투명 배경과 크기를 유지하고 프롬프트·EXIF·XMP 등 부가 메타데이터는 제외합니다. 파일명 앞의 번호로 같은 이름도 구분합니다. 실패한 파일은 건너뛰고 ZIP 안의 errors.txt에 기록합니다. 원본은 바꾸지 않습니다.',ready:'PNG 파일들을 선택해주세요.',selected:'선택 완료',files:'개',busy:'변환 중',part:'묶음',success:'성공',failure:'건너뜀',done:'전체 처리가 끝났어요. ZIP을 저장해주세요.',paused:'이 묶음의 ZIP을 저장한 뒤 다음 묶음을 진행해주세요.',invalid:'올바른 PNG가 아닙니다.',animated:'움직이는 PNG는 지원하지 않습니다.',large:'한 장당 파일 크기·이미지 크기 제한을 넘었습니다.',encode:'이 브라우저에서 WebP 변환에 실패했습니다.',zip:'ZIP을 만들지 못했어요. 선택한 파일을 줄여서 다시 시도해주세요.',saveFirst:'먼저 ZIP 저장을 눌러주세요. 다운로드가 끝난 뒤 다음 묶음으로 진행하세요.',progress:'일괄 변환 진행률'},
+ en:{title:'PNG → WebP · ZIP',back:'← Back to the toolbox',eyebrow:'IMAGE TOOL · 03',intro:'100 images at once. Converted files in a ZIP.',privacy:'Processed only in this browser. No server upload.',choose:'Choose multiple PNGs',drop:'Drop your PNG files here',limit:'No selection count cap · up to 30 MiB / 24 megapixels per still PNG',quality:'Quality',qualityNote:'Higher quality may make larger files. Compression is lossy; 100 does not mean lossless.',convert:'Convert & create ZIP',clear:'Clear / cancel',save:'Save ZIP',next:'Saved — convert next batch',after:'Your ZIP',details:'Good to know',note:'Images are processed one at a time, with a ZIP after up to 100 files or about 64 MiB of output. A large final image can take a batch above 64 MiB. Save each ZIP before continuing; the previous result is released from memory when you continue. Save before selecting new files, clearing or leaving. Each side must be at most 16,383 pixels; animated PNG is unsupported. Transparency and dimensions are retained; extra metadata such as prompts, EXIF and XMP is excluded. Numbered filenames prevent collisions. Failed files are skipped and listed in errors.txt inside the ZIP. Originals stay unchanged.',ready:'Choose your PNG files.',selected:'Selected',files:'files',busy:'Converting',part:'Batch',success:'Converted',failure:'Skipped',done:'All files processed. Save your ZIP.',paused:'Save this ZIP, then continue to the next batch.',invalid:'Not a valid PNG.',animated:'Animated PNG is unsupported.',large:'Exceeds the per-file size or image dimension limit.',encode:'This browser could not convert this file to WebP.',zip:'Could not create ZIP. Try selecting fewer files.',saveFirst:'Click Save ZIP first. Wait for the download to finish before continuing.',progress:'Batch conversion progress'},
+ ja:{title:'PNG → WebP · ZIP',back:'← 道具箱に戻る',eyebrow:'画像ツール · 03',intro:'100枚もまとめて。変換した画像はZIPで。',privacy:'サーバーにアップロードせず、このブラウザ内だけで処理します。',choose:'PNGを複数選択',drop:'ここにPNGファイルをまとめてドロップ',limit:'選択枚数の上限なし · 1枚あたり最大30 MiB／2,400万画素 · 静止PNG',quality:'画質',qualityNote:'高画質ほどファイルが大きくなる場合があります。非可逆圧縮のため、100でも可逆圧縮にはなりません。',convert:'変換してZIPを作成',clear:'クリア／中止',save:'ZIPを保存',next:'保存しました — 次のグループへ',after:'保存するZIP',details:'ご利用にあたって',note:'1枚ずつ処理し、最大100ファイルまたは出力約64 MiBごとにZIPを分けます。最後の画像が大きいと64 MiBを超える場合があります。ZIPを保存してから次へ進むと、前の結果をメモリから解放します。新しいファイルの選択・クリア・画面移動の前に保存してください。各辺16,383ピクセル以下で、アニメーションPNGは未対応です。透明部分と画像サイズを維持し、プロンプト・EXIF・XMPなどの付加メタデータを除きます。同じ名前の画像は連番で区別します。失敗したファイルはスキップし、ZIP内のerrors.txtに記録します。元のファイルは変更しません。',ready:'PNGファイルを選択してください。',selected:'選択済み',files:'枚',busy:'変換中',part:'グループ',success:'成功',failure:'スキップ',done:'すべて処理しました。ZIPを保存してください。',paused:'このZIPを保存してから、次のグループに進んでください。',invalid:'有効なPNGではありません。',animated:'アニメーションPNGは未対応です。',large:'1枚あたりの容量・画像サイズ制限を超えています。',encode:'このブラウザではWebPに変換できませんでした。',zip:'ZIPを作れませんでした。選択するファイルを減らしてお試しください。',saveFirst:'まずZIPを保存してください。ダウンロード完了後に次へ進んでください。',progress:'一括変換の進行状況'}
+};
+const query=new URLSearchParams(location.search).get('lang'),lang=Object.hasOwn(texts,query)?query:'ko',t=texts[lang];
+document.documentElement.lang=lang;document.title=t.title+' · Fish In the Toolbox';document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t[el.dataset.i18n]);
+document.querySelector('#back').href='../../'+(lang==='ko'?'':lang+'/')+'index.html#tools';document.querySelectorAll('.languages a').forEach(a=>{if(a.hreflang===lang)a.setAttribute('aria-current','page');});
+const $=id=>document.getElementById(id),input=$('file'),quality=$('quality'),convert=$('convert'),status=$('status'),progress=$('progress');progress.setAttribute('aria-label',t.progress);
+let files=[],index=0,serial=0,part=0,url=null,saved=false,started=false,busy=false,totalGood=0,totalBad=0;
+const say=(key,error=false)=>{status.textContent=t[key]||key;status.classList.toggle('error',error);};
+function clearZip(){if(url)URL.revokeObjectURL(url);url=null;saved=false;$('result').hidden=true;$('download').removeAttribute('href');$('next').disabled=true;}
+function reset(){serial++;clearZip();files=[];index=0;part=0;started=false;busy=false;totalGood=0;totalBad=0;quality.disabled=false;convert.disabled=true;input.value='';progress.hidden=true;$('selection').textContent='';say('ready');}
+function select(selected){const list=Array.from(selected);reset();files=list;if(!files.length)return;convert.disabled=false;$('selection').textContent=t.selected+': '+files.length.toLocaleString()+' '+t.files;say('selected');}
+input.addEventListener('change',()=>select(input.files));$('clear').addEventListener('click',reset);quality.addEventListener('input',()=>{$('quality-value').value=quality.value;});
+$('download').addEventListener('click',()=>{saved=true;$('next').disabled=false;});
+$('next').addEventListener('click',()=>{if(!saved){say('saveFirst');return;}run();});
+convert.addEventListener('click',run);
+const drop=$('drop');for(const name of ['dragenter','dragover'])drop.addEventListener(name,e=>{e.preventDefault();drop.classList.add('drag');});drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');select(e.dataTransfer.files);});window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
+async function run(){
+ if(busy||!files.length||index>=files.length)return;
+ const id=++serial,q=Number(quality.value),start=index;clearZip();busy=true;started=true;quality.disabled=true;convert.disabled=true;progress.hidden=false;progress.max=files.length;progress.value=index;
+ const zip=new StoreZip(),errors=[];let good=0,bytes=0;
+ try{
+  while(index<files.length&&index-start<100&&bytes<64*1048576){
+   if(id!==serial)return;const currentIndex=index,file=files[currentIndex];let bitmap,canvas;
+   status.textContent=t.busy+' '+(currentIndex+1)+' / '+files.length+' · '+file.name;
+   try{
+    if(file.size>30*1048576)throw Error('large');inspectPng(new Uint8Array(await file.arrayBuffer()));if(id!==serial)return;
+    bitmap=await createImageBitmap(file);if(id!==serial)return;canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
+    const ctx=canvas.getContext('2d');if(!ctx)throw Error('encode');ctx.drawImage(bitmap,0,0);
+    const encoded=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',q/100));if(!encoded||encoded.type!=='image/webp')throw Error('encode');
+    const clean=cleanWebp(new Uint8Array(await encoded.arrayBuffer()));if(id!==serial)return;
+    const stem=file.name.replace(/\.png$/i,'').replace(/[\\/<>:"|?*\x00-\x1f]/g,'_').slice(0,100)||'image';
+    zip.add(String(currentIndex+1).padStart(6,'0')+'-'+stem+'-clean.webp',clean);bytes+=clean.length;good++;totalGood++;
+   }catch(e){if(id!==serial)return;errors.push(file.name+' — '+(t[e.message]||t.encode));totalBad++;}
+   finally{bitmap?.close();if(canvas){canvas.width=0;canvas.height=0;}}
+   index++;progress.value=index;await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  if(id!==serial)return;
+  if(errors.length)zip.add('errors.txt',new TextEncoder().encode(errors.join('\r\n')));
+  const blob=zip.finish();url=URL.createObjectURL(blob);part++;$('download').href=url;$('download').download='webp-batch-'+String(part).padStart(3,'0')+'.zip';
+  $('output-info').textContent=t.part+' '+part+' · '+t.success+' '+good+' · '+t.failure+' '+errors.length+' · '+(blob.size/1048576).toFixed(2)+' MiB';
+  $('totals').textContent=index+' / '+files.length+' · '+t.success+' '+totalGood+' · '+t.failure+' '+totalBad;
+  $('result').hidden=false;$('next').hidden=index>=files.length;say(index<files.length?'paused':'done');
+ }catch{if(id===serial)say('zip',true);}
+ finally{if(id===serial){busy=false;progress.hidden=true;}}
+}
+window.addEventListener('pagehide',reset);say('ready');
+}else{// Export only image chunks. RIFF layout: https://developers.google.com/speed/webp/docs/riff_container
 function inspectPng(bytes) {
   const fail = () => { throw new Error('invalid'); };
   if (bytes.length < 33 || ![137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v)) fail();
@@ -70,13 +216,7 @@ function cleanWebp(bytes) {
  document.getElementById('tool-shortcuts').setAttribute('aria-label',words.nav);
  other.textContent='↔ '+(isAnimation?words.png:words.animation);
  other.href='../'+(isAnimation?'png-to-webp':'webp-5mb')+'/index.html?lang='+language;
- const batchLabels={ko:'여러 장 변환 · ZIP',en:'Batch conversion · ZIP',ja:'一括変換 · ZIP'};
- const batch=document.createElement('a');
- if(location.pathname.includes('/png-batch/')){
-  other.textContent='↔ '+words.png;other.href='../png-to-webp/index.html?lang='+language;
-  batch.textContent='↔ '+words.animation;batch.href='../webp-5mb/index.html?lang='+language;
- }else{batch.textContent='↔ '+batchLabels[language];batch.href='../png-batch/index.html?lang='+language;}
- guide.before(batch);
+
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }
@@ -139,4 +279,4 @@ convert.addEventListener('click',async()=>{
  finally{bitmap?.close();if(canvas){canvas.width=0;canvas.height=0;}if(id===generation)convert.disabled=!source;}
 });
 window.addEventListener('pagehide',reset);message('ready');
-</script></body></html>
+}</script></body></html>

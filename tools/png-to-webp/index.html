@@ -130,6 +130,7 @@ function drawForWebp(canvas,bitmap,options){
  other.textContent='↔ '+(isAnimation?words.png:words.animation);
  other.href='../'+(isAnimation?'png-to-webp':'webp-5mb')+'/index.html?lang='+language;
 
+ const bg=document.createElement('a');bg.textContent='↔ '+({ko:'배경 제거',en:'Remove background',ja:'背景を削除'}[language]);bg.href='../background-remover/index.html?lang='+language;guide.before(bg);
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }
@@ -244,6 +245,11 @@ function cleanWebp(bytes) {
   return result;
 }
 
+// Local same-origin handoff; blobs never leave the browser.
+function transferDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open('fish-tool-transfer',1);r.onupgradeneeded=()=>r.result.createObjectStore('images');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+async function transferStore(value){const db=await transferDB(),id=crypto.randomUUID();try{await new Promise((resolve,reject)=>{const tx=db.transaction('images','readwrite'),s=tx.objectStore('images');s.clear();s.put({...value,time:Date.now()},id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});return id;}finally{db.close();}}
+async function transferTake(id){const db=await transferDB();try{return await new Promise((resolve,reject)=>{const tx=db.transaction('images','readwrite'),s=tx.objectStore('images'),r=s.get(id);let value;r.onsuccess=()=>{value=r.result;s.delete(id);};tx.oncomplete=()=>resolve(value&&Date.now()-value.time<3600000?value:null);tx.onerror=()=>reject(tx.error);});}finally{db.close();}}
+
 function setupAlphaOptions(language,onChange=()=>{}){
  const words={ko:['알파 채널 제거 (투명 배경 없애기)','배경색','켜면 선택한 배경색으로 합쳐서 저장하며, 알파 채널에 숨긴 정보를 제거합니다. 색상 픽셀에 숨긴 정보까지 모두 제거한다고 보장하지는 않습니다. 끄면 투명도를 유지하며 알파 채널의 숨은 정보가 남을 수 있습니다.'],en:['Remove alpha channel (remove transparency)','Background color','When enabled, the image is flattened onto the selected color, removing data stored in the alpha channel. This does not guarantee removal of information hidden in color pixels. When disabled, transparency and hidden alpha data may be retained.'],ja:['アルファチャンネルを削除（透明背景をなくす）','背景色','オンにすると選択した背景色と合成し、アルファチャンネル内の隠し情報を除去します。色の画素に隠された情報の完全な除去は保証しません。オフでは透明度を維持するため、アルファ内の隠し情報が残る可能性があります。']}[language];
  const reasons={ko:'왜 제거하나요? NovelAI 등 일부 생성 도구는 프롬프트·생성 설정을 알파 채널(투명도)에 저장하기도 해요. 일반 메타데이터만 지우면 이 정보가 남을 수 있어, 공유 전에 알파 채널도 제거하는 옵션입니다.',en:'Why remove it? Some generators, including NovelAI, can store prompts and generation settings in the alpha (transparency) channel. Removing ordinary metadata may leave this information behind; this option removes the alpha channel before sharing.',ja:'なぜ削除するの？ NovelAIなど一部の生成ツールは、プロンプトや生成設定をアルファチャンネル（透明度）にも保存します。通常のメタデータを削除するだけでは残る場合があるため、共有前にアルファチャンネルも除去するためのオプションです。'};
@@ -274,6 +280,7 @@ function drawForWebp(canvas,bitmap,options){
  other.textContent='↔ '+(isAnimation?words.png:words.animation);
  other.href='../'+(isAnimation?'png-to-webp':'webp-5mb')+'/index.html?lang='+language;
 
+ const bg=document.createElement('a');bg.textContent='↔ '+({ko:'배경 제거',en:'Remove background',ja:'背景を削除'}[language]);bg.href='../background-remover/index.html?lang='+language;guide.before(bg);
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }
@@ -337,4 +344,7 @@ convert.addEventListener('click',async()=>{
  finally{bitmap?.close();if(canvas){canvas.width=0;canvas.height=0;}if(id===generation)convert.disabled=!source;}
 });
 window.addEventListener('pagehide',reset);message('ready');
+
+const transferId=new URLSearchParams(location.search).get('transfer');
+if(transferId){const url=new URL(location.href);url.searchParams.delete('transfer');history.replaceState(null,'',url);try{const item=await transferTake(transferId);if(!item)throw Error();await select([new File([item.blob],item.name,{type:'image/png'})]);const notice=document.createElement('p');notice.className='privacy';notice.textContent=active==='ko'?'배경 제거 결과를 받았어요. 투명 배경을 유지하려면 알파 채널 제거를 끈 채 변환해주세요.':active==='ja'?'背景削除の結果を受け取りました。透明背景を維持するにはアルファ削除をオフのまま変換してください。':'Cutout received. Leave alpha removal off to preserve transparency.';document.querySelector('header').append(notice);}catch{status.textContent=active==='ko'?'전달된 이미지가 없거나 만료됐어요. 저장한 PNG를 선택해주세요.':active==='ja'?'転送画像が見つからないか期限切れです。保存したPNGを選んでください。':'Transferred image missing or expired. Please select your saved PNG.';}}
 }</script></body></html>

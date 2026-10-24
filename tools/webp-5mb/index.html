@@ -68,6 +68,7 @@ function packAnimation(frames,width,height,loop){
 
  const bg=document.createElement('a');bg.textContent='↔ '+({ko:'이미지 오려내기',en:'Image cutout',ja:'画像の切り抜き'}[language]);bg.href='../background-remover/index.html?lang='+language;guide.before(bg);
  const maker=document.createElement('a');maker.textContent='↔ '+({ko:'움짤 만들기',en:'Animation maker',ja:'アニメーション作成'}[language]);maker.href='../animation-maker/index.html?lang='+language;guide.before(maker);
+ const retouch=document.createElement('a');retouch.textContent='↔ '+({ko:'모자이크·블러',en:'Mosaic & blur',ja:'モザイク・ぼかし'}[language]);retouch.href='../mosaic-brush/index.html?lang='+language;guide.before(retouch);
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }

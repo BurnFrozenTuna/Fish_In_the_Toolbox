@@ -54,6 +54,7 @@ const requested=new URLSearchParams(location.search).get('lang'),lang=Object.has
 document.documentElement.lang=lang;document.title=t.title+' · Fish In the Toolbox';document.querySelectorAll('[data-t]').forEach(e=>e.textContent=t[e.dataset.t]);
 $('back').href='../../'+(lang==='ko'?'':lang+'/')+'index.html#tools';for(const [id,path]of [['png','png-to-webp'],['cut','background-remover'],['shrink','webp-5mb']])$(id).href='../'+path+'/index.html?lang='+lang;
 $('guide').href='https://burnfrozentuna.github.io/SE_Guide/'+(lang==='ja'?'ja/':'');
+const retouch=document.createElement('a');retouch.textContent='↔ '+({ko:'모자이크·블러',en:'Mosaic & blur',ja:'モザイク・ぼかし'}[lang]);retouch.href='../mosaic-brush/index.html?lang='+lang;$('guide').before(retouch);
 const canvas=$('preview'),ctx=canvas.getContext('2d');let frames=[],layers=[],selected=0,layerIndex=-1,timer=null,playing=false,busy=false,token=0,resultUrl=null,drag=null;
 const bound=(id,min,max)=>{const e=$(id),v=Math.round(Number(e.value));e.value=Number.isFinite(v)?Math.max(min,Math.min(max,v)):min;return +e.value;};
 const pixels=()=>new Set([...frames,...layers].map(f=>f.asset));

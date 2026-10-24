@@ -542,11 +542,63 @@ a:focus-visible,summary:focus-visible,.table-scroll:focus-visible{outline:2px so
 .guide-portal{margin:32px 0 20px;padding:22px 24px;border:1px solid #284d38;border-left:4px solid #3fb950;border-radius:10px;background:#101f19}.guide-portal h2{margin:0 0 10px;font-size:1.1rem;color:#7ee787}.guide-portal p{margin:0 0 12px}.guide-portal a{font-weight:700}.guide-portal small{display:block;margin-top:8px;color:#8b949e}
 .contributors{margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}.contributors h2{font-size:1.1rem;margin:0 0 12px}.contributors p{font-size:.92rem;color:var(--text-muted)}.contributors a{color:var(--accent);font-weight:700}
 .tool-links{display:flex;flex-wrap:wrap;gap:12px 24px}.tool-links a{display:inline-block;border:1px solid #375a48;border-radius:8px;padding:10px 14px;background:#162b21}
+
+
+:root { --text-muted:#a0acbc; --text-dim:#96a2b2; }
+html{scroll-behavior:smooth;scroll-padding-top:32px}
+body{font-size:16px;line-height:1.85;overflow-wrap:break-word}
+.shell{max-width:1600px;margin:0 auto}
+.sidebar{width:272px;padding-top:35px}
+.brand{display:block;color:var(--text);text-decoration:none;font-size:23px;font-weight:700;line-height:1.3;margin-top:12px;letter-spacing:-.7px}
+.brand span{font-size:23px}.edition{font-size:13px;color:var(--text-muted);margin-top:16px}
+.nav-label.group{display:block;font-size:14px;letter-spacing:0;text-transform:none;color:#d2dbe7;text-decoration:none;line-height:1.7;margin:8px 0}
+.alias{font-size:12px;color:var(--text-muted);display:block}.nav-item{font-size:15px;padding-top:9px;padding-bottom:9px}.blue{background:var(--accent)}.green{background:var(--accent2)}.purple{background:var(--accent3)}.orange{background:var(--accent4)}
+.subnav{display:flex;gap:12px;padding:8px 25px 4px;font-size:12px}.subnav a{color:var(--text-muted);text-decoration:none}.subnav a:hover{color:var(--accent)}
+.sidebar-footer{margin:32px 24px;border-top:1px solid var(--border);padding-top:22px;color:var(--text-muted);font-size:13px}
+.main{padding:48px 64px 80px;max-width:1120px;min-width:0;flex:1;width:calc(100% - 272px)}
+.page-intro{padding-bottom:34px;border-bottom:1px solid var(--border);margin-bottom:42px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:14px}
+.page-intro h1{font-size:clamp(29px,3vw,40px);letter-spacing:-1.2px;line-height:1.3;margin-bottom:18px}
+.page-intro>p:not(.eyebrow){color:#b5c0cf;font-size:16px;line-height:1.9}
+.language-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 27px}
+.language-tab{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:14px;font-weight:500;text-decoration:none;color:var(--text-muted);background:var(--bg2);min-height:40px}
+.language-tab:hover{border-color:var(--accent);color:var(--text)}.language-tab.selected{border-color:var(--accent);color:#b6d9ff;background:#152c47}
+.feedback{border-top:1px solid var(--border);margin-top:55px;padding-top:30px}.feedback h2{font-size:20px;line-height:1.6;margin-bottom:12px}.feedback p{margin-bottom:15px;color:#bdc8d7}.feedback-link{display:inline-block;color:#a4cfff;border:1px solid #365575;border-radius:6px;padding:8px 15px;text-decoration:none;font-size:14px}.feedback-link:hover{background:#152c47}.feedback .translation-note{margin-top:23px;font-size:14px;line-height:1.9;color:var(--text-muted)}
+html[lang="ja"] body{font-family:'Noto Sans JP','Yu Gothic','Meiryo',sans-serif}html[lang="en"] body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+html[lang="en"] .nav-item,html[lang="ja"] .nav-item{line-height:1.6}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}.meta span{font-size:12px;border:1px solid var(--border);padding:2px 10px;border-radius:5px;color:var(--text-muted)}
+article h2.level-1{font-size:26px;line-height:1.5;letter-spacing:-.6px;margin:65px 0 21px;padding-top:30px;border-top:1px solid var(--border)}
+article h2.level-1:first-child{margin-top:0;padding-top:0;border:0}
+article h3.level-2{font-size:24px;line-height:1.45;letter-spacing:-.5px;margin:50px 0 21px;padding-left:14px;border-left:4px solid var(--accent)}
+#background{border-color:var(--accent2)}#chibi{border-color:var(--accent3)}#principle,#format,#services{border-color:var(--accent4)}
+article h4{font-size:18px;margin:30px 0 13px;line-height:1.6}article h5{font-size:19px;color:var(--accent);margin:38px 0 16px;line-height:1.65}
+article p{margin:0 0 18px}article ul,article ol{margin:0 0 22px;padding-left:24px}article li{margin:7px 0}article strong{font-weight:700;color:#f0f5fc}
+article a{color:#79b8ff;text-underline-offset:4px;word-break:break-word}
+article pre{font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;line-height:1.8;background:#111823;border:1px solid var(--border);border-radius:8px;padding:22px 24px;overflow:auto;margin:22px 0;white-space:pre;max-width:100%;tab-size:2}
+article pre code{padding:0;background:none;color:#cbd9eb;font-size:inherit;white-space:pre}
+article :not(pre)>code{font-size:.87em;background:#202b3b;color:#bad7ff;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+article blockquote{border-left:3px solid var(--accent3);background:rgba(210,168,255,.055);padding:18px 22px;margin:22px 0;color:#c7d0df;border-radius:0 7px 7px 0}article blockquote p:last-child{margin:0}
+article figure{margin:28px 0 30px;border:1px solid var(--border);background:#161b22;border-radius:10px;overflow:hidden}
+article figure img{display:block;width:100%;height:auto;margin:0;padding:0}article figure:first-of-type img{padding:18px}
+article figcaption{font-size:13px;line-height:1.8;color:var(--text-muted);padding:17px 20px;border-top:1px solid var(--border)}
+.table-scroll{width:100%;overflow-x:auto;margin:22px 0 28px;border:1px solid var(--border);border-radius:8px}article table{width:100%;border-collapse:collapse;font-size:14px;margin:0}article th{font-size:13px;background:#1c2532;color:#e1e8f1;text-align:left;font-weight:600;white-space:nowrap}article td,article th{padding:13px 15px;border-bottom:1px solid var(--border);vertical-align:top}article tr:last-child td{border-bottom:0}article td{min-width:100px}article td:last-child{min-width:220px}article td:first-child{min-width:125px}
+article details{margin:22px 0 32px;padding:0 20px;background:#141b26;border:1px solid var(--border);border-radius:8px}article summary{padding:14px 0;color:var(--text-muted);cursor:pointer;font-size:13px;line-height:1.7}article summary small{font-size:13px}article details[open]{padding-bottom:14px}article details[open] summary{border-bottom:1px solid var(--border);margin-bottom:20px}article details h4{font-size:17px}
+.fish-sign{right:22px;bottom:20px;padding:8px}.fish-sign:focus-visible .fish-sign-tip{opacity:1;transform:none}.fish-sign:focus-visible .fish-sign-emoji{opacity:1}.fish-sign-emoji{font-size:29px}.fish-sign-tip{font-size:12px}
+.skip{position:fixed;left:12px;top:-80px;z-index:100;background:var(--accent);color:#0d1117;padding:8px 14px}.skip:focus{top:12px}
+a:focus-visible,summary:focus-visible,.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.end-note{font-size:13px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:24px;margin-top:55px;display:flex;justify-content:space-between;gap:20px;padding-right:36px}.end-note a{color:var(--accent);text-decoration:none}
+.mobile-toc{display:none}
+@media(max-width:1000px){.main{padding:36px 32px 70px}.sidebar{width:242px}.brand{font-size:21px}}
+@media(max-width:760px){.shell{display:block}.sidebar{display:none}.main{width:100%;padding:28px 20px 76px}.page-intro{margin-bottom:24px;padding-bottom:24px}.mobile-toc{display:block;border:1px solid var(--border);background:var(--bg2);border-radius:7px;padding:12px 16px;margin-bottom:32px;font-size:14px}.mobile-toc summary{cursor:pointer}.mobile-toc nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:15px}.mobile-toc a{color:var(--accent);text-decoration:none}article h2.level-1{font-size:23px;margin-top:46px}article h3.level-2{font-size:22px;margin-top:38px}article pre{padding:16px;font-size:12px}article details{padding-left:13px;padding-right:13px}article figure:first-of-type img{padding:9px}article figcaption{padding:13px 15px}.fish-sign{right:10px;bottom:12px}.fish-sign-tip{max-width:70vw;white-space:normal}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.guide-portal{margin:32px 0 20px;padding:22px 24px;border:1px solid #284d38;border-left:4px solid #3fb950;border-radius:10px;background:#101f19}.guide-portal h2{margin:0 0 10px;font-size:1.1rem;color:#7ee787}.guide-portal p{margin:0 0 12px}.guide-portal a{font-weight:700}.guide-portal small{display:block;margin-top:8px;color:#8b949e}
+.contributors{margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}.contributors h2{font-size:1.1rem;margin:0 0 12px}.contributors p{font-size:.92rem;color:var(--text-muted)}.contributors a{color:var(--accent);font-weight:700}
+.tool-links{display:flex;flex-wrap:wrap;gap:12px 24px}.tool-links a{display:inline-block;border:1px solid #375a48;border-radius:8px;padding:10px 14px;background:#162b21}
 </style></head><body><a class="skip" href="#content">본문으로 바로 가기</a>
 <div class="shell"><aside class="sidebar" aria-label="페이지 목차"><div class="sidebar-logo"><div class="product">FROZEN_TUNA’S NOTES</div><a class="brand" href="#top">Fish In<br>the Toolbox <span>🐟</span></a><div class="edition">한국어 · 작업 노트</div></div>
 <nav><div class="nav-section"><a class="nav-label group" href="#gpt">GPT한테 도움받을 때</a><a class="nav-item" href="#typography"><span class="nav-dot blue"></span>타이포</a><a class="nav-item" href="#background"><span class="nav-dot green"></span>백그라운드</a><a class="nav-item" href="#chibi"><span class="nav-dot purple"></span>치비 배열</a></div><div class="nav-section"><a class="nav-label group" href="#external">플랫폼 밖 서버에서<br>이미지 호출하기 <span class="alias">(외부이미지)</span></a><a class="nav-item" href="#principle"><span class="nav-dot orange"></span>호출 원리</a><a class="nav-item" href="#format"><span class="nav-dot orange"></span>호출 형식</a><a class="nav-item" href="#services"><span class="nav-dot orange"></span>지원되는 사이트 목록</a><div class="subnav"><a href="#nsfw-yes">가능</a><a href="#nsfw-no">불가능</a><a href="#nsfw-unknown">확실치 않음</a></div></div></nav><div class="sidebar-footer">직접 써보고, 정리하고,<br>필요한 만큼 꺼내 쓰는 노트.</div></aside>
 <main id="content" class="main"><header id="top" class="page-intro"><nav class="language-tabs" aria-label="언어 선택"><a class="language-tab selected" href="index.html" hreflang="ko" lang="ko" aria-current="page">한국어</a><a class="language-tab" href="en/index.html" hreflang="en" lang="en">English</a><a class="language-tab" href="ja/index.html" hreflang="ja" lang="ja">日本語</a></nav><p class="eyebrow">AI · VISUALS · IMAGE HOSTING</p><h1>Fish In the Toolbox</h1><p>거창한 목적이 있는 건 아니에요. 공유드리고 싶지만 스토리엔진 가이드에서 다루기에는 조금 애매한 이야기들을 이쪽에 따로 모았어요.<br>한 분에게라도 더 도움이 되었으면 좋겠어요.</p><div class="meta"><span>한국어</span><span>관찰 · 실사용 기반</span><span>2026.09.13</span></div></header>
-<section class="guide-portal" id="tools" aria-labelledby="tools-title"><h2 id="tools-title">🧰 바로 쓰는 도구</h2><p>PNG 메타데이터 제거·WebP 저장부터 움짤 용량 조절까지. 서버 업로드 없이 브라우저 안에서 처리합니다.</p><div class="tool-links"><a href="tools/png-to-webp/index.html?lang=ko">PNG → WebP 도구 열기 ↗</a><a href="tools/webp-5mb/index.html?lang=ko">움짤 WebP → 5MB 도구 열기 ↗</a><a href="tools/background-remover/index.html?lang=ko">이미지 오려내기 ↗</a><a href="tools/animation-maker/index.html?lang=ko">움짤 만들기 ↗</a></div></section>
+<section class="guide-portal" id="tools" aria-labelledby="tools-title"><h2 id="tools-title">🧰 바로 쓰는 도구</h2><p>PNG 메타데이터 제거·WebP 저장부터 움짤 용량 조절까지. 서버 업로드 없이 브라우저 안에서 처리합니다.</p><div class="tool-links"><a href="tools/png-to-webp/index.html?lang=ko">PNG → WebP 도구 열기 ↗</a><a href="tools/webp-5mb/index.html?lang=ko">움짤 WebP → 5MB 도구 열기 ↗</a><a href="tools/background-remover/index.html?lang=ko">이미지 오려내기 ↗</a><a href="tools/animation-maker/index.html?lang=ko">움짤 만들기 ↗</a><a href="tools/mosaic-brush/index.html?lang=ko">모자이크·블러 ↗</a></div></section>
 <details class="mobile-toc"><summary>목차 펼치기</summary><nav><a href="#typography">타이포</a><a href="#background">백그라운드</a><a href="#chibi">치비 배열</a><a href="#principle">호출 원리</a><a href="#format">호출 형식</a><a href="#services">지원되는 사이트 목록</a></nav></details><article><h2 id="gpt" class="level-1">GPT한테 도움받을 때</h2>
 <p>GPT에게 타이포, 배경, 치비 배열을 부탁할 때 입력을 정리하는 방법입니다. 직접 작업하면서 비교적 의도가 잘 전달됐던 구조를 모았습니다.</p>
 <p>이미지 생성 전반의 정답집은 아닙니다. 결과는 달라질 수 있으며, 아래 방법도 작업 중인 관찰과 예시입니다. 프롬프트 안의 문구와 조건은 필요한 부분만 바꿔 사용하세요.</p>

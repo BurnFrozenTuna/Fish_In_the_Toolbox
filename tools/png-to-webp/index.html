@@ -132,6 +132,7 @@ function drawForWebp(canvas,bitmap,options){
 
  const bg=document.createElement('a');bg.textContent='↔ '+({ko:'이미지 오려내기',en:'Image cutout',ja:'画像の切り抜き'}[language]);bg.href='../background-remover/index.html?lang='+language;guide.before(bg);
  const maker=document.createElement('a');maker.textContent='↔ '+({ko:'움짤 만들기',en:'Animation maker',ja:'アニメーション作成'}[language]);maker.href='../animation-maker/index.html?lang='+language;guide.before(maker);
+ const retouch=document.createElement('a');retouch.textContent='↔ '+({ko:'모자이크·블러',en:'Mosaic & blur',ja:'モザイク・ぼかし'}[language]);retouch.href='../mosaic-brush/index.html?lang='+language;guide.before(retouch);
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }
@@ -283,6 +284,7 @@ function drawForWebp(canvas,bitmap,options){
 
  const bg=document.createElement('a');bg.textContent='↔ '+({ko:'이미지 오려내기',en:'Image cutout',ja:'画像の切り抜き'}[language]);bg.href='../background-remover/index.html?lang='+language;guide.before(bg);
  const maker=document.createElement('a');maker.textContent='↔ '+({ko:'움짤 만들기',en:'Animation maker',ja:'アニメーション作成'}[language]);maker.href='../animation-maker/index.html?lang='+language;guide.before(maker);
+ const retouch=document.createElement('a');retouch.textContent='↔ '+({ko:'모자이크·블러',en:'Mosaic & blur',ja:'モザイク・ぼかし'}[language]);retouch.href='../mosaic-brush/index.html?lang='+language;guide.before(retouch);
  guide.textContent=words.guide+' ↗';guide.href='https://burnfrozentuna.github.io/SE_Guide/'+(language==='ja'?'ja/':'');
  if(words.guideHint){guide.title=words.guideHint;guide.setAttribute('aria-label',words.guide+' — '+words.guideHint);}
 }
@@ -348,5 +350,5 @@ convert.addEventListener('click',async()=>{
 window.addEventListener('pagehide',reset);message('ready');
 
 const transferId=new URLSearchParams(location.search).get('transfer');
-if(transferId){const url=new URL(location.href);url.searchParams.delete('transfer');history.replaceState(null,'',url);try{const item=await transferTake(transferId);if(!item)throw Error();await select([new File([item.blob],item.name,{type:'image/png'})]);const notice=document.createElement('p');notice.className='privacy';notice.textContent=active==='ko'?'이미지 오려내기 결과를 받았어요. 투명 배경을 유지하려면 알파 채널 제거를 끈 채 변환해주세요.':active==='ja'?'切り抜き結果を受け取りました。透明背景を維持するにはアルファ削除をオフのまま変換してください。':'Cutout received. Leave alpha removal off to preserve transparency.';document.querySelector('header').append(notice);}catch{status.textContent=active==='ko'?'전달된 이미지가 없거나 만료됐어요. 저장한 PNG를 선택해주세요.':active==='ja'?'転送画像が見つからないか期限切れです。保存したPNGを選んでください。':'Transferred image missing or expired. Please select your saved PNG.';}}
+if(transferId){const url=new URL(location.href);url.searchParams.delete('transfer');history.replaceState(null,'',url);try{const item=await transferTake(transferId);if(!item)throw Error();await select([new File([item.blob],item.name,{type:'image/png'})]);const notice=document.createElement('p');notice.className='privacy';notice.textContent=active==='ko'?'편집한 이미지를 받았어요. 투명 배경을 유지하려면 알파 채널 제거를 끈 채 변환해주세요.':active==='ja'?'編集後の画像を受け取りました。透明背景を維持するにはアルファ削除をオフのまま変換してください。':'Edited image received. Leave alpha removal off to preserve transparency.';document.querySelector('header').append(notice);}catch{status.textContent=active==='ko'?'전달된 이미지가 없거나 만료됐어요. 저장한 PNG를 선택해주세요.':active==='ja'?'転送画像が見つからないか期限切れです。保存したPNGを選んでください。':'Transferred image missing or expired. Please select your saved PNG.';}}
 }</script></body></html>

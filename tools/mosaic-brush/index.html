@@ -41,6 +41,7 @@ const requestLang=new URLSearchParams(location.search).get('lang'),lang=Object.h
 document.documentElement.lang=lang;document.title=t.title+' · Fish In the Toolbox';document.querySelectorAll('[data-t]').forEach(e=>e.textContent=t[e.dataset.t]);
 $('back').href='../../'+(lang==='ko'?'':lang+'/')+'index.html#tools';
 for(const [id,path]of [['png','png-to-webp'],['cut','background-remover'],['maker','animation-maker'],['shrink','webp-5mb']])$(id).href='../'+path+'/index.html?lang='+lang;
+const intro=document.createElement('a');intro.textContent=({ko:'인트로 영상 만들기',en:'Intro video maker',ja:'イントロ動画作成'}[document.documentElement.lang]);intro.href='../intro-maker/index.html?lang='+document.documentElement.lang;document.querySelector('.quick-links').append(intro);
 const canvas=$('canvas'),ctx=canvas.getContext('2d'),cursor=$('cursor'),cc=cursor.getContext('2d');let original=null,current=null,effect=null,w=0,h=0,mode='mosaic',drawing=false,last=null,undo=[],redo=[],worker=null,generation=0,loadGeneration=0,loading=false,exporting=false,name='image',cursorPoint=null,filterTimer=null;
 const controls=['mosaic','blur','restore','file','save','send','undo','redo','reset'];
 function message(text){$('status').textContent=text;}

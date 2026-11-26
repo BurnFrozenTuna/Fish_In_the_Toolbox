@@ -1,0 +1,117 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; media-src blob:; connect-src 'none'; base-uri 'none'; form-action 'none'"><title>かんたん音声マスタリング · Fish In the Toolbox</title><style>*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#101725;color:#e9edf8;font:15px/1.65 system-ui,-apple-system,'Segoe UI',sans-serif}body:before{content:'';position:fixed;inset:0;z-index:-1;background:linear-gradient(#101725ea,#101725ef),url('../../assets/images/home-studio-landscape.png') center/cover}main{max-width:1120px;padding:24px;margin:auto}a{color:#c8b9fa;text-underline-offset:4px}nav{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.languages{display:flex;gap:14px}.languages [aria-current]{color:#9de5c9}header{margin:28px 0 22px}h1{font-size:clamp(26px,4vw,38px);margin:4px 0 10px;line-height:1.3}h2{font-size:19px;margin:0 0 14px}p{margin:8px 0;color:#bac8d9}.eyebrow{font-size:12px;letter-spacing:.16em;color:#c8b9fa}.privacy{color:#a0dec7;font-size:14px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{padding:22px;border:1px solid #4d536f;border-radius:15px;background:#172338eb;margin-bottom:20px}.drop{padding:22px;border:1px dashed #8d7cad;border-radius:12px;text-align:center;background:#1d2439}.drop.over{border-color:#9dedce;background:#233c43}input,select,button{font:inherit}input[type=file]{max-width:100%}input::file-selector-button,button,.download{padding:10px 15px;border:1px solid #8d77b5;border-radius:8px;background:#bda7ef;color:#221a33;font:inherit;font-weight:650;cursor:pointer}input::file-selector-button{margin-right:10px}button.secondary{background:#28354f;color:#e0e6f1;border-color:#5e6c86}button:disabled{opacity:.4;cursor:default}.download{display:inline-block;text-decoration:none;margin-top:12px}select{width:100%;padding:10px;border:1px solid #5a6884;border-radius:8px;color:#e4e9f4;background:#152438}label{display:block;margin-bottom:12px}.slider-label{display:flex;justify-content:space-between;gap:12px}.slider-label output{color:#cbb7f6;font-variant-numeric:tabular-nums}input[type=range]{width:100%;accent-color:#c0a8f2}fieldset{padding:0;margin:0;border:0;min-width:0}fieldset:disabled{opacity:.55}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.check{display:flex;align-items:center;gap:8px;margin:15px 0 6px}.check input{width:18px;height:18px;accent-color:#a0e6c7}.hint{font-size:13px;color:#a6b8ce}.file-name{overflow-wrap:anywhere;color:#e4e8f5}.status{min-height:28px;color:#a6e2cc}.error{color:#ffadb8}.transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.transport span{margin-left:auto;font-variant-numeric:tabular-nums}.meters{border-top:1px solid #45546c;margin-top:20px;padding-top:12px}.meters p{font-size:13px;font-variant-numeric:tabular-nums}.meters b{color:#d3c2fb}.meters small{color:#a9bdd5}details{border:1px solid #4d536f;border-radius:12px;padding:16px;margin-bottom:20px}summary{cursor:pointer}footer{font-size:12px;color:#a7b5c8;padding:16px 0;border-top:1px solid #43516a}footer a{margin-right:12px}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #9dedce;outline-offset:4px}[hidden]{display:none!important}@media(max-width:720px){main{padding:18px 14px}.layout{grid-template-columns:1fr;gap:0}.panel{padding:17px}input[type=file]{font-size:12px}.actions button{flex:1}.transport span{font-size:13px}.languages{font-size:13px}}</style></head><body><main><nav><a href="../index.html?lang=ja">← 実験室</a><div class="languages"><a href="ko.html?lang=ko" lang="ko" >한국어</a><a href="en.html?lang=en" lang="en" >English</a><a href="ja.html?lang=ja" lang="ja" aria-current="page">日本語</a></div></nav><header><p class="eyebrow">FISH LAB / AUDIO MASTERING</p><h1>かんたん音声マスタリング</h1><p>音色と強弱を整えて、WAVまたはMP3で保存します。</p><p class="privacy">● ブラウザ内で処理。AI・APIキー・サーバー送信は不要です。</p></header><section class="panel"><div class="drop" id="drop"><label for="file">音声ファイルを1つドロップするか、選択してください。</label><input id="file" type="file" accept="audio/*,.flac,.m4a" aria-label="音声を選択"></div><p class="hint">ブラウザで読み込めるMP3・WAV・FLAC・M4Aなど。最大100 MiB／10分／モノラル・ステレオ。</p><p class="file-name" id="file-name"></p></section><div class="layout"><section class="panel"><h2>01 · 音色とダイナミクス</h2><fieldset id="settings"><label>かんたんプリセット<select id="preset"><option value="natural">自然に</option><option value="clear">くっきり</option><option value="warm">厚みを加える</option><option value="custom">手動調整</option></select></label><label><span class="slider-label">低音 · 120 Hz<output id="low-value">0 dB</output></span><input id="low" aria-label="低音 · 120 Hz" type="range" min="-6" max="6" value="0" step="0.5"></label><label><span class="slider-label">中音 · 1 kHz<output id="mid-value">0 dB</output></span><input id="mid" aria-label="中音 · 1 kHz" type="range" min="-6" max="6" value="0" step="0.5"></label><label><span class="slider-label">高音 · 6 kHz<output id="high-value">0 dB</output></span><input id="high" aria-label="高音 · 6 kHz" type="range" min="-6" max="6" value="0" step="0.5"></label><label><span class="slider-label">コンプレッションの強さ<output id="compression-value">20%</output></span><input id="compression" aria-label="コンプレッションの強さ" type="range" min="0" max="100" value="20" step="1"></label><label><span class="slider-label">出力ゲイン<output id="gain-value">1 dB</output></span><input id="gain" aria-label="出力ゲイン" type="range" min="-12" max="12" value="1" step="0.5"></label><label><span class="slider-label">サンプルピーク上限<output id="ceiling-value">-1 dB</output></span><input id="ceiling" aria-label="サンプルピーク上限" type="range" min="-6" max="-0.5" value="-1" step="0.5"></label></fieldset><div class="actions"><button id="render" disabled>適用版を作成</button><button id="cancel" class="secondary">処理をキャンセル</button></div><p class="status" id="status" role="status" aria-live="polite">音声ファイルを選んでください。</p></section><div><section class="panel"><h2>02 · 原音と比較</h2><label>試聴する音声<select id="source" disabled><option value="original">原音</option><option value="master">適用版</option></select></label><div class="transport"><button id="play" disabled>▶ 再生</button><button id="restart" class="secondary">最初へ</button><span id="time">0:00 / 0:00</span></div><input id="seek" aria-label="再生位置" type="range" min="0" max="1" step=".01" value="0" disabled><label class="check"><input id="match" type="checkbox" checked disabled>近い音量で比較</label><p class="hint">曲全体のRMSを基準に、大きい方だけを下げて比較します。比較用の音量調整は保存ファイルに反映しません。</p><div class="meters" id="meters" hidden><p><b>原音</b><br><span id="before-meter"></span></p><p><b>適用版</b><br><span id="after-meter"></span></p><small id="reduction"></small></div></section><section class="panel"><h2>03 · ファイルに保存</h2><label>ファイル形式<select id="format"><option value="wav">WAV · 24-bit PCM</option><option value="mp3">MP3 · 容量を小さく</option></select></label><label id="mp3-options" hidden>MP3音質<select id="bitrate"><option value="128" >128 kbps</option><option value="192" >192 kbps</option><option value="256" >256 kbps</option><option value="320" selected>320 kbps</option></select></label><p class="hint">出力は44.1 kHzです。WAVは処理した音声を24-bit PCMで保存し、MP3は選択したビットレートで再圧縮します。MP3には非可逆圧縮による損失があります。</p><button id="save" disabled>保存ファイルを作成</button><a id="download" class="download" hidden>ダウンロード</a></section></div></div><details><summary>ご利用の前に</summary><p>最終的な音色と音量を軽く整える実験ツールです。音割れの復元や、埋もれた楽器の分離はできません。適切な設定は曲によって異なります。</p><p>表示はサンプルピークと全体RMSで、LUFS・トゥルーピーク測定ではありません。MP3化でピークが少し高くなる場合があります。元ファイルは変更しません。</p><p>読み込みと処理にはメモリが必要です。保存前に原音と聴き比べてください。</p></details><footer>Fish In the Toolbox · v2.4.0 · <a href="../../ja/index.html">道具箱</a><p>エンコーダー・ライセンス・ソース: <a href="https://github.com/zhuker/lamejs" target="_blank" rel="noopener noreferrer">lamejs 1.2.1</a><a href="https://lame.sourceforge.net/" target="_blank" rel="noopener noreferrer">LAME</a><a href="../../assets/vendor/LGPL-3.0.txt">LGPL-3.0</a><a href="../../assets/vendor/GPL-3.0.txt">GPL-3.0</a><a href="../../assets/vendor/LAME-NOTICE.txt">Notice</a><a href="../../assets/vendor/lamejs-1.2.1.tgz" download>Source (.tgz)</a></p></footer></main><script>const t={"title":"かんたん音声マスタリング","back":"← 実験室","home":"道具箱","desc":"音色と強弱を整えて、WAVまたはMP3で保存します。","privacy":"ブラウザ内で処理。AI・APIキー・サーバー送信は不要です。","pick":"音声を選択","drop":"音声ファイルを1つドロップするか、選択してください。","inputHint":"ブラウザで読み込めるMP3・WAV・FLAC・M4Aなど。最大100 MiB／10分／モノラル・ステレオ。","settings":"音色とダイナミクス","preset":"かんたんプリセット","natural":"自然に","clear":"くっきり","warm":"厚みを加える","custom":"手動調整","low":"低音 · 120 Hz","mid":"中音 · 1 kHz","high":"高音 · 6 kHz","compression":"コンプレッションの強さ","gain":"出力ゲイン","ceiling":"サンプルピーク上限","render":"適用版を作成","cancel":"処理をキャンセル","preview":"原音と比較","original":"原音","master":"適用版","source":"試聴する音声","match":"近い音量で比較","matchHint":"曲全体のRMSを基準に、大きい方だけを下げて比較します。比較用の音量調整は保存ファイルに反映しません。","play":"▶ 再生","pause":"Ⅱ 一時停止","restart":"最初へ","seek":"再生位置","peak":"サンプルピーク","reduction":"リミッターの最大低減量","output":"ファイルに保存","format":"ファイル形式","wav":"WAV · 24-bit PCM","mp3":"MP3 · 容量を小さく","bitrate":"MP3音質","save":"保存ファイルを作成","download":"ダウンロード","formatHint":"出力は44.1 kHzです。WAVは処理した音声を24-bit PCMで保存し、MP3は選択したビットレートで再圧縮します。MP3には非可逆圧縮による損失があります。","limits":"ご利用の前に","scope":"最終的な音色と音量を軽く整える実験ツールです。音割れの復元や、埋もれた楽器の分離はできません。適切な設定は曲によって異なります。","meterHint":"表示はサンプルピークと全体RMSで、LUFS・トゥルーピーク測定ではありません。MP3化でピークが少し高くなる場合があります。元ファイルは変更しません。","empty":"音声ファイルを選んでください。","loading":"音声を読み込んでいます…","ready":"準備できました。設定を選んで適用版を作成してください。","changed":"設定を変更しました。適用版を作り直してください。","processing":"音色・圧縮・ピーク制限を適用しています…","done":"適用版ができました。比較してから保存してください。","encoding":"保存ファイルを作成しています…","saved":"ファイルができました。ダウンロードで保存してください。","failed":"処理できませんでした。対応形式または短い音声でお試しください。","limit":"最大100 MiB／10分／モノラル・ステレオに対応しています。","one":"音声は1つずつ選んでください。","cancelled":"処理をキャンセルしました。","license":"エンコーダー・ライセンス・ソース","note":"読み込みと処理にはメモリが必要です。保存前に原音と聴き比べてください。"};
+function measure(channels) {
+  let peak=0,sum=0,count=0;
+  for(const c of channels)for(let i=0;i<c.length;i++){const x=c[i];if(!Number.isFinite(x))throw Error('invalid');peak=Math.max(peak,Math.abs(x));sum+=x*x;count++;}
+  return {peak,rms:Math.sqrt(sum/Math.max(1,count))};
+}
+function limitPeaks(channels,rate,ceilingDb=-1) {
+  // Linked stereo, 5 ms lookahead sample-peak limiter. This is not a true-peak limiter.
+  const n=channels[0].length,window=Math.max(1,Math.round(rate*.005)),ceiling=10**(ceilingDb/20);
+  const peaks=new Float32Array(n);for(const c of channels)for(let i=0;i<n;i++)peaks[i]=Math.max(peaks[i],Math.abs(c[i]));
+  const deque=new Int32Array(window+2);let head=0,tail=0,right=0,gain=1,minGain=1;
+  const cap=deque.length,release=Math.exp(-1/(rate*.08));
+  for(let i=0;i<n;i++){
+    while(head!==tail&&deque[head]<i)head=(head+1)%cap;
+    while(right<n&&right<=i+window){while(head!==tail&&peaks[deque[(tail-1+cap)%cap]]<=peaks[right])tail=(tail-1+cap)%cap;deque[tail]=right++;tail=(tail+1)%cap;}
+    const max=peaks[deque[head]],required=max>ceiling?ceiling/max:1;
+    gain=required<gain?required:required+(gain-required)*release;minGain=Math.min(minGain,gain);
+    for(const c of channels)c[i]=Math.max(-ceiling,Math.min(ceiling,c[i]*gain));
+  }
+  return {channels,reductionDb:-20*Math.log10(Math.max(minGain,1e-12))};
+}
+function pcm16(channel,start=0,end=channel.length){
+  const a=new Int16Array(end-start);for(let i=start;i<end;i++){const x=Math.max(-1,Math.min(1,channel[i]));a[i-start]=Math.round(x*(x<0?32768:32767));}return a;
+}
+function wav24(channels,rate){
+  const frames=channels[0].length,n=channels.length,size=frames*n*3,buffer=new ArrayBuffer(44+size+(size&1)),v=new DataView(buffer);
+  const text=(p,s)=>{for(let i=0;i<s.length;i++)v.setUint8(p+i,s.charCodeAt(i));};
+  text(0,'RIFF');v.setUint32(4,buffer.byteLength-8,true);text(8,'WAVE');text(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,n,true);v.setUint32(24,rate,true);v.setUint32(28,rate*n*3,true);v.setUint16(32,n*3,true);v.setUint16(34,24,true);text(36,'data');v.setUint32(40,size,true);
+  let p=44;for(let i=0;i<frames;i++)for(const c of channels){const x=Math.max(-1,Math.min(1,c[i])),s=Math.round(x*(x<0?8388608:8388607));v.setUint8(p++,s&255);v.setUint8(p++,(s>>8)&255);v.setUint8(p++,(s>>16)&255);}
+  return buffer;
+}
+
+const $=id=>document.getElementById(id),SR=44100,fields=['low','mid','high','compression','gain','ceiling'];
+let original=null,master=null,originalStats=null,masterStats=null,job=0,worker=null,busy=false,downloadURL='',audioContext=null,source=null,volume=null,position=0,started=0,playing=false,playJob=0;
+const number=id=>Number($(id).value),db=x=>x>0?(20*Math.log10(x)).toFixed(1):'−∞';
+const seconds=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,'0')}`;
+function status(text,error=false){$('status').textContent=text;$('status').classList.toggle('error',error);}
+function revoke(){if(downloadURL)URL.revokeObjectURL(downloadURL);downloadURL='';$('download').hidden=true;$('download').removeAttribute('href');}
+function buttons(){
+ $('settings').disabled=busy;$('file').disabled=busy;$('render').disabled=busy||!original;$('save').disabled=busy||!master;$('format').disabled=busy;$('bitrate').disabled=busy;
+ $('play').disabled=busy||!original;$('source').disabled=busy||!master;$('match').disabled=busy||!master;$('seek').disabled=busy||!original;
+ $('mp3-options').hidden=$('format').value!=='mp3';
+}
+function stopPlayback(){
+ playJob++;if(playing&&audioContext)position=Math.min(original.duration,position+audioContext.currentTime-started);
+ playing=false;if(source){source.onended=null;try{source.stop();}catch{}source.disconnect();source=null;}if(volume){volume.disconnect();volume=null;}$('play').textContent=t.play;updateTime();
+}
+function updateTime(){if(!original)return;const now=playing?Math.min(original.duration,position+audioContext.currentTime-started):position;$('seek').value=now;$('time').textContent=seconds(now)+' / '+seconds(original.duration);}
+function comparisonGain(which){
+ if(!$('match').checked||!masterStats||!originalStats)return 1;const rms=which==='master'?masterStats.rms:originalStats.rms,target=Math.min(masterStats.rms,originalStats.rms);return rms>1e-8?Math.min(1,target/rms):1;
+}
+async function play(){
+ if(!original||busy)return;if(playing){stopPlayback();return;}const token=++playJob;
+ try{audioContext??=new AudioContext();await audioContext.resume();if(token!==playJob)return;
+  const which=$('source').value,b=which==='master'&&master?master:original;if(position>=b.duration)position=0;
+  source=audioContext.createBufferSource();source.buffer=b;volume=audioContext.createGain();volume.gain.value=0;volume.gain.linearRampToValueAtTime(comparisonGain(which),audioContext.currentTime+.015);source.connect(volume);volume.connect(audioContext.destination);
+  started=audioContext.currentTime;playing=true;source.onended=()=>{if(token===playJob){playing=false;position=0;$('play').textContent=t.play;updateTime();}};source.start(0,position);$('play').textContent=t.pause;
+ }catch{status(t.failed,true);}
+}
+$('play').onclick=play;$('restart').onclick=()=>{stopPlayback();position=0;updateTime();};
+$('source').onchange=()=>{const was=playing;stopPlayback();if(was)play();};
+$('match').onchange=()=>{if(volume)volume.gain.setTargetAtTime(comparisonGain($('source').value),audioContext.currentTime,.015);};
+$('seek').oninput=()=>{const p=number('seek');stopPlayback();position=p;updateTime();};
+setInterval(()=>{if(playing)updateTime();},100);
+function cancel(){job++;if(worker)worker.terminate();worker=null;busy=false;stopPlayback();buttons();}
+function dirty(){stopPlayback();master=null;masterStats=null;$('source').value='original';revoke();$('meters').hidden=true;buttons();if(original)status(t.changed);}
+for(const id of fields){$(id).oninput=()=>{$(id+'-value').textContent=$(id).value+(id==='compression'?'%':' dB');$('preset').value='custom';dirty();};}
+const presets={natural:[0,0,0,20,1,-1],clear:[-1,1,2,30,1,-1],warm:[2,0,-1,40,2,-1]};
+$('preset').onchange=()=>{const p=presets[$('preset').value];if(!p)return;fields.forEach((id,i)=>{$(id).value=p[i];$(id+'-value').textContent=p[i]+(id==='compression'?'%':' dB');});dirty();};
+$('format').onchange=()=>{revoke();buttons();};$('bitrate').onchange=revoke;
+async function selectFile(f){
+ cancel();revoke();original=master=null;originalStats=masterStats=null;position=0;$('source').value='original';$('meters').hidden=true;$('file-name').textContent='';$('time').textContent='0:00 / 0:00';$('seek').value=0;buttons();
+ if(!f){status(t.empty);return;}if(f.size>100*1024*1024||!f.size){status(t.limit,true);return;}
+ const token=job;busy=true;buttons();status(t.loading);
+ try{
+  const encoded=await f.arrayBuffer();if(token!==job)return;const decoder=new OfflineAudioContext(2,1,SR);const decoded=await decoder.decodeAudioData(encoded);if(token!==job)return;
+  if(decoded.duration>600||decoded.numberOfChannels>2||decoded.numberOfChannels<1)throw Error('limit');
+  original=decoded;originalStats=measure(Array.from({length:decoded.numberOfChannels},(_,c)=>decoded.getChannelData(c)));$('file-name').textContent=f.name+' · '+seconds(decoded.duration)+' · '+decoded.numberOfChannels+' ch · 44.1 kHz';$('seek').max=decoded.duration;updateTime();status(t.ready);
+ }catch(e){if(token===job)status(e.message==='limit'?t.limit:t.failed,true);}
+ finally{if(token===job){busy=false;buttons();}}
+}
+$('file').onchange=e=>selectFile(e.target.files[0]);
+for(const event of ['dragover','dragenter'])$('drop').addEventListener(event,e=>{e.preventDefault();$('drop').classList.add('over');});$('drop').ondragleave=()=>$('drop').classList.remove('over');
+$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('over');if(e.dataTransfer.files.length===1)selectFile(e.dataTransfer.files[0]);else status(t.one,true);};
+$('cancel').onclick=()=>{cancel();status(original?t.cancelled:t.empty);};
+function workerTask(data,token){return new Promise((resolve,reject)=>{
+ worker=new Worker('worker.js?v=2.4.0');worker.onerror=()=>{worker?.terminate();worker=null;reject(Error('worker'));};worker.onmessage=e=>{
+  if(token!==job)return;if(e.data.progress!==undefined){status(t.encoding+' '+Math.round(e.data.progress*100)+'%');return;}
+  worker.terminate();worker=null;if(e.data.error)reject(Error('worker'));else resolve(e.data);
+ };worker.postMessage(data,data.channels.map(c=>c.buffer));
+});}
+$('render').onclick=async()=>{
+ if(!original||busy)return;cancel();dirty();const token=job;busy=true;buttons();status(t.processing);
+ try{
+  const off=new OfflineAudioContext(original.numberOfChannels,original.length,SR),src=off.createBufferSource();src.buffer=original;let tail=src;
+  for(const [type,freq,id]of [['lowshelf',120,'low'],['peaking',1000,'mid'],['highshelf',6000,'high']]){const f=off.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=.8;f.gain.value=number(id);tail.connect(f);tail=f;}
+  if(number('compression')>0){const c=off.createDynamicsCompressor();c.threshold.value=-18;c.knee.value=12;c.ratio.value=1+number('compression')/25;c.attack.value=.01;c.release.value=.18;tail.connect(c);tail=c;}
+  const gain=off.createGain();gain.gain.value=10**(number('gain')/20);tail.connect(gain);gain.connect(off.destination);src.start();
+  const rendered=await off.startRendering();if(token!==job)return;
+  const channels=Array.from({length:rendered.numberOfChannels},(_,i)=>rendered.getChannelData(i).slice());
+  const result=await workerTask({action:'finish',channels,rate:SR,ceiling:number('ceiling')},token);if(token!==job)return;
+  master=new AudioBuffer({numberOfChannels:result.channels.length,length:result.channels[0].length,sampleRate:SR});result.channels.forEach((c,i)=>master.copyToChannel(c,i));masterStats=result.stats;
+  $('source').value='master';$('before-meter').textContent=`${t.peak} ${db(originalStats.peak)} dBFS · RMS ${db(originalStats.rms)} dBFS`;
+  $('after-meter').textContent=`${t.peak} ${db(masterStats.peak)} dBFS · RMS ${db(masterStats.rms)} dBFS`;
+  $('reduction').textContent=t.reduction+' '+result.reductionDb.toFixed(1)+' dB';$('meters').hidden=false;status(t.done);
+ }catch{if(token===job)status(t.failed,true);}finally{if(token===job){busy=false;buttons();}}
+};
+$('save').onclick=async()=>{
+ if(!master||busy)return;cancel();revoke();const token=job;busy=true;buttons();status(t.encoding);
+ try{
+  const format=$('format').value,channels=Array.from({length:master.numberOfChannels},(_,i)=>master.getChannelData(i).slice());
+  const r=await workerTask({action:format,channels,rate:SR,bitrate:number('bitrate')},token);if(token!==job)return;
+  const blob=new Blob([r.buffer],{type:format==='mp3'?'audio/mpeg':'audio/wav'});downloadURL=URL.createObjectURL(blob);$('download').href=downloadURL;$('download').download='Fish-Master.'+format;$('download').textContent=t.download+' · '+(blob.size/1048576).toFixed(2)+' MiB';$('download').hidden=false;status(t.saved);
+ }catch{if(token===job)status(t.failed,true);}finally{if(token===job){busy=false;buttons();}}
+};
+addEventListener('pagehide',()=>{cancel();revoke();audioContext?.close();audioContext=null;});buttons();
+</script></body></html>
